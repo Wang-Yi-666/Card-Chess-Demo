@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cko4roccpe105"]
 
 [ext_resource type="Script" uid="uid://ctlw371cuawbd" path="res://Scripts/Npc.cs" id="1_i8ab3"]
-[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="1_smt2w"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="1_smt2w"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_i8ab3"]
 radius = 544.0147

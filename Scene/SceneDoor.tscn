@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c0v263dw3prrw"]
 
-[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="1_8i1a6"]
-[ext_resource type="Script" path="res://Scripts/SceneDoor.cs" id="1_xgoer"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="1_8i1a6"]
+[ext_resource type="Script" uid="uid://cr7slktahp8t7" path="res://Scripts/SceneDoor.cs" id="1_xgoer"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xgoer"]
 size = Vector2(411, 369)

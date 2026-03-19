@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://clfyfxbbjiapg"]
 
 [ext_resource type="Script" uid="uid://b8l5yhi5thqn" path="res://Scripts/Player.cs" id="1_dx8mo"]
-[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_j8rcl"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="2_j8rcl"]
 [ext_resource type="PackedScene" uid="uid://c1ojey6clae1h" path="res://Scene/Chest.tscn" id="3_5o5ic"]
 [ext_resource type="PackedScene" uid="uid://cgf2evpc6ty4e" path="res://Scene/Healing.tscn" id="3_j8rcl"]
 [ext_resource type="PackedScene" uid="uid://cko4roccpe105" path="res://Scene/NpcScene.tscn" id="5_5o5ic"]
