@@ -1,26 +1,34 @@
-[gd_scene format=3 uid="uid://cfsbnmkxedlfy"]
+[gd_scene load_steps=8 format=3 uid="uid://cfsbnmkxedlfy"]
 
-[ext_resource type="Script" uid="uid://b1v3ts2ne8faa" path="res://Scripts/Battle/BattleSceneController.cs" id="1_hq08r"]
-[ext_resource type="Script" uid="uid://v6k5hylri703" path="res://Scripts/Battle/Visual/BattleBoardOverlay.cs" id="2_7r48u"]
-[ext_resource type="PackedScene" uid="uid://b0scsa813e0hn" path="res://Scene/Battle/Rooms/GruntDebugRoomA.tscn" id="3_oxbdf"]
+[ext_resource type="Script" path="res://Scripts/Battle/BattleSceneController.cs" id="1_hq08r"]
+[ext_resource type="Script" path="res://Scripts/Battle/Visual/BattleBoardOverlay.cs" id="2_7r48u"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Rooms/GruntDebugRoomA.tscn" id="3_oxbdf"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Rooms/GruntDebugRoomB.tscn" id="4_fypyy"]
-[ext_resource type="Resource" uid="uid://dy3y14c3mod7u" path="res://Resources/Battle/Rooms/DebugBattleRoomPool.tres" id="5_4mo8r"]
+[ext_resource type="Resource" path="res://Resources/Battle/Rooms/DebugBattleRoomPool.tres" id="5_4mo8r"]
+[ext_resource type="Resource" path="res://Resources/Battle/Presentation/DefaultBattlePrefabLibrary.tres" id="6_prefab"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/UI/BattleHud.tscn" id="7_hud"]
 
 [node name="Battle" type="Node2D" unique_id=990095149]
 script = ExtResource("1_hq08r")
 BattleRoomScenes = [ExtResource("3_oxbdf"), ExtResource("4_fypyy")]
 BattleRoomPools = ExtResource("5_4mo8r")
+BattlePrefabLibrary = ExtResource("6_prefab")
 RandomSeed = 20260320
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=768109450]
+[node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(160, 90)
+enabled = true
 
-[node name="BackdropRoot" type="Node2D" parent="." unique_id=83275987]
+[node name="BackdropRoot" type="Node2D" parent="."]
 
-[node name="RoomContainer" type="Node2D" parent="." unique_id=351072525]
+[node name="RoomContainer" type="Node2D" parent="."]
 position = Vector2(32, 26)
 
-[node name="BoardOverlay" type="Node2D" parent="RoomContainer" unique_id=1625006113]
+[node name="BoardOverlay" type="Node2D" parent="RoomContainer"]
 script = ExtResource("2_7r48u")
 
-[node name="OverlayRoot" type="Node2D" parent="." unique_id=476631555]
+[node name="PieceRoot" type="Node2D" parent="RoomContainer"]
+
+[node name="OverlayRoot" type="Node2D" parent="."]
+
+[node name="BattleHud" parent="." instance=ExtResource("7_hud")]

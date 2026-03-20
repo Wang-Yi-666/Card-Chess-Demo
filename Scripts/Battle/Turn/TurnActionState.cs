@@ -10,6 +10,10 @@ public sealed class TurnActionState
 
     public int QuickChainCount { get; private set; }
 
+    public bool CanMove => !HasMoved && !HasEndedTurn;
+
+    public bool CanAct => !HasEndedTurn;
+
     public void StartNewTurn(int turnIndex)
     {
         TurnIndex = turnIndex;
@@ -31,5 +35,10 @@ public sealed class TurnActionState
     public void IncrementQuickChain()
     {
         QuickChainCount++;
+    }
+
+    public void AdvanceToNextTurn()
+    {
+        StartNewTurn(TurnIndex + 1);
     }
 }

@@ -1,0 +1,67 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Battle/UI/BattleHudController.cs" id="1_hud"]
+[ext_resource type="FontFile" path="res://Assets/Fonts/unifont_t-17.0.04.otf" id="2_font"]
+
+[node name="BattleHud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 12
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -40.0
+offset_right = -8.0
+offset_bottom = -8.0
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 9
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 1
+
+[node name="TopRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 3
+
+[node name="PlayerSummary" type="Label" parent="Panel/Margin/VBox/TopRow"]
+size_flags_horizontal = 3
+text = "Player"
+clip_text = true
+
+[node name="TurnSummary" type="Label" parent="Panel/Margin/VBox/TopRow"]
+size_flags_horizontal = 3
+text = "Turn"
+clip_text = true
+
+[node name="MoveMinusButton" type="Button" parent="Panel/Margin/VBox/TopRow"]
+text = "MV-"
+custom_minimum_size = Vector2(24, 0)
+
+[node name="MovePlusButton" type="Button" parent="Panel/Margin/VBox/TopRow"]
+text = "MV+"
+custom_minimum_size = Vector2(24, 0)
+
+[node name="EndTurnButton" type="Button" parent="Panel/Margin/VBox/TopRow"]
+text = "End"
+custom_minimum_size = Vector2(28, 0)
+
+[node name="BottomRow" type="HBoxContainer" parent="Panel/Margin/VBox"]
+theme_override_constants/separation = 3
+
+[node name="ObjectStates" type="Label" parent="Panel/Margin/VBox/BottomRow"]
+size_flags_horizontal = 3
+text = "Objects"
+clip_text = true
+
+[node name="DebugHint" type="Label" parent="Panel/Margin/VBox/BottomRow"]
+size_flags_horizontal = 3
+horizontal_alignment = 2
+clip_text = true
+text = "LMB move | T end"

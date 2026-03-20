@@ -1,6 +1,10 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Battle/Actors/BattlePlayerToken.cs" id="1_psq7j"]
+[ext_resource type="Script" path="res://Scripts/Battle/Presentation/BattlePlayerView.cs" id="1_player"]
 
 [node name="BattlePlayerToken" type="Node2D"]
-script = ExtResource("1_psq7j")
+script = ExtResource("1_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -1)
+centered = true

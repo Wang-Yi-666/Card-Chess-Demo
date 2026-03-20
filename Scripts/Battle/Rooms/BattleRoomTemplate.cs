@@ -48,6 +48,10 @@ public partial class BattleRoomTemplate : Node2D
 	{
 		EnsureReferences();
 		EnsureTopology();
+		if (!Engine.IsEditorHint())
+		{
+			_markerLayer.Visible = false;
+		}
 	}
 
 	public RoomLayoutDefinition BuildLayoutDefinition()
