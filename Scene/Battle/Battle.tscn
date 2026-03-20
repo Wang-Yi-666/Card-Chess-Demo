@@ -1,5 +1,17 @@
-[gd_scene format=3 uid="uid://cfsbnmkxedlfy"]
+[gd_scene load_steps=3 format=3 uid="uid://cfsbnmkxedlfy"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/BattleSceneController.cs" id="1_hq08r"]
+[ext_resource type="Script" path="res://Scripts/Battle/BattleBoardDebugView.cs" id="2_spjhi"]
 
 [node name="Battle" type="Node2D" unique_id=990095149]
+script = ExtResource("1_hq08r")
 
-[node name="Node2D" type="Node2D" parent="."]
+[node name="BoardRoot" type="Node2D" parent="."]
+position = Vector2(80, 80)
+
+[node name="DebugView" type="Node2D" parent="BoardRoot"]
+script = ExtResource("2_spjhi")
+
+[node name="PieceRoot" type="Node2D" parent="."]
+
+[node name="EffectRoot" type="Node2D" parent="."]
