@@ -26,6 +26,10 @@ window/size/window_height_override=720
 
 project/assembly_name="newproject"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+
 [input]
 
 move_left={
