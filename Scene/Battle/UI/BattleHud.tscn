@@ -7,7 +7,7 @@ script = ExtResource("1_hud")
 
 [node name="HoverPanel" type="PanelContainer" parent="."]
 visible = false
-custom_minimum_size = Vector2(104, 34)
+custom_minimum_size = Vector2(56, 34)
 mouse_filter = 2
 z_index = 50
 
@@ -21,12 +21,10 @@ theme_override_constants/margin_bottom = 3
 theme_override_constants/separation = 1
 
 [node name="HoverTitle" type="Label" parent="HoverPanel/Margin/VBox"]
-clip_text = true
 theme_override_font_sizes/font_size = 16
 text = "Unit"
 
 [node name="HoverStats" type="Label" parent="HoverPanel/Margin/VBox"]
-clip_text = true
 theme_override_font_sizes/font_size = 16
 text = "HP"
 

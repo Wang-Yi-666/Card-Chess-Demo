@@ -5,10 +5,11 @@ namespace CardChessDemo.Battle.State;
 
 public sealed class BattleObjectState
 {
-    public BattleObjectState(string objectId, string definitionId, string displayName, BoardObjectType objectType, BoardObjectFaction faction)
+    public BattleObjectState(string objectId, string definitionId, string aiId, string displayName, BoardObjectType objectType, BoardObjectFaction faction)
     {
         ObjectId = objectId;
         DefinitionId = definitionId;
+        AiId = aiId;
         DisplayName = displayName;
         ObjectType = objectType;
         Faction = faction;
@@ -16,6 +17,7 @@ public sealed class BattleObjectState
 
     public string ObjectId { get; }
     public string DefinitionId { get; }
+    public string AiId { get; }
     public string DisplayName { get; set; }
     public BoardObjectType ObjectType { get; }
     public BoardObjectFaction Faction { get; }

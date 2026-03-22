@@ -72,6 +72,7 @@ public sealed class BattleObjectStateManager
             BattlePrefabEntry? prefabEntry = _prefabLibrary.FindEntry(boardObject.DefinitionId);
             state.Cell = boardObject.Cell;
             state.MaxHp = boardObject.MaxHp > 0 ? boardObject.MaxHp : state.MaxHp;
+            state.MaxShield = boardObject.MaxShield;
             state.CurrentHp = ResolveCurrentHp(boardObject, prefabEntry);
             state.CurrentShield = ResolveCurrentShield(boardObject);
         }
@@ -105,12 +106,14 @@ public sealed class BattleObjectStateManager
         BattleObjectState state = new(
             boardObject.ObjectId,
             boardObject.DefinitionId,
+            boardObject.AiId,
             prefabEntry?.DisplayName ?? boardObject.DefinitionId,
             boardObject.ObjectType,
             boardObject.Faction)
         {
             Cell = boardObject.Cell,
             MaxHp = boardObject.MaxHp > 0 ? boardObject.MaxHp : prefabEntry?.DefaultMaxHp ?? 0,
+            MaxShield = boardObject.MaxShield,
             CurrentHp = ResolveCurrentHp(boardObject, prefabEntry),
             CurrentShield = ResolveCurrentShield(boardObject),
             MovePointsPerTurn = prefabEntry?.DefaultMovePointsPerTurn ?? 0,

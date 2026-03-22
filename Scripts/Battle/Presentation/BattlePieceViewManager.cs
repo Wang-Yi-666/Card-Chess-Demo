@@ -96,6 +96,22 @@ public sealed class BattlePieceViewManager
         }
     }
 
+    public void PlayDefeat(string objectId)
+    {
+        if (_views.TryGetValue(objectId, out BattleAnimatedViewBase? view))
+        {
+            view.PlayDefeat();
+        }
+    }
+
+    public void PlayCue(string objectId, StringName animationName)
+    {
+        if (_views.TryGetValue(objectId, out BattleAnimatedViewBase? view))
+        {
+            view.PlayCue(animationName);
+        }
+    }
+
     private BattleAnimatedViewBase? CreateView(BoardObject boardObject, BattleObjectStateManager stateManager, BattleRoomTemplate room)
     {
         BattleObjectState? state = stateManager.Get(boardObject.ObjectId);

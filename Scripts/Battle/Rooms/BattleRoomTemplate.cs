@@ -98,25 +98,24 @@ public partial class BattleRoomTemplate : Node2D
 				continue;
 			}
 
-			if (tileId == DestructibleObstacleMarkerTileId)
-			{
-				obstacleCounter++;
-				spawns.Add(CreateDestructibleObstacleSpawn(obstacleCounter, cell));
-				continue;
-			}
+		}
 
-			if (tileId == IndestructibleObstacleMarkerTileId)
-			{
-				obstacleCounter++;
-				spawns.Add(CreateIndestructibleObstacleSpawn(obstacleCounter, cell));
-				continue;
-			}
+		foreach (Vector2I cell in DefaultDestructibleObstacleCells)
+		{
+			obstacleCounter++;
+			spawns.Add(CreateDestructibleObstacleSpawn(obstacleCounter, cell));
+		}
 
-			if (tileId == SlowPassObstacleMarkerTileId)
-			{
-				obstacleCounter++;
-				spawns.Add(CreateSlowPassObstacleSpawn(obstacleCounter, cell));
-			}
+		foreach (Vector2I cell in DefaultIndestructibleObstacleCells)
+		{
+			obstacleCounter++;
+			spawns.Add(CreateIndestructibleObstacleSpawn(obstacleCounter, cell));
+		}
+
+		foreach (Vector2I cell in DefaultSlowPassObstacleCells)
+		{
+			obstacleCounter++;
+			spawns.Add(CreateSlowPassObstacleSpawn(obstacleCounter, cell));
 		}
 
 		return new RoomLayoutDefinition
@@ -323,6 +322,7 @@ public partial class BattleRoomTemplate : Node2D
 		{
 			ObjectId = $"enemy_{index:00}",
 			DefinitionId = resolvedDefinitionId,
+			AiId = "melee_basic",
 			ObjectType = BoardObjectType.Unit,
 			Cell = cell,
 			Faction = BoardObjectFaction.Enemy,

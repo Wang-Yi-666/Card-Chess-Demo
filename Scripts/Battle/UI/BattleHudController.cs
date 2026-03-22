@@ -220,6 +220,9 @@ public partial class BattleHudController : CanvasLayer
 		_hoveredUnitTitle.Text = _hoveredUnitState.DisplayName;
 		string hpText = _hoveredUnitState.MaxHp > 0 ? $"{_hoveredUnitState.CurrentHp}/{_hoveredUnitState.MaxHp}" : "-";
 		_hoveredUnitStats.Text = $"HP {hpText} SH {_hoveredUnitState.CurrentShield}";
+		_hoveredUnitTitle.ResetSize();
+		_hoveredUnitStats.ResetSize();
+		_hoveredUnitPanel.ResetSize();
 		PositionFloatingPanel(_hoveredUnitPanel, _hoveredUnitScreenPosition);
 	}
 
@@ -251,6 +254,7 @@ public partial class BattleHudController : CanvasLayer
 
 	private void PositionFloatingPanel(Control panel, Vector2 screenPosition)
 	{
+		panel.ResetSize();
 		Vector2 panelSize = panel.GetCombinedMinimumSize();
 		panel.Size = panelSize;
 		Vector2 viewportSize = GetViewport().GetVisibleRect().Size;
