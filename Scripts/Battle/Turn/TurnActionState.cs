@@ -121,6 +121,13 @@ public sealed class TurnActionState
     {
         ClearSelectedCard();
         InputMode = TurnInputMode.None;
+
+        // If targeting was opened directly from the move stage and no real action
+        // has been committed yet, return to PlayerMove so the unit can still move.
+        if (Phase == TurnPhase.PlayerAction && !HasMoved && !HasActed && !HasEndedTurn)
+        {
+            Phase = TurnPhase.PlayerMove;
+        }
     }
 
     public void MarkMoved()

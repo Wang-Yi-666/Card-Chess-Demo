@@ -28,8 +28,8 @@ public partial class BattleSceneController : Node2D
 	[Export] public string EncounterEnemyDefinitionId { get; set; } = "battle_enemy";
 	[Export] public int RandomSeed { get; set; } = 1337;
 	[Export] public float CameraZoom { get; set; } = 1.0f;
-	[Export] public int CameraTopMarginPixels { get; set; } = 18;
-	[Export] public int CameraBottomMarginPixels { get; set; } = 40;
+	[Export] public int CameraTopMarginPixels { get; set; } = 8;
+	[Export] public int CameraBottomMarginPixels { get; set; } = 52;
 	[Export] public int PlayerHandSize { get; set; } = 7;
 	[Export] public int PlayerEnergyPerTurn { get; set; } = 3;
 

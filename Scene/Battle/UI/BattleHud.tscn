@@ -23,12 +23,12 @@ theme_override_constants/separation = 1
 [node name="HoverTitle" type="Label" parent="HoverPanel/Margin/VBox"]
 clip_text = true
 theme_override_font_sizes/font_size = 16
-text = "单位"
+text = "Unit"
 
 [node name="HoverStats" type="Label" parent="HoverPanel/Margin/VBox"]
 clip_text = true
 theme_override_font_sizes/font_size = 16
-text = "生命"
+text = "HP"
 
 [node name="CardHoverPanel" type="PanelContainer" parent="."]
 visible = false
@@ -48,13 +48,13 @@ theme_override_constants/separation = 1
 [node name="HoverTitle" type="Label" parent="CardHoverPanel/Margin/VBox"]
 clip_text = true
 theme_override_font_sizes/font_size = 16
-text = "卡牌"
+text = "Card"
 
 [node name="HoverStats" type="Label" parent="CardHoverPanel/Margin/VBox"]
 autowrap_mode = 2
 custom_minimum_size = Vector2(0, 26)
 theme_override_font_sizes/font_size = 16
-text = "说明"
+text = "Info"
 
 [node name="PilePopup" type="PanelContainer" parent="."]
 visible = false
@@ -80,7 +80,7 @@ theme_override_constants/separation = 2
 
 [node name="TitleLabel" type="Label" parent="PilePopup/Margin/VBox"]
 theme_override_font_sizes/font_size = 16
-text = "牌堆"
+text = "Pile"
 
 [node name="BodyLabel" type="RichTextLabel" parent="PilePopup/Margin/VBox"]
 custom_minimum_size = Vector2(0, 66)
@@ -88,7 +88,7 @@ bbcode_enabled = false
 scroll_active = true
 fit_content = false
 theme_override_font_sizes/normal_font_size = 16
-text = "空"
+text = "Empty"
 
 [node name="CardFxRoot" type="Control" parent="."]
 layout_mode = 1
@@ -101,10 +101,10 @@ mouse_filter = 2
 z_index = 40
 
 [node name="TopBar" type="HBoxContainer" parent="."]
-offset_left = 4.0
-offset_top = 2.0
-offset_right = 316.0
-offset_bottom = 18.0
+offset_left = 2.0
+offset_top = 0.0
+offset_right = 130.0
+offset_bottom = 16.0
 theme_override_constants/separation = 2
 z_index = 20
 
@@ -113,62 +113,56 @@ theme_override_constants/separation = 2
 
 [node name="TurnLabel" type="Label" parent="TopBar/LeftInfo"]
 theme_override_font_sizes/font_size = 16
-text = "T1 行"
+text = "T1 Act"
 
 [node name="ResourceLabel" type="Label" parent="TopBar/LeftInfo"]
 theme_override_font_sizes/font_size = 16
 text = "E0/3 R0/3"
 
-[node name="Spacer" type="Control" parent="TopBar"]
-size_flags_horizontal = 3
+[node name="RightControls" type="VBoxContainer" parent="."]
+anchor_left = 1.0
+offset_left = -38.0
+offset_top = 0.0
+offset_right = -2.0
+offset_bottom = 66.0
+theme_override_constants/separation = 0
+z_index = 20
 
-[node name="RightControls" type="VBoxContainer" parent="TopBar"]
-theme_override_constants/separation = 2
-
-[node name="PileRow" type="HBoxContainer" parent="TopBar/RightControls"]
-theme_override_constants/separation = 2
-
-[node name="DrawPileButton" type="Button" parent="TopBar/RightControls/PileRow"]
-custom_minimum_size = Vector2(26, 16)
+[node name="DrawPileButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
-text = "抽0"
+text = "D0"
 
-[node name="DiscardPileButton" type="Button" parent="TopBar/RightControls/PileRow"]
-custom_minimum_size = Vector2(26, 16)
+[node name="DiscardPileButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
-text = "弃0"
+text = "G0"
 
-[node name="ExhaustPileButton" type="Button" parent="TopBar/RightControls/PileRow"]
-custom_minimum_size = Vector2(26, 16)
+[node name="ExhaustPileButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
-text = "消0"
+text = "X0"
 
-[node name="ActionRow" type="HBoxContainer" parent="TopBar/RightControls"]
-theme_override_constants/separation = 2
-
-[node name="AttackButton" type="Button" parent="TopBar/RightControls/ActionRow"]
-custom_minimum_size = Vector2(20, 16)
+[node name="AttackButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
-text = "攻"
+text = "Atk"
 
-[node name="MeditateButton" type="Button" parent="TopBar/RightControls/ActionRow"]
-custom_minimum_size = Vector2(20, 16)
+[node name="MeditateButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
-text = "冥"
+text = "Med"
 
-[node name="EndTurnButton" type="Button" parent="TopBar/RightControls/ActionRow"]
-custom_minimum_size = Vector2(20, 16)
+[node name="EndTurnButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
-text = "结"
+text = "End"
 
-[node name="BottomHand" type="PanelContainer" parent="."]
+[node name="BottomHand" type="Control" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 0.0
-offset_top = -40.0
-offset_right = 0.0
-offset_bottom = 0.0
+offset_top = -58.0
 mouse_filter = 2
 z_index = 10
 

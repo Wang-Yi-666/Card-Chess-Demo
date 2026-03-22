@@ -20,10 +20,27 @@ public partial class BattleHudController : CanvasLayer
 	private const float HoverOffsetY = -8.0f;
 	private const float ScreenMargin = 4.0f;
 	private const float SelectedCardLift = 8.0f;
-	private const float CardWidth = 42.0f;
-	private const float CardHeight = 42.0f;
+	private const float CardWidth = 56.0f;
+	private const float CardHeight = 54.0f;
 
 	private readonly PackedScene _cardViewScene = GD.Load<PackedScene>("res://Scene/Battle/UI/BattleCardView.tscn");
+	private readonly StyleBoxFlat _compactButtonStyle = new()
+	{
+		BgColor = new Color(0.18f, 0.18f, 0.22f, 0.88f),
+		BorderColor = new Color(0.72f, 0.72f, 0.78f, 0.95f),
+		BorderWidthLeft = 1,
+		BorderWidthTop = 1,
+		BorderWidthRight = 1,
+		BorderWidthBottom = 1,
+		CornerRadiusTopLeft = 2,
+		CornerRadiusTopRight = 2,
+		CornerRadiusBottomLeft = 2,
+		CornerRadiusBottomRight = 2,
+		ContentMarginLeft = 0,
+		ContentMarginTop = -2,
+		ContentMarginRight = 0,
+		ContentMarginBottom = -2,
+	};
 
 	private PanelContainer _hoveredUnitPanel = null!;
 	private Label _hoveredUnitTitle = null!;
@@ -177,14 +194,15 @@ public partial class BattleHudController : CanvasLayer
 
 		_turnLabel.Text = BuildTurnLabel();
 		_resourceLabel.Text = $"E{_currentEnergy}/{_maxEnergy} R{_energyRechargeProgress}/{_energyRechargeInterval}";
-		_drawPileButton.Text = $"抽{_drawPileCards.Length}";
-		_discardPileButton.Text = $"弃{_discardPileCards.Length}";
-		_exhaustPileButton.Text = $"消{_exhaustPileCards.Length}";
+		_drawPileButton.Text = $"D{_drawPileCards.Length}";
+		_discardPileButton.Text = $"G{_discardPileCards.Length}";
+		_exhaustPileButton.Text = $"X{_exhaustPileCards.Length}";
 		_attackButton.Visible = _turnState.CanEnterAttackTargeting || _turnState.IsAttackTargeting;
-		_attackButton.Text = _turnState.IsAttackTargeting ? "取消" : "攻击";
+		_attackButton.Text = _turnState.IsAttackTargeting ? "Cn" : "Atk";
 		_attackButton.Disabled = !_turnState.CanEnterAttackTargeting && !_turnState.IsAttackTargeting;
 		_meditateButton.Disabled = !_turnState.CanSelectCard;
 		_endTurnButton.Disabled = !_turnState.IsPlayerTurn && !_turnState.IsAttackTargeting && !_turnState.IsCardTargeting;
+
 		RefreshHandViews();
 		RefreshHoveredUnit();
 		RefreshHoveredCard();
@@ -200,7 +218,7 @@ public partial class BattleHudController : CanvasLayer
 
 		_hoveredUnitPanel.Visible = true;
 		_hoveredUnitTitle.Text = _hoveredUnitState.DisplayName;
-		_hoveredUnitStats.Text = $"生命 {_hoveredUnitState.CurrentHp}/{_hoveredUnitState.MaxHp}";
+		_hoveredUnitStats.Text = $"HP {_hoveredUnitState.CurrentHp}/{_hoveredUnitState.MaxHp}";
 		PositionFloatingPanel(_hoveredUnitPanel, _hoveredUnitScreenPosition);
 	}
 
@@ -216,16 +234,16 @@ public partial class BattleHudController : CanvasLayer
 		line.Append(_hoveredCard.Definition.Description);
 		if (_hoveredCard.Definition.IsQuick)
 		{
-			line.Append(" 迅速");
+			line.Append(" Quick");
 		}
 
 		if (_hoveredCard.Definition.ExhaustsOnPlay)
 		{
-			line.Append(" 消耗");
+			line.Append(" Exhaust");
 		}
 
 		_hoveredCardPanel.Visible = true;
-		_hoveredCardTitle.Text = $"{_hoveredCard.Definition.DisplayName} 费 {_hoveredCard.Definition.Cost}";
+		_hoveredCardTitle.Text = $"{_hoveredCard.Definition.DisplayName} C{_hoveredCard.Definition.Cost}";
 		_hoveredCardStats.Text = line.ToString();
 		PositionFloatingPanel(_hoveredCardPanel, _hoveredCardScreenPosition);
 	}
@@ -302,7 +320,7 @@ public partial class BattleHudController : CanvasLayer
 		float availableWidth = Mathf.Max(CardWidth, _handArea.Size.X);
 		float spacing = cardCount <= 1
 			? 0.0f
-			: Mathf.Clamp((availableWidth - CardWidth * cardCount) / Math.Max(1, cardCount - 1), 2.0f, 8.0f);
+			: Mathf.Clamp((availableWidth - CardWidth * cardCount) / Math.Max(1, cardCount - 1), -22.0f, 4.0f);
 
 		float totalWidth = CardWidth * cardCount + spacing * Mathf.Max(0, cardCount - 1);
 		float startX = Mathf.Max(0.0f, (availableWidth - totalWidth) * 0.5f);
@@ -329,7 +347,7 @@ public partial class BattleHudController : CanvasLayer
 		StringBuilder builder = new();
 		if (cards.Count == 0)
 		{
-			builder.Append("空");
+			builder.Append("Empty");
 		}
 		else
 		{
@@ -337,17 +355,17 @@ public partial class BattleHudController : CanvasLayer
 			{
 				BattleCardInstance card = cards[index];
 				builder.Append(card.Definition.DisplayName);
-				builder.Append(" 费");
+				builder.Append(" C");
 				builder.Append(card.Definition.Cost);
 
 				if (card.Definition.IsQuick)
 				{
-					builder.Append(" 迅速");
+					builder.Append(" Quick");
 				}
 
 				if (card.Definition.ExhaustsOnPlay)
 				{
-					builder.Append(" 消耗");
+					builder.Append(" Exhaust");
 				}
 
 				if (index > 0)
@@ -380,12 +398,12 @@ public partial class BattleHudController : CanvasLayer
 		_pilePopupBody = GetNodeOrNull<RichTextLabel>("PilePopup/Margin/VBox/BodyLabel");
 		_turnLabel = GetNodeOrNull<Label>("TopBar/LeftInfo/TurnLabel");
 		_resourceLabel = GetNodeOrNull<Label>("TopBar/LeftInfo/ResourceLabel");
-		_drawPileButton = GetNodeOrNull<Button>("TopBar/RightControls/PileRow/DrawPileButton");
-		_discardPileButton = GetNodeOrNull<Button>("TopBar/RightControls/PileRow/DiscardPileButton");
-		_exhaustPileButton = GetNodeOrNull<Button>("TopBar/RightControls/PileRow/ExhaustPileButton");
-		_attackButton = GetNodeOrNull<Button>("TopBar/RightControls/ActionRow/AttackButton");
-		_meditateButton = GetNodeOrNull<Button>("TopBar/RightControls/ActionRow/MeditateButton");
-		_endTurnButton = GetNodeOrNull<Button>("TopBar/RightControls/ActionRow/EndTurnButton");
+		_drawPileButton = GetNodeOrNull<Button>("RightControls/DrawPileButton");
+		_discardPileButton = GetNodeOrNull<Button>("RightControls/DiscardPileButton");
+		_exhaustPileButton = GetNodeOrNull<Button>("RightControls/ExhaustPileButton");
+		_attackButton = GetNodeOrNull<Button>("RightControls/AttackButton");
+		_meditateButton = GetNodeOrNull<Button>("RightControls/MeditateButton");
+		_endTurnButton = GetNodeOrNull<Button>("RightControls/EndTurnButton");
 		_handArea = GetNodeOrNull<Control>("BottomHand/HandArea");
 		_cardFxRoot = GetNodeOrNull<Control>("CardFxRoot");
 
@@ -417,6 +435,13 @@ public partial class BattleHudController : CanvasLayer
 			return;
 		}
 
+		ApplyCompactButtonStyle(_drawPileButton);
+		ApplyCompactButtonStyle(_discardPileButton);
+		ApplyCompactButtonStyle(_exhaustPileButton);
+		ApplyCompactButtonStyle(_attackButton);
+		ApplyCompactButtonStyle(_meditateButton);
+		ApplyCompactButtonStyle(_endTurnButton);
+
 		_attackButton.Pressed += OnAttackPressed;
 		_meditateButton.Pressed += OnMeditatePressed;
 		_endTurnButton.Pressed += OnEndTurnPressed;
@@ -425,6 +450,23 @@ public partial class BattleHudController : CanvasLayer
 		_exhaustPileButton.Pressed += OnExhaustPilePressed;
 		_handArea.Resized += OnHandAreaResized;
 		_signalsHooked = true;
+	}
+
+	private void ApplyCompactButtonStyle(Button button)
+	{
+		StyleBoxFlat normal = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
+		StyleBoxFlat hover = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
+		StyleBoxFlat pressed = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
+		StyleBoxFlat disabled = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
+		hover.BgColor = hover.BgColor.Lightened(0.08f);
+		pressed.BgColor = pressed.BgColor.Darkened(0.08f);
+		disabled.BgColor = disabled.BgColor.Darkened(0.18f);
+		disabled.BorderColor = disabled.BorderColor.Darkened(0.20f);
+
+		button.AddThemeStyleboxOverride("normal", normal);
+		button.AddThemeStyleboxOverride("hover", hover);
+		button.AddThemeStyleboxOverride("pressed", pressed);
+		button.AddThemeStyleboxOverride("disabled", disabled);
 	}
 
 	private void OnCardMouseEntered(BattleCardInstance card)
@@ -465,43 +507,43 @@ public partial class BattleHudController : CanvasLayer
 
 	private void OnDrawPilePressed()
 	{
-		ShowPilePopup("抽牌堆", _drawPileCards);
+		ShowPilePopup("Draw Pile", _drawPileCards);
 	}
 
 	private void OnDiscardPilePressed()
 	{
-		ShowPilePopup("弃牌堆", _discardPileCards);
+		ShowPilePopup("Discard Pile", _discardPileCards);
 	}
 
 	private void OnExhaustPilePressed()
 	{
-		ShowPilePopup("消耗牌堆", _exhaustPileCards);
+		ShowPilePopup("Exhaust Pile", _exhaustPileCards);
 	}
 
 	private string BuildTurnLabel()
 	{
 		if (_turnState == null)
 		{
-			return "回合 ?";
+			return "Turn ?";
 		}
 
 		string phaseLabel = _turnState.Phase switch
 		{
-			TurnPhase.PlayerMove => "移动",
-			TurnPhase.PlayerAction => "行动",
-			TurnPhase.TurnPost => "结算",
-			TurnPhase.EnemyTurn => "敌方",
+			TurnPhase.PlayerMove => "Move",
+			TurnPhase.PlayerAction => "Act",
+			TurnPhase.TurnPost => "Post",
+			TurnPhase.EnemyTurn => "Enemy",
 			_ => _turnState.Phase.ToString(),
 		};
 
 		if (_turnState.IsCardTargeting)
 		{
-			return $"T{_turnState.TurnIndex} {phaseLabel} 牌";
+			return $"T{_turnState.TurnIndex} {phaseLabel} Card";
 		}
 
 		if (_turnState.IsAttackTargeting)
 		{
-			return $"T{_turnState.TurnIndex} {phaseLabel} 攻";
+			return $"T{_turnState.TurnIndex} {phaseLabel} Atk";
 		}
 
 		return $"T{_turnState.TurnIndex} {phaseLabel}";

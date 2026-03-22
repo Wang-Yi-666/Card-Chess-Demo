@@ -71,7 +71,8 @@ public sealed class BattleDeckState
 
     public void StartPlayerTurn()
     {
-        CurrentEnergy = MaxEnergyPerTurn;
+        // Energy no longer refills every turn. It is driven by the turn-based
+        // recharge loop and card effects.
     }
 
     public void EndPlayerTurn()
