@@ -21,6 +21,7 @@ namespace CardChessDemo.Battle;
 
 public partial class BattleSceneController : Node2D
 {
+	private static readonly DefenseActionDefinition BasicDefenseAction = new(damageReductionPercent: 50);
 	[Export] public PackedScene? ForcedBattleRoomScene { get; set; }
 	[Export] public PackedScene[] BattleRoomScenes { get; set; } = Array.Empty<PackedScene>();
 	[Export] public BattleRoomPoolDefinition? BattleRoomPools { get; set; }
@@ -48,6 +49,7 @@ public partial class BattleSceneController : Node2D
 
 	private RandomNumberGenerator _rng = new();
 	private BattlePieceViewManager? _pieceViewManager;
+	private BattleFloatingTextLayer? _floatingTextLayer;
 	private BattleActionService? _actionService;
 	private EnemyTurnResolver? _enemyTurnResolver;
 	private BattleHudController? _hud;
@@ -104,14 +106,16 @@ public partial class BattleSceneController : Node2D
 
 		_pieceViewManager = new BattlePieceViewManager(GetNode<Node>("RoomContainer/PieceRoot"), BattlePrefabLibrary);
 		_pieceViewManager.Rebuild(Registry, StateManager, CurrentRoom);
-		_actionService = new BattleActionService(BoardState, Registry, QueryService, StateManager, _pieceViewManager, CurrentRoom, GlobalSession);
+		_floatingTextLayer = GetNodeOrNull<BattleFloatingTextLayer>("RoomContainer/FloatingTextLayer");
+		_actionService = new BattleActionService(BoardState, Registry, QueryService, StateManager, _pieceViewManager, CurrentRoom, GlobalSession, _floatingTextLayer);
 		_enemyTurnResolver = new EnemyTurnResolver(
 			Registry,
 			StateManager,
 			Pathfinder,
 			TargetingService,
 			_actionService,
-			new EnemyAiRegistry());
+			new EnemyAiRegistry(),
+			this);
 
 		BattleBoardOverlay? overlay = GetNodeOrNull<BattleBoardOverlay>("RoomContainer/BoardOverlay");
 		overlay?.Bind(CurrentRoom);
@@ -121,6 +125,7 @@ public partial class BattleSceneController : Node2D
 		{
 			_hud.Bind(TurnState);
 			_hud.AttackRequested += OnAttackRequested;
+			_hud.DefendRequested += OnDefendRequested;
 			_hud.MeditateRequested += OnMeditateRequested;
 			_hud.CardRequested += OnCardRequested;
 			_hud.EndTurnRequested += OnEndTurnRequested;
@@ -146,6 +151,7 @@ public partial class BattleSceneController : Node2D
 		if (_hud != null)
 		{
 			_hud.AttackRequested -= OnAttackRequested;
+			_hud.DefendRequested -= OnDefendRequested;
 			_hud.MeditateRequested -= OnMeditateRequested;
 			_hud.CardRequested -= OnCardRequested;
 			_hud.EndTurnRequested -= OnEndTurnRequested;
@@ -208,7 +214,7 @@ public partial class BattleSceneController : Node2D
 		if (TurnState?.IsCardTargeting == true)
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
-			overlay.SetAttackTargetCells(BuildSelectedCardTargetCells(playerState.ObjectId));
+			overlay.SetAttackTargetCells(BuildSelectedCardTargetCells(playerState.ObjectId), playerState.Cell);
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -216,7 +222,7 @@ public partial class BattleSceneController : Node2D
 		if (TurnState?.IsAttackTargeting == true)
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
-			overlay.SetAttackTargetCells(BuildAttackTargetCells(playerState.ObjectId, playerState.Cell, playerState.AttackRange));
+			overlay.SetAttackTargetCells(BuildAttackTargetCells(playerState.ObjectId, playerState.Cell, playerState.AttackRange), playerState.Cell);
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -230,7 +236,7 @@ public partial class BattleSceneController : Node2D
 		}
 
 		List<Vector2I> reachableCells = BuildReachableCells(playerState.ObjectId, playerState.Cell, playerState.MovePointsPerTurn);
-		overlay.SetReachableCells(reachableCells);
+		overlay.SetReachableCells(reachableCells, playerState.Cell);
 		overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
 
 		if (hasHoveredCell && reachableCells.Contains(hoveredCell))
@@ -476,6 +482,34 @@ public partial class BattleSceneController : Node2D
 		ResolveTurnPostPhase();
 	}
 
+	private async void OnDefendRequested()
+	{
+		if (_battleFailureSequenceStarted || TurnState == null || StateManager == null || _actionService == null)
+		{
+			return;
+		}
+
+		if (!TurnState.CanSelectCard)
+		{
+			return;
+		}
+
+		if (TurnState.IsAttackTargeting || TurnState.IsCardTargeting)
+		{
+			TurnState.CancelTargeting();
+		}
+
+		BattleObjectState? playerState = StateManager.GetPrimaryPlayerState();
+		if (playerState == null)
+		{
+			return;
+		}
+
+		await _actionService.ApplyDefenseActionAsync(playerState.ObjectId, BasicDefenseAction, TurnState.TurnIndex);
+		TurnState.MarkActed();
+		ResolveTurnPostPhase();
+	}
+
 	private bool CanPlayerMoveThisTurn()
 	{
 		return TurnState?.CanMove != false;
@@ -586,16 +620,17 @@ public partial class BattleSceneController : Node2D
 
 		if (targetObject != null && cardInstance.Definition.Damage > 0)
 		{
-			targetObject.ApplyDamage(cardInstance.Definition.Damage);
-
-			if (targetObject.IsDestroyed)
+			if (_actionService == null)
 			{
-				BoardState.RemoveObject(targetObject);
-				Registry.Remove(targetObject.ObjectId);
+				failureReason = "Battle action service is not initialized.";
+				return false;
 			}
-			else
+
+			_actionService.ApplyDamageToTarget(targetObject.ObjectId, cardInstance.Definition.Damage, out _, out string damageFailureReason);
+			if (!string.IsNullOrWhiteSpace(damageFailureReason))
 			{
-				_pieceViewManager.PlayHit(targetObject.ObjectId);
+				failureReason = damageFailureReason;
+				return false;
 			}
 		}
 
@@ -606,7 +641,18 @@ public partial class BattleSceneController : Node2D
 
 		if (cardInstance.Definition.ShieldGain > 0)
 		{
-			attacker.GainShield(cardInstance.Definition.ShieldGain);
+			if (_actionService == null)
+			{
+				failureReason = "Battle action service is not initialized.";
+				return false;
+			}
+
+			_actionService.ApplyShieldGainToTarget(attackerId, cardInstance.Definition.ShieldGain, out string shieldFailureReason);
+			if (!string.IsNullOrWhiteSpace(shieldFailureReason))
+			{
+				failureReason = shieldFailureReason;
+				return false;
+			}
 		}
 
 		if (cardInstance.Definition.DrawCount > 0)
@@ -646,7 +692,7 @@ public partial class BattleSceneController : Node2D
 		return true;
 	}
 
-	private void ResolveTurnPostPhase()
+	private async void ResolveTurnPostPhase()
 	{
 		if (TurnState == null)
 		{
@@ -661,7 +707,12 @@ public partial class BattleSceneController : Node2D
 		_playerDeck?.EndPlayerTurn();
 		StateManager?.SyncAllFromRegistry();
 		TurnState.BeginEnemyTurn();
-		_enemyTurnResolver?.ResolveTurn();
+		_actionService?.ResolveTurnStart(BoardObjectFaction.Enemy, TurnState.TurnIndex);
+		if (_enemyTurnResolver != null)
+		{
+			await _enemyTurnResolver.ResolveTurnAsync();
+		}
+
 		if (_actionService?.IsPlayerDefeated == true)
 		{
 			StartBattleFailureSequence();
@@ -679,6 +730,7 @@ public partial class BattleSceneController : Node2D
 		}
 
 		_playerDeck?.StartPlayerTurn();
+		_actionService?.ResolveTurnStart(BoardObjectFaction.Player, TurnState.TurnIndex);
 	}
 
 	private void ApplyPendingBattleRequest()
@@ -921,22 +973,26 @@ public partial class BattleSceneController : Node2D
 	private List<Vector2I> BuildAttackTargetCells(string objectId, Vector2I origin, int attackRange)
 	{
 		List<Vector2I> cells = new();
-		if (Registry == null || !Registry.TryGet(objectId, out BoardObject? sourceObject) || sourceObject == null)
+		if (CurrentRoom == null || attackRange <= 0)
 		{
 			return cells;
 		}
 
-		foreach (BoardObject boardObject in Registry.AllObjects)
+		for (int y = origin.Y - attackRange; y <= origin.Y + attackRange; y++)
 		{
-			if (boardObject.ObjectId == objectId || !BattleActionService.IsAttackable(sourceObject, boardObject))
+			for (int x = origin.X - attackRange; x <= origin.X + attackRange; x++)
 			{
-				continue;
-			}
+				Vector2I cell = new(x, y);
+				if (cell == origin || !CurrentRoom.Topology.IsInsideBoard(cell))
+				{
+					continue;
+				}
 
-			int distance = Mathf.Abs(boardObject.Cell.X - origin.X) + Mathf.Abs(boardObject.Cell.Y - origin.Y);
-			if (distance <= attackRange)
-			{
-				cells.Add(boardObject.Cell);
+				int distance = Mathf.Abs(cell.X - origin.X) + Mathf.Abs(cell.Y - origin.Y);
+				if (distance <= attackRange)
+				{
+					cells.Add(cell);
+				}
 			}
 		}
 
@@ -968,15 +1024,50 @@ public partial class BattleSceneController : Node2D
 		return cardDefinition.TargetingMode switch
 		{
 			BattleCardTargetingMode.EnemyUnit => BuildAttackTargetCells(sourceObjectId, sourceObject.Cell, cardDefinition.Range),
-			BattleCardTargetingMode.StraightLineEnemy => TargetingService == null
-				? new List<Vector2I>()
-				: TargetingService.FindEnemiesInStraightLines(sourceObjectId, cardDefinition.Range)
-					.Values
-					.Select(target => target.Cell)
-					.Distinct()
-					.ToList(),
+			BattleCardTargetingMode.StraightLineEnemy => BuildStraightLineTargetCells(sourceObject.Cell, cardDefinition.Range),
 			_ => new List<Vector2I>(),
 		};
+	}
+
+	private List<Vector2I> BuildStraightLineTargetCells(Vector2I origin, int range)
+	{
+		List<Vector2I> cells = new();
+		if (CurrentRoom == null || QueryService == null || range <= 0)
+		{
+			return cells;
+		}
+
+		foreach (Vector2I direction in BoardTopology.CardinalDirections)
+		{
+			Vector2I currentCell = origin;
+			for (int step = 0; step < range; step++)
+			{
+				currentCell += direction;
+				if (!CurrentRoom.Topology.IsInsideBoard(currentCell))
+				{
+					break;
+				}
+
+				cells.Add(currentCell);
+
+				bool shouldStop = false;
+				foreach (BoardObject boardObject in QueryService.GetObjectsAtCell(currentCell))
+				{
+					if (boardObject.ObjectType == BoardObjectType.Unit || boardObject.BlocksLineOfSight)
+					{
+						shouldStop = true;
+						break;
+					}
+				}
+
+				if (shouldStop)
+				{
+					break;
+				}
+			}
+		}
+
+		return cells.Distinct().ToList();
 	}
 
 	private bool TryResolveCardTarget(

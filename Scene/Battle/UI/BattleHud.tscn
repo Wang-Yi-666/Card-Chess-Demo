@@ -146,6 +146,11 @@ custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16
 text = "Atk"
 
+[node name="DefendButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(34, 10)
+theme_override_font_sizes/font_size = 16
+text = "Def"
+
 [node name="MeditateButton" type="Button" parent="RightControls"]
 custom_minimum_size = Vector2(34, 10)
 theme_override_font_sizes/font_size = 16

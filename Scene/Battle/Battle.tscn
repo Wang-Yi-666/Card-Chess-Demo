@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://cfsbnmkxedlfy"]
+[gd_scene load_steps=10 format=3 uid="uid://cfsbnmkxedlfy"]
 
 [ext_resource type="Script" path="res://Scripts/Battle/BattleSceneController.cs" id="1_hq08r"]
 [ext_resource type="Script" path="res://Scripts/Battle/Visual/BattleBoardOverlay.cs" id="2_7r48u"]
+[ext_resource type="Script" path="res://Scripts/Battle/Visual/BattleFloatingTextLayer.cs" id="9_float"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Rooms/GruntDebugRoomA.tscn" id="3_oxbdf"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Rooms/GruntDebugRoomB.tscn" id="4_fypyy"]
 [ext_resource type="Resource" path="res://Resources/Battle/Rooms/DebugBattleRoomPool.tres" id="5_4mo8r"]
@@ -31,6 +32,9 @@ position = Vector2(32, 26)
 script = ExtResource("2_7r48u")
 
 [node name="PieceRoot" type="Node2D" parent="RoomContainer"]
+
+[node name="FloatingTextLayer" type="Node2D" parent="RoomContainer"]
+script = ExtResource("9_float")
 
 [node name="OverlayRoot" type="Node2D" parent="."]
 

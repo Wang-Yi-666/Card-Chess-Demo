@@ -67,6 +67,14 @@ public sealed class BoardObject
 
     public int CurrentShield { get; private set; }
 
+    public bool HasDefenseStance => DefenseDamageReductionPercent > 0;
+
+    public int DefenseDamageReductionPercent { get; private set; }
+
+    public int DefenseExpiresOnTurnIndex { get; private set; }
+
+    public BoardObjectFaction DefenseExpiresOnFaction { get; private set; } = BoardObjectFaction.None;
+
     public bool BlocksMovement { get; }
 
     public bool BlocksLineOfSight { get; }
@@ -89,35 +97,86 @@ public sealed class BoardObject
         Cell = cell;
     }
 
-    public void ApplyDamage(int amount)
+    public DamageApplicationResult ApplyDamage(int amount)
     {
         if (MaxHp <= 0 || amount <= 0)
         {
-            return;
+            return new DamageApplicationResult();
         }
 
-        int remainingDamage = amount;
+        List<CombatImpact> impacts = new();
+        int remainingDamage = ResolveIncomingDamage(amount);
         if (CurrentShield > 0)
         {
             int absorbed = Math.Min(CurrentShield, remainingDamage);
             CurrentShield -= absorbed;
             remainingDamage -= absorbed;
+            if (absorbed > 0)
+            {
+                impacts.Add(new CombatImpact(CombatImpactType.ShieldDamage, absorbed));
+            }
         }
 
         if (remainingDamage > 0)
         {
+            int hpDamage = Math.Min(CurrentHp, remainingDamage);
             CurrentHp = Math.Max(0, CurrentHp - remainingDamage);
+            if (hpDamage > 0)
+            {
+                impacts.Add(new CombatImpact(CombatImpactType.HealthDamage, hpDamage));
+            }
         }
+
+        return new DamageApplicationResult(impacts);
     }
 
-    public void GainShield(int amount)
+    public DamageApplicationResult EnterDefenseStance(int currentTurnIndex, int damageReductionPercent, int shieldGain = 0)
     {
-        if (amount <= 0)
+        DefenseDamageReductionPercent = Math.Max(0, damageReductionPercent);
+        DefenseExpiresOnTurnIndex = currentTurnIndex + 1;
+        DefenseExpiresOnFaction = Faction;
+
+        return shieldGain > 0
+            ? GainShield(shieldGain)
+            : new DamageApplicationResult();
+    }
+
+    public void ResolveTurnStart(BoardObjectFaction activeFaction, int activeTurnIndex)
+    {
+        if (!HasDefenseStance)
         {
             return;
         }
 
+        if (DefenseExpiresOnFaction != activeFaction || activeTurnIndex < DefenseExpiresOnTurnIndex)
+        {
+            return;
+        }
+
+        ClearDefenseStance();
+    }
+
+    public DamageApplicationResult GainShield(int amount)
+    {
+        if (amount <= 0)
+        {
+            return new DamageApplicationResult();
+        }
+
         CurrentShield += amount;
+        return new DamageApplicationResult(new[] { new CombatImpact(CombatImpactType.ShieldGain, amount) });
+    }
+
+    public DamageApplicationResult RestoreHealth(int amount)
+    {
+        if (amount <= 0 || MaxHp <= 0 || CurrentHp >= MaxHp)
+        {
+            return new DamageApplicationResult();
+        }
+
+        int restored = Math.Min(MaxHp - CurrentHp, amount);
+        CurrentHp += restored;
+        return new DamageApplicationResult(new[] { new CombatImpact(CombatImpactType.HealthHeal, restored) });
     }
 
     public void ApplyCombatDefaults(int maxHp, int currentHp, int maxShield = 0, int currentShield = 0)
@@ -140,6 +199,24 @@ public sealed class BoardObject
         CurrentHp = MaxHp <= 0 ? 0 : Mathf.Clamp(currentHp, 0, MaxHp);
         MaxShield = Math.Max(0, maxShield);
         CurrentShield = Math.Max(0, currentShield);
+    }
+
+    private int ResolveIncomingDamage(int amount)
+    {
+        if (!HasDefenseStance)
+        {
+            return amount;
+        }
+
+        float multiplier = Mathf.Clamp(1.0f - DefenseDamageReductionPercent / 100.0f, 0.0f, 1.0f);
+        return Mathf.CeilToInt(amount * multiplier);
+    }
+
+    private void ClearDefenseStance()
+    {
+        DefenseDamageReductionPercent = 0;
+        DefenseExpiresOnTurnIndex = 0;
+        DefenseExpiresOnFaction = BoardObjectFaction.None;
     }
 
     public static BoardObject FromSpawn(BoardObjectSpawnDefinition spawn)

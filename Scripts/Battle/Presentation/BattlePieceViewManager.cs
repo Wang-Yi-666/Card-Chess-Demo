@@ -96,6 +96,23 @@ public sealed class BattlePieceViewManager
         }
     }
 
+    public void PlayAttackExchange(string attackerId, Vector2 directionToTarget, string targetId)
+    {
+        Vector2 normalizedDirection = directionToTarget == Vector2.Zero ? Vector2.Zero : directionToTarget.Normalized();
+
+        if (_views.TryGetValue(attackerId, out BattleAnimatedViewBase? attackerView))
+        {
+            attackerView.PlayAction();
+            attackerView.PlayMotionOffset(normalizedDirection * 3.0f, 0.05d, 0.10d);
+        }
+
+        if (_views.TryGetValue(targetId, out BattleAnimatedViewBase? targetView))
+        {
+            targetView.PlayHit();
+            targetView.PlayMotionOffset(-normalizedDirection * 4.0f, 0.04d, 0.12d, 0.01d);
+        }
+    }
+
     public void PlayDefeat(string objectId)
     {
         if (_views.TryGetValue(objectId, out BattleAnimatedViewBase? view))

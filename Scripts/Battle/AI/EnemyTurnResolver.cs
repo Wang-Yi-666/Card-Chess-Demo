@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Godot;
 using CardChessDemo.Battle.Actions;
 using CardChessDemo.Battle.Board;
 using CardChessDemo.Battle.State;
@@ -14,6 +16,10 @@ public sealed class EnemyTurnResolver
     private readonly BoardTargetingService _targetingService;
     private readonly BattleActionService _actionService;
     private readonly EnemyAiRegistry _aiRegistry;
+    private readonly Node _awaitHost;
+
+    public double PreActionDelaySeconds { get; set; } = 0.08d;
+    public double PostActionDelaySeconds { get; set; } = 0.16d;
 
     public EnemyTurnResolver(
         BoardObjectRegistry registry,
@@ -21,7 +27,8 @@ public sealed class EnemyTurnResolver
         BoardPathfinder pathfinder,
         BoardTargetingService targetingService,
         BattleActionService actionService,
-        EnemyAiRegistry aiRegistry)
+        EnemyAiRegistry aiRegistry,
+        Node awaitHost)
     {
         _registry = registry;
         _stateManager = stateManager;
@@ -29,9 +36,10 @@ public sealed class EnemyTurnResolver
         _targetingService = targetingService;
         _actionService = actionService;
         _aiRegistry = aiRegistry;
+        _awaitHost = awaitHost;
     }
 
-    public void ResolveTurn()
+    public async Task ResolveTurnAsync()
     {
         string[] enemyIds = _registry.AllObjects
             .Where(boardObject => boardObject.ObjectType == BoardObjectType.Unit && boardObject.Faction == BoardObjectFaction.Enemy)
@@ -63,7 +71,9 @@ public sealed class EnemyTurnResolver
 
             IEnemyAiStrategy strategy = _aiRegistry.Resolve(enemyState.AiId);
             EnemyAiDecision decision = strategy.Decide(context);
-            ExecuteDecision(enemyId, decision);
+            await WaitSeconds(PreActionDelaySeconds);
+            await ExecuteDecisionAsync(enemyId, decision);
+            await WaitSeconds(PostActionDelaySeconds);
 
             if (_actionService.IsPlayerDefeated)
             {
@@ -72,17 +82,27 @@ public sealed class EnemyTurnResolver
         }
     }
 
-    private void ExecuteDecision(string enemyId, EnemyAiDecision decision)
+    private async Task ExecuteDecisionAsync(string enemyId, EnemyAiDecision decision)
     {
         switch (decision.DecisionType)
         {
             case EnemyAiDecisionType.Move:
-                _actionService.TryMoveObject(enemyId, decision.MoveCell, out _);
+                await _actionService.TryMoveObjectAsync(enemyId, decision.MoveCell);
                 break;
 
             case EnemyAiDecisionType.Attack:
-                _actionService.TryAttackObject(enemyId, decision.TargetObjectId, out _);
+                await _actionService.TryAttackObjectAsync(enemyId, decision.TargetObjectId);
                 break;
         }
+    }
+
+    private async Task WaitSeconds(double seconds)
+    {
+        if (seconds <= 0.0d)
+        {
+            return;
+        }
+
+        await _awaitHost.ToSignal(_awaitHost.GetTree().CreateTimer(seconds), SceneTreeTimer.SignalName.Timeout);
     }
 }

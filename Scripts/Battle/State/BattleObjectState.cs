@@ -26,6 +26,8 @@ public sealed class BattleObjectState
     public int CurrentHp { get; set; }
     public int MaxShield { get; set; }
     public int CurrentShield { get; set; }
+    public bool HasDefenseStance { get; set; }
+    public int DefenseDamageReductionPercent { get; set; }
     public int MovePointsPerTurn { get; set; }
     public int AttackRange { get; set; }
     public int AttackDamage { get; set; }

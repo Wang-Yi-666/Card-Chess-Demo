@@ -75,6 +75,8 @@ public sealed class BattleObjectStateManager
             state.MaxShield = boardObject.MaxShield;
             state.CurrentHp = ResolveCurrentHp(boardObject, prefabEntry);
             state.CurrentShield = ResolveCurrentShield(boardObject);
+            state.HasDefenseStance = boardObject.HasDefenseStance;
+            state.DefenseDamageReductionPercent = boardObject.DefenseDamageReductionPercent;
         }
 
         SyncPlayerFromSession();
@@ -116,6 +118,8 @@ public sealed class BattleObjectStateManager
             MaxShield = boardObject.MaxShield,
             CurrentHp = ResolveCurrentHp(boardObject, prefabEntry),
             CurrentShield = ResolveCurrentShield(boardObject),
+            HasDefenseStance = boardObject.HasDefenseStance,
+            DefenseDamageReductionPercent = boardObject.DefenseDamageReductionPercent,
             MovePointsPerTurn = prefabEntry?.DefaultMovePointsPerTurn ?? 0,
             AttackRange = prefabEntry?.DefaultAttackRange ?? 1,
             AttackDamage = prefabEntry?.DefaultAttackDamage ?? 1,

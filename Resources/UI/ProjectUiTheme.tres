@@ -1,8 +1,8 @@
-[gd_resource type="Theme" load_steps=2 format=3]
+[gd_resource type="Theme" format=3 uid="uid://bkbf2r62ddq26"]
 
-[ext_resource type="FontFile" path="res://Assets/Fonts/unifont_t-17.0.04.otf" id="1_font"]
+[ext_resource type="FontFile" uid="uid://ct58dk6apiarx" path="res://Assets/Fonts/unifont_t-17.0.04.otf" id="1_font"]
 
 [resource]
+default_base_scale = 1.0
 default_font = ExtResource("1_font")
 default_font_size = 16
-default_base_scale = 1.0

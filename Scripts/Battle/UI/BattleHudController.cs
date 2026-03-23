@@ -13,6 +13,7 @@ public partial class BattleHudController : CanvasLayer
 {
 	[Signal] public delegate void EndTurnRequestedEventHandler();
 	[Signal] public delegate void AttackRequestedEventHandler();
+	[Signal] public delegate void DefendRequestedEventHandler();
 	[Signal] public delegate void MeditateRequestedEventHandler();
 	[Signal] public delegate void CardRequestedEventHandler(string cardInstanceId);
 
@@ -57,6 +58,7 @@ public partial class BattleHudController : CanvasLayer
 	private Button _discardPileButton = null!;
 	private Button _exhaustPileButton = null!;
 	private Button _attackButton = null!;
+	private Button _defendButton = null!;
 	private Button _meditateButton = null!;
 	private Button _endTurnButton = null!;
 	private Control _handArea = null!;
@@ -100,6 +102,7 @@ public partial class BattleHudController : CanvasLayer
 		}
 
 		_attackButton.Pressed -= OnAttackPressed;
+		_defendButton.Pressed -= OnDefendPressed;
 		_meditateButton.Pressed -= OnMeditatePressed;
 		_endTurnButton.Pressed -= OnEndTurnPressed;
 		_drawPileButton.Pressed -= OnDrawPilePressed;
@@ -200,6 +203,7 @@ public partial class BattleHudController : CanvasLayer
 		_attackButton.Visible = _turnState.CanEnterAttackTargeting || _turnState.IsAttackTargeting;
 		_attackButton.Text = _turnState.IsAttackTargeting ? "Cn" : "Atk";
 		_attackButton.Disabled = !_turnState.CanEnterAttackTargeting && !_turnState.IsAttackTargeting;
+		_defendButton.Disabled = !_turnState.CanSelectCard;
 		_meditateButton.Disabled = !_turnState.CanSelectCard;
 		_endTurnButton.Disabled = !_turnState.IsPlayerTurn && !_turnState.IsAttackTargeting && !_turnState.IsCardTargeting;
 
@@ -219,7 +223,8 @@ public partial class BattleHudController : CanvasLayer
 		_hoveredUnitPanel.Visible = true;
 		_hoveredUnitTitle.Text = _hoveredUnitState.DisplayName;
 		string hpText = _hoveredUnitState.MaxHp > 0 ? $"{_hoveredUnitState.CurrentHp}/{_hoveredUnitState.MaxHp}" : "-";
-		_hoveredUnitStats.Text = $"HP {hpText} SH {_hoveredUnitState.CurrentShield}";
+		string defenseText = _hoveredUnitState.HasDefenseStance ? $" DF {_hoveredUnitState.DefenseDamageReductionPercent}%" : string.Empty;
+		_hoveredUnitStats.Text = $"HP {hpText} SH {_hoveredUnitState.CurrentShield}{defenseText}";
 		_hoveredUnitTitle.ResetSize();
 		_hoveredUnitStats.ResetSize();
 		_hoveredUnitPanel.ResetSize();
@@ -407,6 +412,7 @@ public partial class BattleHudController : CanvasLayer
 		_discardPileButton = GetNodeOrNull<Button>("RightControls/DiscardPileButton");
 		_exhaustPileButton = GetNodeOrNull<Button>("RightControls/ExhaustPileButton");
 		_attackButton = GetNodeOrNull<Button>("RightControls/AttackButton");
+		_defendButton = GetNodeOrNull<Button>("RightControls/DefendButton");
 		_meditateButton = GetNodeOrNull<Button>("RightControls/MeditateButton");
 		_endTurnButton = GetNodeOrNull<Button>("RightControls/EndTurnButton");
 		_handArea = GetNodeOrNull<Control>("BottomHand/HandArea");
@@ -427,6 +433,7 @@ public partial class BattleHudController : CanvasLayer
 			&& _discardPileButton != null
 			&& _exhaustPileButton != null
 			&& _attackButton != null
+			&& _defendButton != null
 			&& _meditateButton != null
 			&& _endTurnButton != null
 			&& _handArea != null
@@ -444,10 +451,12 @@ public partial class BattleHudController : CanvasLayer
 		ApplyCompactButtonStyle(_discardPileButton);
 		ApplyCompactButtonStyle(_exhaustPileButton);
 		ApplyCompactButtonStyle(_attackButton);
+		ApplyCompactButtonStyle(_defendButton);
 		ApplyCompactButtonStyle(_meditateButton);
 		ApplyCompactButtonStyle(_endTurnButton);
 
 		_attackButton.Pressed += OnAttackPressed;
+		_defendButton.Pressed += OnDefendPressed;
 		_meditateButton.Pressed += OnMeditatePressed;
 		_endTurnButton.Pressed += OnEndTurnPressed;
 		_drawPileButton.Pressed += OnDrawPilePressed;
@@ -502,6 +511,12 @@ public partial class BattleHudController : CanvasLayer
 	{
 		_pilePopup.Visible = false;
 		EmitSignal(SignalName.MeditateRequested);
+	}
+
+	private void OnDefendPressed()
+	{
+		_pilePopup.Visible = false;
+		EmitSignal(SignalName.DefendRequested);
 	}
 
 	private void OnEndTurnPressed()
