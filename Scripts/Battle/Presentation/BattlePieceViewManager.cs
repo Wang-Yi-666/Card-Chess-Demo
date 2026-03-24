@@ -129,6 +129,14 @@ public sealed class BattlePieceViewManager
         }
     }
 
+    public void PlayTintPulse(string objectId, Color tintColor)
+    {
+        if (_views.TryGetValue(objectId, out BattleAnimatedViewBase? view))
+        {
+            view.PlayTintPulse(tintColor);
+        }
+    }
+
     private BattleAnimatedViewBase? CreateView(BoardObject boardObject, BattleObjectStateManager stateManager, BattleRoomTemplate room)
     {
         BattleObjectState? state = stateManager.Get(boardObject.ObjectId);

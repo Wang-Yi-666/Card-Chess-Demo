@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using CardChessDemo.Battle.Board;
+using CardChessDemo.Battle.Data;
 using CardChessDemo.Battle.Presentation;
 using CardChessDemo.Battle.Rooms;
 using CardChessDemo.Battle.Shared;
@@ -28,6 +29,7 @@ public sealed class BattleActionService
     public const double AttackPresentationDurationSeconds = 0.24d;
     public const double ImpactPresentationDurationSeconds = 0.18d;
     public const double DefensePresentationDurationSeconds = 0.22d;
+    public const double UtilityPresentationDurationSeconds = 0.24d;
 
     public BattleActionService(
         BoardState boardState,
@@ -189,6 +191,67 @@ public sealed class BattleActionService
         OnNonDamageImpactsApplied(target, result);
         SyncPresentation();
         return result;
+    }
+
+    public bool TryCreateIndestructibleObstacle(Vector2I targetCell, out string createdObjectId, out string failureReason)
+    {
+        createdObjectId = string.Empty;
+        failureReason = string.Empty;
+
+        if (!_boardState.ContainsCell(targetCell))
+        {
+            failureReason = $"Cell {targetCell} is outside the board.";
+            return false;
+        }
+
+        if (_queryService.GetObjectsAtCell(targetCell).Count > 0)
+        {
+            failureReason = $"Cell {targetCell} is already occupied.";
+            return false;
+        }
+
+        BoardObjectSpawnDefinition spawn = new()
+        {
+            ObjectId = $"arakawa_wall_{Guid.NewGuid():N}"[..21],
+            DefinitionId = "battle_obstacle_wall",
+            ObjectType = BoardObjectType.Obstacle,
+            Cell = targetCell,
+            Faction = BoardObjectFaction.World,
+            Tags = new[] { "obstacle", "indestructible", "arakawa_construct" },
+            BlocksMovement = true,
+            BlocksLineOfSight = true,
+            StackableWithUnit = false,
+        };
+
+        BoardObject boardObject = BoardObject.FromSpawn(spawn);
+        if (!OccupancyRules.CanPlaceObject(_boardState, _registry, boardObject, targetCell, out failureReason))
+        {
+            return false;
+        }
+
+        if (!_registry.Register(boardObject))
+        {
+            failureReason = $"Object {boardObject.ObjectId} could not be registered.";
+            return false;
+        }
+
+        _boardState.PlaceObject(boardObject);
+        SyncPresentation();
+        _pieceViewManager.PlayTintPulse(boardObject.ObjectId, new Color(0.26f, 0.74f, 1.0f, 1.0f));
+        createdObjectId = boardObject.ObjectId;
+        return true;
+    }
+
+    public async Task<bool> TryCreateIndestructibleObstacleAsync(Vector2I targetCell)
+    {
+        bool created = TryCreateIndestructibleObstacle(targetCell, out _, out _);
+        if (!created)
+        {
+            return false;
+        }
+
+        await WaitSeconds(UtilityPresentationDurationSeconds);
+        return true;
     }
 
     public async Task ApplyDefenseActionAsync(string objectId, DefenseActionDefinition definition, int currentTurnIndex)

@@ -4,6 +4,7 @@ using System.Linq;
 using Godot;
 using CardChessDemo.Battle.Actions;
 using CardChessDemo.Battle.AI;
+using CardChessDemo.Battle.Arakawa;
 using CardChessDemo.Battle.Board;
 using CardChessDemo.Battle.Boundary;
 using CardChessDemo.Battle.Cards;
@@ -22,6 +23,30 @@ namespace CardChessDemo.Battle;
 public partial class BattleSceneController : Node2D
 {
 	private static readonly DefenseActionDefinition BasicDefenseAction = new(damageReductionPercent: 50);
+	private const double PlayerActionResolveBufferSeconds = 0.24d;
+	private static readonly ArakawaAbilityDefinition BuildWallAbility = new("build_wall", "造墙", 1);
+	private static readonly ArakawaAbilityDefinition EnhanceCardAbility = new("enhance_card", "强化", 1);
+	private static readonly IReadOnlyDictionary<string, BattleCardEnhancementDefinition> PrototypeCardEnhancements =
+		new Dictionary<string, BattleCardEnhancementDefinition>(StringComparer.Ordinal)
+		{
+			["cross_slash"] = new BattleCardEnhancementDefinition("+", "伤害 +2", damageDelta: 2),
+			["quick_cut"] = new BattleCardEnhancementDefinition("+", "伤害 +1", damageDelta: 1),
+			["line_shot"] = new BattleCardEnhancementDefinition("+", "伤害 +2", damageDelta: 2),
+			["heavy_shot"] = new BattleCardEnhancementDefinition("+", "伤害 +2", damageDelta: 2),
+			["battle_read"] = new BattleCardEnhancementDefinition("+", "额外抽 1", drawCountDelta: 1),
+			["meditate"] = new BattleCardEnhancementDefinition("+", "额外抽 1", drawCountDelta: 1),
+			["surge"] = new BattleCardEnhancementDefinition("+", "额外获得 1 能量", energyGainDelta: 1),
+			["draw_spark"] = new BattleCardEnhancementDefinition("+", "额外抽 1", drawCountDelta: 1),
+			["quick_plan"] = new BattleCardEnhancementDefinition("+", "额外抽 1", drawCountDelta: 1),
+			["burning_edge"] = new BattleCardEnhancementDefinition("+", "伤害 +2", damageDelta: 2),
+			["hook_shot"] = new BattleCardEnhancementDefinition("+", "伤害 +2", damageDelta: 2),
+			["deep_focus"] = new BattleCardEnhancementDefinition("+", "额外抽 1", drawCountDelta: 1),
+			["spark_charge"] = new BattleCardEnhancementDefinition("+", "额外获得 1 能量", energyGainDelta: 1),
+			["burst_drive"] = new BattleCardEnhancementDefinition("+", "额外获得 1 能量", energyGainDelta: 1),
+			["guard_up"] = new BattleCardEnhancementDefinition("+", "获得额外 2 护盾", shieldGainDelta: 2),
+			["brace"] = new BattleCardEnhancementDefinition("+", "获得额外 3 护盾", shieldGainDelta: 3),
+			["quick_guard"] = new BattleCardEnhancementDefinition("+", "获得额外 2 护盾", shieldGainDelta: 2),
+		};
 	[Export] public PackedScene? ForcedBattleRoomScene { get; set; }
 	[Export] public PackedScene[] BattleRoomScenes { get; set; } = Array.Empty<PackedScene>();
 	[Export] public BattleRoomPoolDefinition? BattleRoomPools { get; set; }
@@ -59,6 +84,8 @@ public partial class BattleSceneController : Node2D
 	private Label? _battleFailLabel;
 	private bool _battleFailureSequenceStarted;
 	private bool _battleResultCommitted;
+	private bool _isArakawaWheelOpen;
+	private ArakawaAbilityMode _arakawaAbilityMode = ArakawaAbilityMode.None;
 
 	public override void _Ready()
 	{
@@ -126,6 +153,9 @@ public partial class BattleSceneController : Node2D
 			_hud.Bind(TurnState);
 			_hud.AttackRequested += OnAttackRequested;
 			_hud.DefendRequested += OnDefendRequested;
+			_hud.ArakawaWheelRequested += OnArakawaWheelRequested;
+			_hud.ArakawaAbilityRequested += OnArakawaAbilityRequested;
+			_hud.ArakawaCancelRequested += OnArakawaCancelRequested;
 			_hud.MeditateRequested += OnMeditateRequested;
 			_hud.CardRequested += OnCardRequested;
 			_hud.EndTurnRequested += OnEndTurnRequested;
@@ -136,6 +166,7 @@ public partial class BattleSceneController : Node2D
 		_battleFailLabel = GetNodeOrNull<Label>("BattleFailOverlay/DefeatLabel");
 
 		GlobalSession.PlayerRuntimeChanged += OnPlayerRuntimeChanged;
+		GlobalSession.ArakawaRuntimeChanged += OnArakawaRuntimeChanged;
 		ConfigureCameraForBattle();
 
 		GD.Print($"BattleSceneController: layout={layout.LayoutId}, size={layout.BoardSize}, objects={Registry.Count}");
@@ -146,12 +177,16 @@ public partial class BattleSceneController : Node2D
 		if (GlobalSession != null)
 		{
 			GlobalSession.PlayerRuntimeChanged -= OnPlayerRuntimeChanged;
+			GlobalSession.ArakawaRuntimeChanged -= OnArakawaRuntimeChanged;
 		}
 
 		if (_hud != null)
 		{
 			_hud.AttackRequested -= OnAttackRequested;
 			_hud.DefendRequested -= OnDefendRequested;
+			_hud.ArakawaWheelRequested -= OnArakawaWheelRequested;
+			_hud.ArakawaAbilityRequested -= OnArakawaAbilityRequested;
+			_hud.ArakawaCancelRequested -= OnArakawaCancelRequested;
 			_hud.MeditateRequested -= OnMeditateRequested;
 			_hud.CardRequested -= OnCardRequested;
 			_hud.EndTurnRequested -= OnEndTurnRequested;
@@ -187,6 +222,25 @@ public partial class BattleSceneController : Node2D
 				_playerDeck.DiscardPileCards,
 				_playerDeck.ExhaustPileCards);
 		}
+		if (_hud != null && GlobalSession != null)
+		{
+			bool canUseArakawa = CanUseArakawaThisTurn();
+			if (!canUseArakawa)
+			{
+				_isArakawaWheelOpen = false;
+				if (_arakawaAbilityMode != ArakawaAbilityMode.None)
+				{
+					CancelArakawaAbilityMode();
+				}
+			}
+
+			_hud.SetArakawaState(
+				GlobalSession.ArakawaCurrentEnergy,
+				GlobalSession.ArakawaMaxEnergy,
+				canUseArakawa,
+				_isArakawaWheelOpen,
+				GetCurrentArakawaAbilityId());
+		}
 
 		BattleBoardOverlay? overlay = GetNodeOrNull<BattleBoardOverlay>("RoomContainer/BoardOverlay");
 		if (overlay == null)
@@ -198,6 +252,7 @@ public partial class BattleSceneController : Node2D
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
 			overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
+			overlay.SetSupportTargetCells(Array.Empty<Vector2I>());
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -207,6 +262,16 @@ public partial class BattleSceneController : Node2D
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
 			overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
+			overlay.SetSupportTargetCells(Array.Empty<Vector2I>());
+			overlay.SetPreviewPath(Array.Empty<Vector2I>());
+			return;
+		}
+
+		if (_arakawaAbilityMode == ArakawaAbilityMode.BuildWall)
+		{
+			overlay.SetReachableCells(Array.Empty<Vector2I>());
+			overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
+			overlay.SetSupportTargetCells(BuildArakawaWallTargetCells(), playerState.Cell);
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -215,6 +280,7 @@ public partial class BattleSceneController : Node2D
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
 			overlay.SetAttackTargetCells(BuildSelectedCardTargetCells(playerState.ObjectId), playerState.Cell);
+			overlay.SetSupportTargetCells(Array.Empty<Vector2I>());
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -223,6 +289,7 @@ public partial class BattleSceneController : Node2D
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
 			overlay.SetAttackTargetCells(BuildAttackTargetCells(playerState.ObjectId, playerState.Cell, playerState.AttackRange), playerState.Cell);
+			overlay.SetSupportTargetCells(Array.Empty<Vector2I>());
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -231,6 +298,7 @@ public partial class BattleSceneController : Node2D
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
 			overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
+			overlay.SetSupportTargetCells(Array.Empty<Vector2I>());
 			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
@@ -238,6 +306,7 @@ public partial class BattleSceneController : Node2D
 		List<Vector2I> reachableCells = BuildReachableCells(playerState.ObjectId, playerState.Cell, playerState.MovePointsPerTurn);
 		overlay.SetReachableCells(reachableCells, playerState.Cell);
 		overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
+		overlay.SetSupportTargetCells(Array.Empty<Vector2I>());
 
 		if (hasHoveredCell && reachableCells.Contains(hoveredCell))
 		{
@@ -300,6 +369,12 @@ public partial class BattleSceneController : Node2D
 				TurnState.CancelTargeting();
 			}
 
+			return;
+		}
+
+		if (_arakawaAbilityMode == ArakawaAbilityMode.BuildWall)
+		{
+			TryExecuteArakawaBuildWall(targetCell);
 			return;
 		}
 
@@ -390,6 +465,10 @@ public partial class BattleSceneController : Node2D
 		StateManager?.SyncPlayerFromSession();
 	}
 
+	private void OnArakawaRuntimeChanged()
+	{
+	}
+
 	private void OnEndTurnRequested()
 	{
 		if (_battleFailureSequenceStarted)
@@ -425,6 +504,12 @@ public partial class BattleSceneController : Node2D
 	{
 		if (_battleFailureSequenceStarted || TurnState == null || _playerDeck == null || StateManager == null)
 		{
+			return;
+		}
+
+		if (_arakawaAbilityMode == ArakawaAbilityMode.EnhanceCard)
+		{
+			TryExecuteArakawaEnhanceCard(cardInstanceId);
 			return;
 		}
 
@@ -510,9 +595,88 @@ public partial class BattleSceneController : Node2D
 		ResolveTurnPostPhase();
 	}
 
+	private void OnArakawaWheelRequested()
+	{
+		if (!CanUseArakawaThisTurn())
+		{
+			_isArakawaWheelOpen = false;
+			CancelArakawaAbilityMode();
+			return;
+		}
+
+		if (_arakawaAbilityMode != ArakawaAbilityMode.None)
+		{
+			CancelArakawaAbilityMode();
+			_isArakawaWheelOpen = false;
+			return;
+		}
+
+		_isArakawaWheelOpen = !_isArakawaWheelOpen;
+	}
+
+	private void OnArakawaAbilityRequested(string abilityId)
+	{
+		if (!CanUseArakawaThisTurn())
+		{
+			_isArakawaWheelOpen = false;
+			return;
+		}
+
+		_isArakawaWheelOpen = false;
+		switch (abilityId)
+		{
+			case "build_wall":
+				BeginArakawaAbilityMode(ArakawaAbilityMode.BuildWall);
+				break;
+
+			case "enhance_card":
+				BeginArakawaAbilityMode(ArakawaAbilityMode.EnhanceCard);
+				break;
+		}
+	}
+
+	private void OnArakawaCancelRequested()
+	{
+		_isArakawaWheelOpen = false;
+		CancelArakawaAbilityMode();
+	}
+
 	private bool CanPlayerMoveThisTurn()
 	{
 		return TurnState?.CanMove != false;
+	}
+
+	private bool CanUseArakawaThisTurn()
+	{
+		return !_battleFailureSequenceStarted
+			&& TurnState?.IsPlayerTurn == true
+			&& GlobalSession != null
+			&& GlobalSession.ArakawaCurrentEnergy > 0;
+	}
+
+	private void BeginArakawaAbilityMode(ArakawaAbilityMode abilityMode)
+	{
+		if (TurnState?.IsAttackTargeting == true || TurnState?.IsCardTargeting == true)
+		{
+			TurnState.CancelTargeting();
+		}
+
+		_arakawaAbilityMode = abilityMode;
+	}
+
+	private void CancelArakawaAbilityMode()
+	{
+		_arakawaAbilityMode = ArakawaAbilityMode.None;
+	}
+
+	private string GetCurrentArakawaAbilityId()
+	{
+		return _arakawaAbilityMode switch
+		{
+			ArakawaAbilityMode.BuildWall => BuildWallAbility.AbilityId,
+			ArakawaAbilityMode.EnhanceCard => EnhanceCardAbility.AbilityId,
+			_ => string.Empty,
+		};
 	}
 
 	private void EndPlayerTurn()
@@ -702,6 +866,15 @@ public partial class BattleSceneController : Node2D
 		if (TurnState.Phase != TurnPhase.TurnPost)
 		{
 			return;
+		}
+
+		if (TurnState.HasActed)
+		{
+			await ToSignal(GetTree().CreateTimer(PlayerActionResolveBufferSeconds), SceneTreeTimer.SignalName.Timeout);
+			if (_battleFailureSequenceStarted || TurnState.Phase != TurnPhase.TurnPost)
+			{
+				return;
+			}
 		}
 
 		_playerDeck?.EndPlayerTurn();
@@ -970,6 +1143,25 @@ public partial class BattleSceneController : Node2D
 		return Pathfinder.FindReachableCells(objectId, origin, moveRange).ToList();
 	}
 
+	private List<Vector2I> BuildArakawaWallTargetCells()
+	{
+		List<Vector2I> cells = new();
+		if (BoardState == null || QueryService == null)
+		{
+			return cells;
+		}
+
+		foreach (BoardCellState cellState in BoardState.EnumerateCells())
+		{
+			if (QueryService.GetObjectsAtCell(cellState.Cell).Count == 0)
+			{
+				cells.Add(cellState.Cell);
+			}
+		}
+
+		return cells;
+	}
+
 	private List<Vector2I> BuildAttackTargetCells(string objectId, Vector2I origin, int attackRange)
 	{
 		List<Vector2I> cells = new();
@@ -1012,6 +1204,65 @@ public partial class BattleSceneController : Node2D
 		}
 
 		return BuildCardTargetCells(sourceObjectId, selectedCard.Definition);
+	}
+
+	private async void TryExecuteArakawaBuildWall(Vector2I targetCell)
+	{
+		if (_actionService == null || GlobalSession == null || !CanUseArakawaThisTurn())
+		{
+			return;
+		}
+
+		if (!BuildArakawaWallTargetCells().Contains(targetCell))
+		{
+			return;
+		}
+
+		if (!GlobalSession.TrySpendArakawaEnergy(BuildWallAbility.EnergyCost))
+		{
+			return;
+		}
+
+		bool created = await _actionService.TryCreateIndestructibleObstacleAsync(targetCell);
+		if (!created)
+		{
+			GlobalSession.RestoreArakawaEnergy(BuildWallAbility.EnergyCost);
+			return;
+		}
+
+		CancelArakawaAbilityMode();
+	}
+
+	private void TryExecuteArakawaEnhanceCard(string cardInstanceId)
+	{
+		if (_playerDeck == null || GlobalSession == null || _hud == null || !CanUseArakawaThisTurn())
+		{
+			return;
+		}
+
+		if (!_playerDeck.TryGetHandCard(cardInstanceId, out BattleCardInstance? cardInstance) || cardInstance == null)
+		{
+			return;
+		}
+
+		if (cardInstance.IsEnhanced || !PrototypeCardEnhancements.TryGetValue(cardInstance.BaseDefinition.CardId, out BattleCardEnhancementDefinition? enhancement))
+		{
+			return;
+		}
+
+		if (!GlobalSession.TrySpendArakawaEnergy(EnhanceCardAbility.EnergyCost))
+		{
+			return;
+		}
+
+		if (!cardInstance.TryApplyEnhancement(enhancement))
+		{
+			GlobalSession.RestoreArakawaEnergy(EnhanceCardAbility.EnergyCost);
+			return;
+		}
+
+		_hud.PlayCardEnhancementEffect(cardInstanceId);
+		CancelArakawaAbilityMode();
 	}
 
 	private List<Vector2I> BuildCardTargetCells(string sourceObjectId, BattleCardDefinition cardDefinition)

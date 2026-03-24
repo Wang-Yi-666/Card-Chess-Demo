@@ -14,6 +14,9 @@ public partial class BattleHudController : CanvasLayer
 	[Signal] public delegate void EndTurnRequestedEventHandler();
 	[Signal] public delegate void AttackRequestedEventHandler();
 	[Signal] public delegate void DefendRequestedEventHandler();
+	[Signal] public delegate void ArakawaWheelRequestedEventHandler();
+	[Signal] public delegate void ArakawaAbilityRequestedEventHandler(string abilityId);
+	[Signal] public delegate void ArakawaCancelRequestedEventHandler();
 	[Signal] public delegate void MeditateRequestedEventHandler();
 	[Signal] public delegate void CardRequestedEventHandler(string cardInstanceId);
 
@@ -54,6 +57,8 @@ public partial class BattleHudController : CanvasLayer
 	private RichTextLabel _pilePopupBody = null!;
 	private Label _turnLabel = null!;
 	private Label _resourceLabel = null!;
+	private Label _arakawaEnergyLabel = null!;
+	private Button _arakawaButton = null!;
 	private Button _drawPileButton = null!;
 	private Button _discardPileButton = null!;
 	private Button _exhaustPileButton = null!;
@@ -61,6 +66,10 @@ public partial class BattleHudController : CanvasLayer
 	private Button _defendButton = null!;
 	private Button _meditateButton = null!;
 	private Button _endTurnButton = null!;
+	private Control _arakawaWheel = null!;
+	private Button _arakawaBuildButton = null!;
+	private Button _arakawaEnhanceButton = null!;
+	private Button _arakawaCancelButton = null!;
 	private Control _handArea = null!;
 	private Control _cardFxRoot = null!;
 
@@ -77,6 +86,11 @@ public partial class BattleHudController : CanvasLayer
 	private BattleCardInstance[] _exhaustPileCards = Array.Empty<BattleCardInstance>();
 	private int _currentEnergy;
 	private int _maxEnergy;
+	private int _arakawaCurrentEnergy;
+	private int _arakawaMaxEnergy;
+	private bool _canUseArakawa;
+	private bool _isArakawaWheelOpen;
+	private string _selectedArakawaAbilityId = string.Empty;
 	private int _energyRechargeProgress;
 	private int _energyRechargeInterval = 3;
 	private string _selectedCardInstanceId = string.Empty;
@@ -103,6 +117,10 @@ public partial class BattleHudController : CanvasLayer
 
 		_attackButton.Pressed -= OnAttackPressed;
 		_defendButton.Pressed -= OnDefendPressed;
+		_arakawaButton.Pressed -= OnArakawaButtonPressed;
+		_arakawaBuildButton.Pressed -= OnArakawaBuildPressed;
+		_arakawaEnhanceButton.Pressed -= OnArakawaEnhancePressed;
+		_arakawaCancelButton.Pressed -= OnArakawaCancelPressed;
 		_meditateButton.Pressed -= OnMeditatePressed;
 		_endTurnButton.Pressed -= OnEndTurnPressed;
 		_drawPileButton.Pressed -= OnDrawPilePressed;
@@ -141,6 +159,15 @@ public partial class BattleHudController : CanvasLayer
 		_drawPileCards = drawPileCards.ToArray();
 		_discardPileCards = discardPileCards.ToArray();
 		_exhaustPileCards = exhaustPileCards.ToArray();
+	}
+
+	public void SetArakawaState(int currentEnergy, int maxEnergy, bool canUse, bool isWheelOpen, string selectedAbilityId)
+	{
+		_arakawaCurrentEnergy = currentEnergy;
+		_arakawaMaxEnergy = maxEnergy;
+		_canUseArakawa = canUse;
+		_isArakawaWheelOpen = isWheelOpen;
+		_selectedArakawaAbilityId = selectedAbilityId ?? string.Empty;
 	}
 
 	public void SetHoveredUnitState(BattleObjectState? hoveredUnitState, Vector2 screenPosition)
@@ -183,6 +210,14 @@ public partial class BattleHudController : CanvasLayer
 		tween.Finished += fxView.QueueFree;
 	}
 
+	public void PlayCardEnhancementEffect(string cardInstanceId)
+	{
+		if (_cardViews.TryGetValue(cardInstanceId, out BattleCardView? cardView))
+		{
+			cardView.PlayEnhancementPulse();
+		}
+	}
+
 	public override void _Process(double delta)
 	{
 		Refresh();
@@ -197,6 +232,12 @@ public partial class BattleHudController : CanvasLayer
 
 		_turnLabel.Text = BuildTurnLabel();
 		_resourceLabel.Text = $"E{_currentEnergy}/{_maxEnergy} R{_energyRechargeProgress}/{_energyRechargeInterval}";
+		_arakawaEnergyLabel.Text = $"荒川 {_arakawaCurrentEnergy}/{_arakawaMaxEnergy}";
+		_arakawaButton.Disabled = !_canUseArakawa && !_isArakawaWheelOpen;
+		_arakawaButton.Text = string.IsNullOrWhiteSpace(_selectedArakawaAbilityId) ? "Ark" : "Ark*";
+		_arakawaWheel.Visible = _isArakawaWheelOpen;
+		_arakawaBuildButton.Disabled = !_canUseArakawa || _arakawaCurrentEnergy <= 0;
+		_arakawaEnhanceButton.Disabled = !_canUseArakawa || _arakawaCurrentEnergy <= 0;
 		_drawPileButton.Text = $"D{_drawPileCards.Length}";
 		_discardPileButton.Text = $"G{_discardPileCards.Length}";
 		_exhaustPileButton.Text = $"X{_exhaustPileCards.Length}";
@@ -408,6 +449,8 @@ public partial class BattleHudController : CanvasLayer
 		_pilePopupBody = GetNodeOrNull<RichTextLabel>("PilePopup/Margin/VBox/BodyLabel");
 		_turnLabel = GetNodeOrNull<Label>("TopBar/LeftInfo/TurnLabel");
 		_resourceLabel = GetNodeOrNull<Label>("TopBar/LeftInfo/ResourceLabel");
+		_arakawaEnergyLabel = GetNodeOrNull<Label>("TopBar/ArakawaInfo/ArakawaEnergyLabel");
+		_arakawaButton = GetNodeOrNull<Button>("TopBar/ArakawaInfo/ArakawaButton");
 		_drawPileButton = GetNodeOrNull<Button>("RightControls/DrawPileButton");
 		_discardPileButton = GetNodeOrNull<Button>("RightControls/DiscardPileButton");
 		_exhaustPileButton = GetNodeOrNull<Button>("RightControls/ExhaustPileButton");
@@ -415,6 +458,10 @@ public partial class BattleHudController : CanvasLayer
 		_defendButton = GetNodeOrNull<Button>("RightControls/DefendButton");
 		_meditateButton = GetNodeOrNull<Button>("RightControls/MeditateButton");
 		_endTurnButton = GetNodeOrNull<Button>("RightControls/EndTurnButton");
+		_arakawaWheel = GetNodeOrNull<Control>("ArakawaWheel");
+		_arakawaBuildButton = GetNodeOrNull<Button>("ArakawaWheel/BuildButton");
+		_arakawaEnhanceButton = GetNodeOrNull<Button>("ArakawaWheel/EnhanceButton");
+		_arakawaCancelButton = GetNodeOrNull<Button>("ArakawaWheel/CancelButton");
 		_handArea = GetNodeOrNull<Control>("BottomHand/HandArea");
 		_cardFxRoot = GetNodeOrNull<Control>("CardFxRoot");
 
@@ -429,6 +476,8 @@ public partial class BattleHudController : CanvasLayer
 			&& _pilePopupBody != null
 			&& _turnLabel != null
 			&& _resourceLabel != null
+			&& _arakawaEnergyLabel != null
+			&& _arakawaButton != null
 			&& _drawPileButton != null
 			&& _discardPileButton != null
 			&& _exhaustPileButton != null
@@ -436,6 +485,10 @@ public partial class BattleHudController : CanvasLayer
 			&& _defendButton != null
 			&& _meditateButton != null
 			&& _endTurnButton != null
+			&& _arakawaWheel != null
+			&& _arakawaBuildButton != null
+			&& _arakawaEnhanceButton != null
+			&& _arakawaCancelButton != null
 			&& _handArea != null
 			&& _cardFxRoot != null;
 	}
@@ -452,11 +505,19 @@ public partial class BattleHudController : CanvasLayer
 		ApplyCompactButtonStyle(_exhaustPileButton);
 		ApplyCompactButtonStyle(_attackButton);
 		ApplyCompactButtonStyle(_defendButton);
+		ApplyCompactButtonStyle(_arakawaButton);
+		ApplyCompactButtonStyle(_arakawaBuildButton);
+		ApplyCompactButtonStyle(_arakawaEnhanceButton);
+		ApplyCompactButtonStyle(_arakawaCancelButton);
 		ApplyCompactButtonStyle(_meditateButton);
 		ApplyCompactButtonStyle(_endTurnButton);
 
 		_attackButton.Pressed += OnAttackPressed;
 		_defendButton.Pressed += OnDefendPressed;
+		_arakawaButton.Pressed += OnArakawaButtonPressed;
+		_arakawaBuildButton.Pressed += OnArakawaBuildPressed;
+		_arakawaEnhanceButton.Pressed += OnArakawaEnhancePressed;
+		_arakawaCancelButton.Pressed += OnArakawaCancelPressed;
 		_meditateButton.Pressed += OnMeditatePressed;
 		_endTurnButton.Pressed += OnEndTurnPressed;
 		_drawPileButton.Pressed += OnDrawPilePressed;
@@ -523,6 +584,27 @@ public partial class BattleHudController : CanvasLayer
 	{
 		_pilePopup.Visible = false;
 		EmitSignal(SignalName.EndTurnRequested);
+	}
+
+	private void OnArakawaButtonPressed()
+	{
+		_pilePopup.Visible = false;
+		EmitSignal(SignalName.ArakawaWheelRequested);
+	}
+
+	private void OnArakawaBuildPressed()
+	{
+		EmitSignal(SignalName.ArakawaAbilityRequested, "build_wall");
+	}
+
+	private void OnArakawaEnhancePressed()
+	{
+		EmitSignal(SignalName.ArakawaAbilityRequested, "enhance_card");
+	}
+
+	private void OnArakawaCancelPressed()
+	{
+		EmitSignal(SignalName.ArakawaCancelRequested);
 	}
 
 	private void OnDrawPilePressed()

@@ -11,6 +11,7 @@ public partial class BattleBoardOverlay : Node2D
     [Export] public Color HoverColor { get; set; } = new(0.2f, 0.85f, 1.0f, 0.28f);
     [Export] public Color ReachableColor { get; set; } = new(0.2f, 1.0f, 0.45f, 0.18f);
     [Export] public Color AttackTargetColor { get; set; } = new(1.0f, 0.35f, 0.35f, 0.22f);
+    [Export] public Color SupportTargetColor { get; set; } = new(0.28f, 0.76f, 1.0f, 0.22f);
     [Export] public Color PathColor { get; set; } = new(1.0f, 0.9f, 0.3f, 0.82f);
     [Export(PropertyHint.Range, "0.01,0.40,0.01")] public float CellRevealDuration { get; set; } = 0.16f;
     [Export(PropertyHint.Range, "0.00,0.20,0.005")] public float CellRingDelaySeconds { get; set; } = 0.018f;
@@ -21,6 +22,7 @@ public partial class BattleBoardOverlay : Node2D
     private BattleRoomTemplate? _room;
     private readonly AnimatedCellLayer _reachableCells = new();
     private readonly AnimatedCellLayer _attackTargetCells = new();
+    private readonly AnimatedCellLayer _supportTargetCells = new();
     private readonly List<Vector2I> _previewPath = new();
     private double _previewPathAnimationStartTimeSeconds;
     private bool _isPreviewPathAnimating;
@@ -42,6 +44,12 @@ public partial class BattleBoardOverlay : Node2D
     public void SetAttackTargetCells(IEnumerable<Vector2I> cells, Vector2I? originCell = null)
     {
         SetAnimatedLayerCells(_attackTargetCells, cells, originCell);
+        QueueRedraw();
+    }
+
+    public void SetSupportTargetCells(IEnumerable<Vector2I> cells, Vector2I? originCell = null)
+    {
+        SetAnimatedLayerCells(_supportTargetCells, cells, originCell);
         QueueRedraw();
     }
 
@@ -67,7 +75,7 @@ public partial class BattleBoardOverlay : Node2D
             return;
         }
 
-        if (_reachableCells.IsAnimating || _attackTargetCells.IsAnimating || _isPreviewPathAnimating)
+        if (_reachableCells.IsAnimating || _attackTargetCells.IsAnimating || _supportTargetCells.IsAnimating || _isPreviewPathAnimating)
         {
             QueueRedraw();
         }
@@ -86,6 +94,7 @@ public partial class BattleBoardOverlay : Node2D
 
         DrawAnimatedCells(_reachableCells, ReachableColor);
         DrawAnimatedCells(_attackTargetCells, AttackTargetColor);
+        DrawAnimatedCells(_supportTargetCells, SupportTargetColor);
 
         if (_previewPath.Count > 1)
         {

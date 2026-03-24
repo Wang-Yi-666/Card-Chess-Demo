@@ -72,4 +72,27 @@ public sealed class BattleCardDefinition
     public bool ExhaustsOnPlay { get; }
 
     public bool RequiresTarget => TargetingMode != BattleCardTargetingMode.None;
+
+    public BattleCardDefinition CreateEnhanced(BattleCardEnhancementDefinition enhancement)
+    {
+        string suffix = string.IsNullOrWhiteSpace(enhancement.DisplaySuffix) ? "+" : enhancement.DisplaySuffix;
+        string enhancedDescription = string.IsNullOrWhiteSpace(enhancement.DescriptionSuffix)
+            ? Description
+            : $"{Description} / {enhancement.DescriptionSuffix}";
+
+        return new BattleCardDefinition(
+            CardId,
+            $"{DisplayName}{suffix}",
+            enhancedDescription,
+            cost: Cost + enhancement.CostDelta,
+            category: Category,
+            targetingMode: TargetingMode,
+            range: Range + enhancement.RangeDelta,
+            damage: Damage + enhancement.DamageDelta,
+            drawCount: DrawCount + enhancement.DrawCountDelta,
+            energyGain: EnergyGain + enhancement.EnergyGainDelta,
+            shieldGain: ShieldGain + enhancement.ShieldGainDelta,
+            isQuick: enhancement.IsQuickOverride ?? IsQuick,
+            exhaustsOnPlay: enhancement.ExhaustsOnPlayOverride ?? ExhaustsOnPlay);
+    }
 }

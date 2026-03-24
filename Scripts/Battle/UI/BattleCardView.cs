@@ -19,6 +19,7 @@ public partial class BattleCardView : Button
 	private Label _costLabel = null!;
 	private Label _nameLabel = null!;
 	private TextureRect _artTexture = null!;
+	private ColorRect _artShade = null!;
 	private Label _artSymbolLabel = null!;
 	private Label _keywordLabel = null!;
 	private Label _descriptionLabel = null!;
@@ -68,7 +69,7 @@ public partial class BattleCardView : Button
 		_costIcon.Texture = GetBadgeTexture(card.Definition);
 		_artTexture.Texture = GetArtTexture(card.Definition);
 
-		ApplyCardFrameStyle(card.Definition, isSelected, isPlayable);
+		ApplyCardFrameStyle(card, isSelected, isPlayable);
 		Modulate = isPlayable ? Colors.White : new Color(1.0f, 1.0f, 1.0f, 0.55f);
 		Scale = Vector2.One;
 	}
@@ -85,6 +86,7 @@ public partial class BattleCardView : Button
 		_nameLabel = GetNode<Label>("Margin/Root/Head/TitleBanner/NameLabel");
 		_artFrame = GetNode<PanelContainer>("Margin/Root/ArtFrame");
 		_artTexture = GetNode<TextureRect>("Margin/Root/ArtFrame/ArtTexture");
+		_artShade = GetNode<ColorRect>("Margin/Root/ArtFrame/ArtShade");
 		_artSymbolLabel = GetNode<Label>("Margin/Root/ArtFrame/ArtSymbol");
 		_titleBanner = GetNode<PanelContainer>("Margin/Root/Head/TitleBanner");
 		_typePlate = GetNode<PanelContainer>("Margin/Root/TypePlate");
@@ -93,8 +95,22 @@ public partial class BattleCardView : Button
 		_descriptionLabel = GetNode<Label>("Margin/Root/DescriptionPanel/DescriptionLabel");
 	}
 
-	private void ApplyCardFrameStyle(BattleCardDefinition definition, bool isSelected, bool isPlayable)
+	public void PlayEnhancementPulse()
 	{
+		Color originalShade = _artShade.Color;
+		Tween tween = CreateTween();
+		tween.SetParallel();
+		tween.SetEase(Tween.EaseType.Out);
+		tween.SetTrans(Tween.TransitionType.Cubic);
+		tween.TweenProperty(this, "scale", new Vector2(1.10f, 1.10f), 0.10f);
+		tween.TweenProperty(_artShade, "color", new Color(0.24f, 0.72f, 1.0f, 0.42f), 0.08f);
+		tween.TweenProperty(this, "scale", Vector2.One, 0.16f).SetDelay(0.10f);
+		tween.TweenProperty(_artShade, "color", originalShade, 0.18f).SetDelay(0.08f);
+	}
+
+	private void ApplyCardFrameStyle(BattleCardInstance card, bool isSelected, bool isPlayable)
+	{
+		BattleCardDefinition definition = card.Definition;
 		Color frameColor = definition.Category == BattleCardCategory.Attack
 			? new Color(0.68f, 0.30f, 0.22f)
 			: new Color(0.26f, 0.44f, 0.64f);
@@ -110,6 +126,13 @@ public partial class BattleCardView : Button
 		if (isSelected)
 		{
 			frameColor = new Color(0.95f, 0.83f, 0.42f);
+		}
+
+		if (card.IsEnhanced)
+		{
+			frameColor = new Color(0.30f, 0.84f, 1.0f);
+			fillColor = fillColor.Lerp(new Color(0.12f, 0.22f, 0.36f), 0.40f);
+			typeColor = typeColor.Lerp(new Color(0.46f, 0.88f, 1.0f), 0.70f);
 		}
 
 		StyleBoxFlat normalStyle = new()
@@ -147,6 +170,9 @@ public partial class BattleCardView : Button
 			CornerRadiusBottomLeft = 3,
 		};
 		_artFrame.AddThemeStyleboxOverride("panel", artStyle);
+		_artShade.Color = card.IsEnhanced
+			? new Color(0.18f, 0.52f, 0.92f, 0.22f)
+			: new Color(0.0f, 0.0f, 0.0f, 0.12f);
 
 		StyleBoxFlat titleStyle = new()
 		{

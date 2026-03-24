@@ -9,6 +9,7 @@ namespace CardChessDemo.Battle.Shared;
 public partial class GlobalGameSession : Node
 {
 	[Signal] public delegate void PlayerRuntimeChangedEventHandler();
+	[Signal] public delegate void ArakawaRuntimeChangedEventHandler();
 
 	[Export] public string PlayerDisplayName { get; set; } = "Traveler";
 	[Export] public int PlayerMaxHp { get; set; } = 12;
@@ -16,6 +17,8 @@ public partial class GlobalGameSession : Node
 	[Export] public int PlayerMovePointsPerTurn { get; set; } = 4;
 	[Export] public int PlayerAttackRange { get; set; } = 1;
 	[Export] public int PlayerAttackDamage { get; set; } = 2;
+	[Export] public int ArakawaMaxEnergy { get; set; } = 3;
+	[Export] public int ArakawaCurrentEnergy { get; set; } = 3;
 
 	public BattleRequest? PendingBattleRequest { get; private set; }
 	public BattleResult? LastBattleResult { get; private set; }
@@ -30,6 +33,38 @@ public partial class GlobalGameSession : Node
 	{
 		PlayerMovePointsPerTurn = Mathf.Max(0, value);
 		EmitSignal(SignalName.PlayerRuntimeChanged);
+	}
+
+	public void SetArakawaCurrentEnergy(int value)
+	{
+		ArakawaCurrentEnergy = Mathf.Clamp(value, 0, Math.Max(ArakawaMaxEnergy, 0));
+		EmitSignal(SignalName.ArakawaRuntimeChanged);
+	}
+
+	public bool TrySpendArakawaEnergy(int amount)
+	{
+		if (amount <= 0)
+		{
+			return true;
+		}
+
+		if (ArakawaCurrentEnergy < amount)
+		{
+			return false;
+		}
+
+		SetArakawaCurrentEnergy(ArakawaCurrentEnergy - amount);
+		return true;
+	}
+
+	public void RestoreArakawaEnergy(int amount)
+	{
+		if (amount <= 0)
+		{
+			return;
+		}
+
+		SetArakawaCurrentEnergy(ArakawaCurrentEnergy + amount);
 	}
 
 	public void ApplyMovePointDelta(int delta)
@@ -74,6 +109,8 @@ public partial class GlobalGameSession : Node
 			["move_points_per_turn"] = PlayerMovePointsPerTurn,
 			["attack_range"] = PlayerAttackRange,
 			["attack_damage"] = PlayerAttackDamage,
+			["arakawa_max_energy"] = ArakawaMaxEnergy,
+			["arakawa_current_energy"] = ArakawaCurrentEnergy,
 		};
 	}
 
@@ -110,6 +147,17 @@ public partial class GlobalGameSession : Node
 			PlayerAttackDamage = attackDamage.AsInt32();
 		}
 
+		if (snapshot.TryGetValue("arakawa_max_energy", out Variant arakawaMaxEnergy))
+		{
+			ArakawaMaxEnergy = arakawaMaxEnergy.AsInt32();
+		}
+
+		if (snapshot.TryGetValue("arakawa_current_energy", out Variant arakawaCurrentEnergy))
+		{
+			ArakawaCurrentEnergy = arakawaCurrentEnergy.AsInt32();
+		}
+
 		EmitSignal(SignalName.PlayerRuntimeChanged);
+		EmitSignal(SignalName.ArakawaRuntimeChanged);
 	}
 }
