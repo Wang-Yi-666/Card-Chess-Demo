@@ -22,6 +22,8 @@ public partial class GlobalGameSession : Node
 
 	public BattleRequest? PendingBattleRequest { get; private set; }
 	public BattleResult? LastBattleResult { get; private set; }
+	public MapResumeContext? PendingMapResumeContext { get; private set; }
+	public string PendingBattleEncounterId { get; private set; } = string.Empty;
 
 	public void SetPlayerCurrentHp(int value)
 	{
@@ -76,6 +78,35 @@ public partial class GlobalGameSession : Node
 	{
 		PendingBattleRequest = request ?? BattleRequest.FromSession(this);
 		LastBattleResult = null;
+	}
+
+	public void SetPendingMapResumeContext(MapResumeContext? resumeContext)
+	{
+		PendingMapResumeContext = resumeContext;
+	}
+
+	public MapResumeContext? PeekPendingMapResumeContext()
+	{
+		return PendingMapResumeContext;
+	}
+
+	public MapResumeContext? ConsumePendingMapResumeContext()
+	{
+		MapResumeContext? resumeContext = PendingMapResumeContext;
+		PendingMapResumeContext = null;
+		return resumeContext;
+	}
+
+	public void SetPendingBattleEncounterId(string encounterId)
+	{
+		PendingBattleEncounterId = encounterId?.Trim() ?? string.Empty;
+	}
+
+	public string ConsumePendingBattleEncounterId()
+	{
+		string encounterId = PendingBattleEncounterId;
+		PendingBattleEncounterId = string.Empty;
+		return encounterId;
 	}
 
 	public BattleRequest? ConsumePendingBattleRequest()

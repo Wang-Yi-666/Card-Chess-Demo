@@ -93,6 +93,7 @@ public partial class BattleSceneController : Node2D
 
 		GlobalSession = GetNodeOrNull<GlobalGameSession>("/root/GlobalGameSession");
 		ApplyPendingBattleRequest();
+		ApplyPendingEncounterId();
 		BattlePrefabLibrary ??= GD.Load<BattlePrefabLibrary>("res://Resources/Battle/Presentation/DefaultBattlePrefabLibrary.tres");
 		EncounterLibrary ??= GD.Load<BattleEncounterLibrary>("res://Resources/Battle/Encounters/DebugBattleEncounterLibrary.tres");
 		ResolveEncounterConfiguration();
@@ -917,6 +918,20 @@ public partial class BattleSceneController : Node2D
 		request?.ApplyToSession(GlobalSession);
 	}
 
+	private void ApplyPendingEncounterId()
+	{
+		if (GlobalSession == null)
+		{
+			return;
+		}
+
+		string encounterId = GlobalSession.ConsumePendingBattleEncounterId();
+		if (!string.IsNullOrWhiteSpace(encounterId))
+		{
+			EncounterId = encounterId;
+		}
+	}
+
 	private void StartBattleFailureSequence()
 	{
 		if (_battleFailureSequenceStarted || GlobalSession == null)
@@ -963,6 +978,22 @@ public partial class BattleSceneController : Node2D
 
 		_battleResultCommitted = true;
 		GlobalSession.CompleteBattle(BattleResult.FromSession(GlobalSession, didPlayerFail));
+		ReturnToPendingMapSceneIfAny();
+	}
+
+	private void ReturnToPendingMapSceneIfAny()
+	{
+		if (GlobalSession?.PeekPendingMapResumeContext() is not MapResumeContext resumeContext
+			|| string.IsNullOrWhiteSpace(resumeContext.ScenePath))
+		{
+			return;
+		}
+
+		Error result = GetTree().ChangeSceneToFile(resumeContext.ScenePath);
+		if (result != Error.Ok)
+		{
+			GD.PushError($"BattleSceneController: return to map failed, error={result}");
+		}
 	}
 	private void ConfigureCameraForBattle()
 	{
