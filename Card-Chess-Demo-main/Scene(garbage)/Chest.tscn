@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://c1ojey6clae1h"]
+
+[ext_resource type="Script" uid="uid://dqnsnaq4nynjb" path="res://Scripts/Item/Chest.cs" id="1_yhaw6"]
+[ext_resource type="Texture2D" uid="uid://cqccafampgoje" path="res://icon.svg" id="2_1oqmg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_apm08"]
+radius = 176.22997
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_45juo"]
+size = Vector2(130, 132)
+
+[node name="Chest" type="Node2D" unique_id=419507687]
+
+[node name="Chest" type="StaticBody2D" parent="." unique_id=959279838]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_yhaw6")
+
+[node name="Sprite2D" type="Sprite2D" parent="Chest" unique_id=381271938]
+texture = ExtResource("2_1oqmg")
+
+[node name="InteractionArea" type="Area2D" parent="Chest" unique_id=714173595]
+collision_layer = 8
+collision_mask = 0
+
+[node name="Detectshape" type="CollisionShape2D" parent="Chest/InteractionArea" unique_id=355911407]
+shape = SubResource("CircleShape2D_apm08")
+
+[node name="Bodyshape" type="CollisionShape2D" parent="Chest" unique_id=263266519]
+position = Vector2(-1, 0)
+shape = SubResource("RectangleShape2D_45juo")

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bn2hl4i2igsdh"]
+
+[node name="BaseInteractable" type="Node2D" unique_id=583652748]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2006372797]
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D" unique_id=1653349226]
+position = Vector2(2.0000038, -7.6293945e-06)
+scale = Vector2(14.249999, 15.500001)
+region_enabled = true
+region_rect = Rect2(0, 80, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=657515007]
+
+[node name="InteractionArea" type="Area2D" parent="StaticBody2D" unique_id=804042237]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D/InteractionArea" unique_id=1866587251]

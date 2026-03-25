@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://cldmyermn0c8u"]
+
+[ext_resource type="Script" uid="uid://darxr64ra052t" path="res://Scripts/Character/Partner.cs" id="1_partner"]
+[ext_resource type="Texture2D" uid="uid://cqccafampgoje" path="res://icon.svg" id="2_b2ex0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_partner_interact"]
+radius = 163.0276
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_partner_body"]
+size = Vector2(126, 127)
+
+[node name="PartnerScene" type="Node2D" unique_id=1140342373]
+
+[node name="Partner" type="StaticBody2D" parent="." unique_id=725196503]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_partner")
+StopNearPlayerDistance = 130.0
+ResumeFarPlayerDistance = 200.0
+PromptText = "一起走"
+
+[node name="Sprite2D" type="Sprite2D" parent="Partner" unique_id=1919964344]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_b2ex0")
+
+[node name="InteractionArea" type="Area2D" parent="Partner" unique_id=1868998010]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Partner/InteractionArea" unique_id=1798081007]
+shape = SubResource("CircleShape2D_partner_interact")
+
+[node name="BodyShape" type="CollisionShape2D" parent="Partner" unique_id=386025075]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_partner_body")

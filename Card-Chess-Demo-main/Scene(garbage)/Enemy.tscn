@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://cs2xwibupxdob"]
+
+[ext_resource type="Script" uid="uid://c1pxlou8bv44n" path="res://Scripts/Character/Enemy.cs" id="1_enemy_script"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_tex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enemy_interact"]
+radius = 57.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_body"]
+size = Vector2(14, 14)
+
+[node name="Enemy" type="StaticBody2D" unique_id=825636394]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_enemy_script")
+OneTimeEncounter = true
+PromptText = "战斗"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1488180510]
+scale = Vector2(3, 3)
+texture = ExtResource("2_tex")
+region_enabled = true
+region_rect = Rect2(160, 48, 16, 16)
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=904986263]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=832204969]
+shape = SubResource("CircleShape2D_enemy_interact")
+
+[node name="BodyShape" type="CollisionShape2D" parent="." unique_id=1567822632]
+scale = Vector2(3, 3)
+shape = SubResource("RectangleShape2D_enemy_body")
