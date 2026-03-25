@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using CardChessDemo.Battle.Actions;
+using CardChessDemo.Battle.AI;
 using CardChessDemo.Battle.Board;
+using CardChessDemo.Battle.Boundary;
 using CardChessDemo.Battle.Cards;
 using CardChessDemo.Battle.Data;
 using CardChessDemo.Battle.Encounters;
@@ -45,14 +48,22 @@ public partial class BattleSceneController : Node2D
 
 	private RandomNumberGenerator _rng = new();
 	private BattlePieceViewManager? _pieceViewManager;
+	private BattleActionService? _actionService;
+	private EnemyTurnResolver? _enemyTurnResolver;
 	private BattleHudController? _hud;
 	private BattleDeckState? _playerDeck;
+	private Control? _battleFailOverlay;
+	private ColorRect? _battleFailFlash;
+	private Label? _battleFailLabel;
+	private bool _battleFailureSequenceStarted;
+	private bool _battleResultCommitted;
 
 	public override void _Ready()
 	{
 		_rng.Seed = (ulong)Math.Max(RandomSeed, 1);
 
 		GlobalSession = GetNodeOrNull<GlobalGameSession>("/root/GlobalGameSession");
+		ApplyPendingBattleRequest();
 		BattlePrefabLibrary ??= GD.Load<BattlePrefabLibrary>("res://Resources/Battle/Presentation/DefaultBattlePrefabLibrary.tres");
 		EncounterLibrary ??= GD.Load<BattleEncounterLibrary>("res://Resources/Battle/Encounters/DebugBattleEncounterLibrary.tres");
 		ResolveEncounterConfiguration();
@@ -93,6 +104,14 @@ public partial class BattleSceneController : Node2D
 
 		_pieceViewManager = new BattlePieceViewManager(GetNode<Node>("RoomContainer/PieceRoot"), BattlePrefabLibrary);
 		_pieceViewManager.Rebuild(Registry, StateManager, CurrentRoom);
+		_actionService = new BattleActionService(BoardState, Registry, QueryService, StateManager, _pieceViewManager, CurrentRoom, GlobalSession);
+		_enemyTurnResolver = new EnemyTurnResolver(
+			Registry,
+			StateManager,
+			Pathfinder,
+			TargetingService,
+			_actionService,
+			new EnemyAiRegistry());
 
 		BattleBoardOverlay? overlay = GetNodeOrNull<BattleBoardOverlay>("RoomContainer/BoardOverlay");
 		overlay?.Bind(CurrentRoom);
@@ -106,6 +125,10 @@ public partial class BattleSceneController : Node2D
 			_hud.CardRequested += OnCardRequested;
 			_hud.EndTurnRequested += OnEndTurnRequested;
 		}
+
+		_battleFailOverlay = GetNodeOrNull<Control>("BattleFailOverlay");
+		_battleFailFlash = GetNodeOrNull<ColorRect>("BattleFailOverlay/Flash");
+		_battleFailLabel = GetNodeOrNull<Label>("BattleFailOverlay/DefeatLabel");
 
 		GlobalSession.PlayerRuntimeChanged += OnPlayerRuntimeChanged;
 		ConfigureCameraForBattle();
@@ -137,10 +160,14 @@ public partial class BattleSceneController : Node2D
 		}
 
 		StateManager.SyncAllFromRegistry();
+		if (!_battleFailureSequenceStarted && GlobalSession?.PlayerCurrentHp <= 0)
+		{
+			StartBattleFailureSequence();
+		}
 
 		bool hasHoveredCell = CurrentRoom.TryScreenToCell(GetGlobalMousePosition(), out Vector2I hoveredCell);
 		Vector2 hoverScreenPosition = GetViewport().GetMousePosition();
-		_hud?.SetHoveredUnitState(hasHoveredCell ? GetHoveredUnitState(hoveredCell) : null, hoverScreenPosition);
+		_hud?.SetHoveredUnitState(hasHoveredCell ? GetHoveredObjectState(hoveredCell) : null, hoverScreenPosition);
 		if (_playerDeck != null)
 		{
 			_hud?.SetCardState(
@@ -158,6 +185,14 @@ public partial class BattleSceneController : Node2D
 		BattleBoardOverlay? overlay = GetNodeOrNull<BattleBoardOverlay>("RoomContainer/BoardOverlay");
 		if (overlay == null)
 		{
+			return;
+		}
+
+		if (_battleFailureSequenceStarted)
+		{
+			overlay.SetReachableCells(Array.Empty<Vector2I>());
+			overlay.SetAttackTargetCells(Array.Empty<Vector2I>());
+			overlay.SetPreviewPath(Array.Empty<Vector2I>());
 			return;
 		}
 
@@ -210,6 +245,11 @@ public partial class BattleSceneController : Node2D
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
+		if (_battleFailureSequenceStarted)
+		{
+			return;
+		}
+
 		if (@event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo && GlobalSession != null)
 		{
 			if (keyEvent.Keycode == Key.Pageup)
@@ -312,7 +352,7 @@ public partial class BattleSceneController : Node2D
 	{
 		failureReason = "BoardQueryService has not been initialized.";
 
-		if (QueryService == null || Registry == null || CurrentRoom == null || StateManager == null || _pieceViewManager == null)
+		if (_actionService == null || StateManager == null)
 		{
 			return false;
 		}
@@ -327,17 +367,13 @@ public partial class BattleSceneController : Node2D
 			return false;
 		}
 
-		bool moved = QueryService.TryMoveObject(objectId, targetCell, out failureReason);
+		bool moved = _actionService.TryMoveObject(objectId, targetCell, out failureReason);
 		if (moved)
 		{
 			if (isPlayerObject)
 			{
 				TurnState?.MarkMoved();
 			}
-
-			StateManager.SyncAllFromRegistry();
-			_pieceViewManager.Sync(Registry, StateManager, CurrentRoom);
-			_pieceViewManager.PlayMove(objectId);
 		}
 
 		return moved;
@@ -350,12 +386,17 @@ public partial class BattleSceneController : Node2D
 
 	private void OnEndTurnRequested()
 	{
+		if (_battleFailureSequenceStarted)
+		{
+			return;
+		}
+
 		EndPlayerTurn();
 	}
 
 	private void OnAttackRequested()
 	{
-		if (TurnState == null)
+		if (_battleFailureSequenceStarted || TurnState == null)
 		{
 			return;
 		}
@@ -376,7 +417,7 @@ public partial class BattleSceneController : Node2D
 
 	private void OnCardRequested(string cardInstanceId)
 	{
-		if (TurnState == null || _playerDeck == null || StateManager == null)
+		if (_battleFailureSequenceStarted || TurnState == null || _playerDeck == null || StateManager == null)
 		{
 			return;
 		}
@@ -419,7 +460,7 @@ public partial class BattleSceneController : Node2D
 
 	private void OnMeditateRequested()
 	{
-		if (_playerDeck == null || TurnState == null)
+		if (_battleFailureSequenceStarted || _playerDeck == null || TurnState == null)
 		{
 			return;
 		}
@@ -442,7 +483,7 @@ public partial class BattleSceneController : Node2D
 
 	private void EndPlayerTurn()
 	{
-		if (TurnState == null)
+		if (_battleFailureSequenceStarted || TurnState == null)
 		{
 			return;
 		}
@@ -456,7 +497,7 @@ public partial class BattleSceneController : Node2D
 		ResolveTurnPostPhase();
 	}
 
-	private BattleObjectState? GetHoveredUnitState(Vector2I hoveredCell)
+	private BattleObjectState? GetHoveredObjectState(Vector2I hoveredCell)
 	{
 		if (QueryService == null || StateManager == null)
 		{
@@ -465,11 +506,6 @@ public partial class BattleSceneController : Node2D
 
 		foreach (BoardObject boardObject in QueryService.GetObjectsAtCell(hoveredCell))
 		{
-			if (boardObject.ObjectType != BoardObjectType.Unit)
-			{
-				continue;
-			}
-
 			return StateManager.Get(boardObject.ObjectId);
 		}
 
@@ -494,56 +530,18 @@ public partial class BattleSceneController : Node2D
 
 	private BoardObject? GetAttackableObjectAtCell(string sourceObjectId, Vector2I targetCell)
 	{
-		if (QueryService == null || Registry == null || !Registry.TryGet(sourceObjectId, out BoardObject? sourceObject) || sourceObject == null)
+		if (_actionService == null)
 		{
 			return null;
 		}
 
-		foreach (BoardObject boardObject in QueryService.GetObjectsAtCell(targetCell))
-		{
-			if (boardObject.ObjectId == sourceObjectId)
-			{
-				continue;
-			}
-
-			if (boardObject.ObjectType == BoardObjectType.Unit)
-			{
-				if (boardObject.Faction == sourceObject.Faction)
-				{
-					continue;
-				}
-
-				return boardObject;
-			}
-
-			if (boardObject.ObjectType == BoardObjectType.Obstacle && boardObject.HasTag("destructible"))
-			{
-				return boardObject;
-			}
-		}
-
-		return null;
+		return _actionService.GetAttackableObjectAtCell(sourceObjectId, targetCell);
 	}
 
 	private BoardObject? GetEnemyUnitAtCell(string sourceObjectId, Vector2I targetCell)
 	{
 		BoardObject? attackableObject = GetAttackableObjectAtCell(sourceObjectId, targetCell);
 		return attackableObject?.ObjectType == BoardObjectType.Unit ? attackableObject : null;
-	}
-
-	private static bool IsAttackable(BoardObject sourceObject, BoardObject targetObject)
-	{
-		if (targetObject.ObjectType == BoardObjectType.Unit)
-		{
-			return sourceObject.Faction != targetObject.Faction;
-		}
-
-		if (targetObject.ObjectType == BoardObjectType.Obstacle)
-		{
-			return targetObject.HasTag("destructible");
-		}
-
-		return false;
 	}
 
 	private bool TryPlayCard(string attackerId, string cardInstanceId, string? targetId, out string failureReason)
@@ -632,59 +630,17 @@ public partial class BattleSceneController : Node2D
 	{
 		failureReason = string.Empty;
 
-		if (Registry == null || BoardState == null || StateManager == null || _pieceViewManager == null || TurnState == null)
+		if (_actionService == null || TurnState == null)
 		{
 			failureReason = "Battle systems are not initialized.";
 			return false;
 		}
 
-		if (!Registry.TryGet(attackerId, out BoardObject? attacker) || attacker == null)
+		if (!_actionService.TryAttackObject(attackerId, targetId, out failureReason))
 		{
-			failureReason = $"Attacker {attackerId} was not found.";
 			return false;
 		}
 
-		if (!Registry.TryGet(targetId, out BoardObject? target) || target == null)
-		{
-			failureReason = $"Target {targetId} was not found.";
-			return false;
-		}
-
-		BattleObjectState? attackerState = StateManager.Get(attackerId);
-		if (attackerState == null)
-		{
-			failureReason = $"Attacker state {attackerId} was not found.";
-			return false;
-		}
-
-		if (!IsAttackable(attacker, target))
-		{
-			failureReason = "This target cannot be attacked.";
-			return false;
-		}
-
-		int distance = Mathf.Abs(attacker.Cell.X - target.Cell.X) + Mathf.Abs(attacker.Cell.Y - target.Cell.Y);
-		if (distance > attackerState.AttackRange)
-		{
-			failureReason = $"Target is out of range. Range={attackerState.AttackRange}, distance={distance}.";
-			return false;
-		}
-
-		_pieceViewManager.PlayAction(attackerId);
-		target.ApplyDamage(attackerState.AttackDamage);
-
-		if (target.IsDestroyed)
-		{
-			BoardState.RemoveObject(target);
-			Registry.Remove(target.ObjectId);
-		}
-		else
-		{
-			_pieceViewManager.PlayHit(targetId);
-		}
-
-		StateManager.SyncAllFromRegistry();
-		_pieceViewManager.Sync(Registry, StateManager, CurrentRoom!);
 		TurnState.MarkActed();
 		ResolveTurnPostPhase();
 		return true;
@@ -705,7 +661,13 @@ public partial class BattleSceneController : Node2D
 		_playerDeck?.EndPlayerTurn();
 		StateManager?.SyncAllFromRegistry();
 		TurnState.BeginEnemyTurn();
-		ResolveEnemyTurnPlaceholder();
+		_enemyTurnResolver?.ResolveTurn();
+		if (_actionService?.IsPlayerDefeated == true)
+		{
+			StartBattleFailureSequence();
+			return;
+		}
+
 		TurnState.AdvanceToNextTurn();
 		if (_playerDeck != null)
 		{
@@ -719,10 +681,64 @@ public partial class BattleSceneController : Node2D
 		_playerDeck?.StartPlayerTurn();
 	}
 
-	private void ResolveEnemyTurnPlaceholder()
+	private void ApplyPendingBattleRequest()
 	{
+		if (GlobalSession == null)
+		{
+			return;
+		}
+
+		BattleRequest? request = GlobalSession.ConsumePendingBattleRequest();
+		request?.ApplyToSession(GlobalSession);
 	}
 
+	private void StartBattleFailureSequence()
+	{
+		if (_battleFailureSequenceStarted || GlobalSession == null)
+		{
+			return;
+		}
+
+		_battleFailureSequenceStarted = true;
+		BattleObjectState? playerState = StateManager?.GetPrimaryPlayerState();
+		if (playerState != null)
+		{
+			_pieceViewManager?.PlayDefeat(playerState.ObjectId);
+		}
+
+		if (_battleFailOverlay == null || _battleFailFlash == null || _battleFailLabel == null)
+		{
+			CommitBattleResult(true);
+			return;
+		}
+
+		_battleFailOverlay.Visible = true;
+		_battleFailOverlay.Modulate = Colors.White;
+		_battleFailFlash.Color = new Color(0.45f, 0.04f, 0.06f, 0.0f);
+		_battleFailLabel.Visible = true;
+		_battleFailLabel.Modulate = new Color(1.0f, 0.92f, 0.92f, 0.0f);
+		_battleFailLabel.Scale = new Vector2(0.9f, 0.9f);
+
+		Tween tween = CreateTween();
+		tween.SetParallel();
+		tween.SetEase(Tween.EaseType.Out);
+		tween.SetTrans(Tween.TransitionType.Cubic);
+		tween.TweenProperty(_battleFailFlash, "color", new Color(0.45f, 0.04f, 0.06f, 0.82f), 0.18f);
+		tween.TweenProperty(_battleFailLabel, "modulate:a", 1.0f, 0.16f).SetDelay(0.08f);
+		tween.TweenProperty(_battleFailLabel, "scale", Vector2.One, 0.22f).SetDelay(0.08f);
+		tween.Finished += () => CommitBattleResult(true);
+	}
+
+	private void CommitBattleResult(bool didPlayerFail)
+	{
+		if (_battleResultCommitted || GlobalSession == null)
+		{
+			return;
+		}
+
+		_battleResultCommitted = true;
+		GlobalSession.CompleteBattle(BattleResult.FromSession(GlobalSession, didPlayerFail));
+	}
 	private void ConfigureCameraForBattle()
 	{
 		if (CurrentRoom == null)
@@ -920,7 +936,7 @@ public partial class BattleSceneController : Node2D
 
 		foreach (BoardObject boardObject in Registry.AllObjects)
 		{
-			if (boardObject.ObjectId == objectId || !IsAttackable(sourceObject, boardObject))
+			if (boardObject.ObjectId == objectId || !BattleActionService.IsAttackable(sourceObject, boardObject))
 			{
 				continue;
 			}

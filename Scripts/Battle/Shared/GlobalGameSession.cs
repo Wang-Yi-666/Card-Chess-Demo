@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using CardChessDemo.Battle.Boundary;
 
 namespace CardChessDemo.Battle.Shared;
 
@@ -16,10 +17,14 @@ public partial class GlobalGameSession : Node
 	[Export] public int PlayerAttackRange { get; set; } = 1;
 	[Export] public int PlayerAttackDamage { get; set; } = 2;
 
-	public string PendingEncounterId { get; private set; } = string.Empty;
-	public string PendingReturnScenePath { get; private set; } = string.Empty;
-	public Vector2 PendingReturnPlayerPosition { get; private set; } = Vector2.Zero;
-	public bool HasPendingEncounter => !string.IsNullOrWhiteSpace(PendingEncounterId);
+	public BattleRequest? PendingBattleRequest { get; private set; }
+	public BattleResult? LastBattleResult { get; private set; }
+
+	public void SetPlayerCurrentHp(int value)
+	{
+		PlayerCurrentHp = Mathf.Clamp(value, 0, Math.Max(PlayerMaxHp, 0));
+		EmitSignal(SignalName.PlayerRuntimeChanged);
+	}
 
 	public void SetPlayerMovePointsPerTurn(int value)
 	{
@@ -30,6 +35,32 @@ public partial class GlobalGameSession : Node
 	public void ApplyMovePointDelta(int delta)
 	{
 		SetPlayerMovePointsPerTurn(PlayerMovePointsPerTurn + delta);
+	}
+
+	public void BeginBattle(BattleRequest? request = null)
+	{
+		PendingBattleRequest = request ?? BattleRequest.FromSession(this);
+		LastBattleResult = null;
+	}
+
+	public BattleRequest? ConsumePendingBattleRequest()
+	{
+		BattleRequest? request = PendingBattleRequest;
+		PendingBattleRequest = null;
+		return request;
+	}
+
+	public void CompleteBattle(BattleResult result)
+	{
+		LastBattleResult = result;
+		result.ApplyToSession(this);
+	}
+
+	public BattleResult? ConsumeLastBattleResult()
+	{
+		BattleResult? result = LastBattleResult;
+		LastBattleResult = null;
+		return result;
 	}
 
 	public Godot.Collections.Dictionary BuildPlayerSnapshot()

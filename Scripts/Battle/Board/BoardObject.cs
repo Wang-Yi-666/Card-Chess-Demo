@@ -12,6 +12,7 @@ public sealed class BoardObject
     public BoardObject(
         string objectId,
         string definitionId,
+        string aiId,
         BoardObjectType objectType,
         Vector2I cell,
         BoardObjectFaction faction,
@@ -28,6 +29,7 @@ public sealed class BoardObject
     {
         ObjectId = objectId;
         DefinitionId = definitionId;
+        AiId = aiId ?? string.Empty;
         ObjectType = objectType;
         Cell = cell;
         Faction = faction;
@@ -46,6 +48,8 @@ public sealed class BoardObject
     public string ObjectId { get; }
 
     public string DefinitionId { get; }
+
+    public string AiId { get; }
 
     public BoardObjectType ObjectType { get; }
 
@@ -118,7 +122,8 @@ public sealed class BoardObject
 
     public void ApplyCombatDefaults(int maxHp, int currentHp, int maxShield = 0, int currentShield = 0)
     {
-        if (MaxHp > 0 || CurrentShield > 0)
+        // Shield-only spawns still need HP defaults, otherwise MaxHp stays 0 and damage is skipped.
+        if (MaxHp > 0 || CurrentHp > 0)
         {
             return;
         }
@@ -157,6 +162,7 @@ public sealed class BoardObject
         return new BoardObject(
             objectId,
             definitionId,
+            spawn.AiId,
             spawn.ObjectType,
             spawn.Cell,
             spawn.Faction,

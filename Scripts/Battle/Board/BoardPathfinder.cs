@@ -40,7 +40,7 @@ public sealed class BoardPathfinder
                     continue;
                 }
 
-                int moveCost = _queryService.GetMoveCost(neighborCell);
+                int moveCost = GetTraversalStepCost(originCell, currentCell, neighborCell);
                 int nextCost = currentCost + moveCost;
                 if (nextCost > moveBudget)
                 {
@@ -109,8 +109,8 @@ public sealed class BoardPathfinder
 
             if (currentCell == targetCell)
             {
-                totalCost = gScore[currentCell];
                 path = ReconstructPath(cameFrom, currentCell);
+                totalCost = CalculatePathCost(path);
                 return totalCost <= moveBudget;
             }
 
@@ -123,7 +123,7 @@ public sealed class BoardPathfinder
                     continue;
                 }
 
-                int nextCost = currentCost + _queryService.GetMoveCost(neighborCell);
+                int nextCost = currentCost + GetTraversalStepCost(startCell, currentCell, neighborCell);
                 if (nextCost > moveBudget)
                 {
                     continue;
@@ -156,6 +156,40 @@ public sealed class BoardPathfinder
 
         path.Reverse();
         return path;
+    }
+
+    private int CalculatePathCost(IReadOnlyList<Vector2I> path)
+    {
+        if (path.Count <= 1)
+        {
+            return 0;
+        }
+
+        int totalCost = GetOriginExtraCost(path[0]);
+        for (int index = 1; index < path.Count; index++)
+        {
+            totalCost += _queryService.GetMoveCost(path[index]);
+        }
+
+        return totalCost;
+    }
+
+    private int GetTraversalStepCost(Vector2I originCell, Vector2I currentCell, Vector2I neighborCell)
+    {
+        int nextCellCost = _queryService.GetMoveCost(neighborCell);
+        if (currentCell != originCell)
+        {
+            return nextCellCost;
+        }
+
+        // The origin cell also participates in traversal cost, but only its extra cost above a normal floor
+        // should be paid here; otherwise every path would lose an extra base movement point.
+        return nextCellCost + GetOriginExtraCost(originCell);
+    }
+
+    private int GetOriginExtraCost(Vector2I originCell)
+    {
+        return Math.Max(0, _queryService.GetMoveCost(originCell) - 1);
     }
 
     private static int EstimateRemainingCost(Vector2I currentCell, Vector2I targetCell)

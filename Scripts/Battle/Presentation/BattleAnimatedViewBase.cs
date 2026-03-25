@@ -41,10 +41,16 @@ public partial class BattleAnimatedViewBase : Node2D
 		Position = localCenter;
 	}
 
-	public virtual void PlayIdle() => PlayNamedAnimation("idle");
-	public virtual void PlayMove() => PlayNamedAnimation("move");
-	public virtual void PlayAction() => PlayNamedAnimation("action");
-	public virtual void PlayHit() => PlayNamedAnimation("hit");
+	public virtual void PlayIdle() => PlayCue("idle");
+	public virtual void PlayMove() => PlayCue("move");
+	public virtual void PlayAction() => PlayCue("action");
+	public virtual void PlayHit() => PlayCue("hit");
+	public virtual void PlayDefeat() => PlayCue("defeat");
+
+	public virtual void PlayCue(StringName animationName)
+	{
+		PlayNamedAnimation(animationName.ToString());
+	}
 
 	protected void PlayNamedAnimation(string animationName)
 	{
@@ -87,6 +93,7 @@ public partial class BattleAnimatedViewBase : Node2D
 		AddAnimation(frames, "move", new[] { primary.Lightened(0.1f), secondary, primary.Darkened(0.1f) }, 7.0f, true);
 		AddAnimation(frames, "action", new[] { secondary, primary, secondary }, 10.0f, false);
 		AddAnimation(frames, "hit", new[] { new Color(1.0f, 1.0f, 1.0f), primary.Darkened(0.3f) }, 8.0f, false);
+		AddAnimation(frames, "defeat", new[] { primary.Darkened(0.2f), new Color(0.26f, 0.0f, 0.0f), Colors.Transparent }, 6.0f, false);
 		// defend 目前只是视觉占位动画，正式防御规则还没有落地。
 		AddAnimation(frames, "defend", new[] { primary, new Color(0.75f, 0.95f, 1.0f), primary }, 6.0f, false);
 		return frames;

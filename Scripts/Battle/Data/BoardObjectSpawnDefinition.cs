@@ -8,6 +8,7 @@ public partial class BoardObjectSpawnDefinition : Resource
 {
     [Export] public string ObjectId { get; set; } = string.Empty;
     [Export] public string DefinitionId { get; set; } = "undefined";
+    [Export] public string AiId { get; set; } = string.Empty;
     [Export] public BoardObjectType ObjectType { get; set; } = BoardObjectType.Obstacle;
     [Export] public Vector2I Cell { get; set; } = Vector2I.Zero;
     [Export] public BoardObjectFaction Faction { get; set; } = BoardObjectFaction.None;
