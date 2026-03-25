@@ -1,12 +1,12 @@
-[gd_scene format=3 uid="uid://bq5qagu68cj0o"]
+[gd_scene format=3 uid="uid://clfyfxbbjiapg"]
 
-[ext_resource type="PackedScene" uid="uid://c1ojey6clae1h" path="res://Scene(garbage)/Chest.tscn" id="1_pyta8"]
-[ext_resource type="PackedScene" uid="uid://cgf2evpc6ty4e" path="res://Scene(garbage)/HealingStation.tscn" id="2_xawni"]
-[ext_resource type="PackedScene" uid="uid://cko4roccpe105" path="res://Scene(garbage)/Npc.tscn" id="3_eoyd3"]
-[ext_resource type="PackedScene" uid="uid://c0v263dw3prrw" path="res://Scene(garbage)/Door.tscn" id="4_bwvie"]
-[ext_resource type="PackedScene" uid="uid://cygseefr5cx8a" path="res://Scene(garbage)/MainPlayer.tscn" id="5_xawni"]
-[ext_resource type="PackedScene" uid="uid://cs2xwibupxdob" path="res://Scene(garbage)/Enemy.tscn" id="6_enemy_scene"]
-[ext_resource type="PackedScene" uid="uid://cldmyermn0c8u" path="res://Scene(garbage)/Partner.tscn" id="7_7hiu4"]
+[ext_resource type="PackedScene" uid="uid://c1ojey6clae1h" path="res://Scene/Chest.tscn" id="1_pyta8"]
+[ext_resource type="PackedScene" uid="uid://cgf2evpc6ty4e" path="res://Scene/HealingStation.tscn" id="2_xawni"]
+[ext_resource type="PackedScene" uid="uid://cko4roccpe105" path="res://Scene/Npc.tscn" id="3_eoyd3"]
+[ext_resource type="PackedScene" uid="uid://c0v263dw3prrw" path="res://Scene/Door.tscn" id="4_bwvie"]
+[ext_resource type="PackedScene" uid="uid://cygseefr5cx8a" path="res://Scene/MainPlayer.tscn" id="5_xawni"]
+[ext_resource type="PackedScene" uid="uid://cs2xwibupxdob" path="res://Scene/Enemy.tscn" id="6_enemy_scene"]
+[ext_resource type="PackedScene" uid="uid://cldmyermn0c8u" path="res://Scene/Partner.tscn" id="7_7hiu4"]
 
 [node name="Node2D" type="Node2D" unique_id=94755713]
 
@@ -21,7 +21,7 @@ position = Vector2(631, -21)
 
 [node name="Door" parent="." unique_id=583652748 instance=ExtResource("4_bwvie")]
 position = Vector2(611, 649)
-NextScenePath = "res://Scene(garbage)/Scene2.tscn"
+NextScenePath = "res://Scene/Scene2.tscn"
 
 [node name="MainPlayer" parent="." unique_id=375524829 instance=ExtResource("5_xawni")]
 

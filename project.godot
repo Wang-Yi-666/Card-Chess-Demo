@@ -17,7 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GlobalGameSession="*res://Scripts/Battle/Shared/GlobalGameSession.cs"
+GameSession="*res://AutoLoad/GameSession.cs"
+GlobalBattleContext="*res://AutoLoad/GlobalBattleContext.cs"
+PartnerManager="*res://AutoLoad/PartnerManager.cs"
 
 [dotnet]
 
