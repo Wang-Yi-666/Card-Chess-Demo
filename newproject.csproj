@@ -3,16 +3,5 @@
     <TargetFramework>net8.0</TargetFramework>
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-<<<<<<< Updated upstream
-    <Compile Include="Scripts\**\*.cs" />
-=======
->>>>>>> Stashed changes
-    <Compile Remove="Card-Chess-Demo-main\**\*.cs" />
-  </ItemGroup>
-
 </Project>

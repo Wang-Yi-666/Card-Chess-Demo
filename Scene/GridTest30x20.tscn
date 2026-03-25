@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://cydc44et0eaee"]
+
+[ext_resource type="PackedScene" uid="uid://dghav5ugwnnfi" path="res://Scene(garbage)/GridFloorTemplate.tscn" id="1_floor"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_37v2h"]
+[ext_resource type="PackedScene" uid="uid://cygseefr5cx8a" path="res://Scene(garbage)/MainPlayer.tscn" id="2_player"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_37v2h"]
+texture = ExtResource("2_37v2h")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_uo02y"]
+sources/0 = SubResource("TileSetAtlasSource_37v2h")
+
+[node name="GridTest30x20" type="Node2D" unique_id=1179989208]
+
+[node name="GridFloor" parent="." unique_id=1591137161 instance=ExtResource("1_floor")]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="GridFloor" unique_id=681332773]
+tile_set = SubResource("TileSet_uo02y")
+
+[node name="MainPlayer" parent="." unique_id=375524829 instance=ExtResource("2_player")]

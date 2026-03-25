@@ -1,0 +1,124 @@
+[gd_scene format=3 uid="uid://cygseefr5cx8a"]
+
+[ext_resource type="Script" uid="uid://b8l5yhi5thqn" path="res://Scripts/Character/Player.cs" id="1_mv7q2"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_u2r47"]
+[ext_resource type="Texture2D" path="res://Assets/Character/Idle/idle_001.png" id="3_idle1"]
+[ext_resource type="Texture2D" path="res://Assets/Character/Idle/idle_002.png" id="4_idle2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p5hms"]
+size = Vector2(126, 127)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5xq6q"]
+radius = 243.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_idle"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_idle1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_idle2")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}]
+
+[node name="MainPlayer" type="Node2D" unique_id=375524829]
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=272412821]
+collision_mask = 14
+script = ExtResource("1_mv7q2")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=373331228]
+scale = Vector2(3.096, 3)
+sprite_frames = SubResource("SpriteFrames_idle")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=160022622]
+position = Vector2(-1, -0.5)
+shape = SubResource("RectangleShape2D_p5hms")
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1876884036]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+
+[node name="InteractionArea" type="Area2D" parent="Player" unique_id=1568551401]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/InteractionArea" unique_id=968322492]
+shape = SubResource("CircleShape2D_5xq6q")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=462736160]
+
+[node name="InteractionHintLabel" type="Label" parent="UI" unique_id=194744206]
+visible = false
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 424.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+
+[node name="BottomStatusBar" type="Panel" parent="UI"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -78.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Margin" type="MarginContainer" parent="UI/BottomStatusBar"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="UI/BottomStatusBar/Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 28
+
+[node name="PlayerBlock" type="VBoxContainer" parent="UI/BottomStatusBar/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="PlayerHpLabel" type="Label" parent="UI/BottomStatusBar/Margin/HBox/PlayerBlock"]
+layout_mode = 2
+text = "主角 HP 100/100"
+
+[node name="PlayerHpBar" type="ProgressBar" parent="UI/BottomStatusBar/Margin/HBox/PlayerBlock"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="PartnerBlock" type="VBoxContainer" parent="UI/BottomStatusBar/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="PartnerEnergyLabel" type="Label" parent="UI/BottomStatusBar/Margin/HBox/PartnerBlock"]
+layout_mode = 2
+text = "伙伴 EN 100/100"
+
+[node name="PartnerEnergyBar" type="ProgressBar" parent="UI/BottomStatusBar/Margin/HBox/PartnerBlock"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 100.0
+show_percentage = false

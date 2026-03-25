@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://cko4roccpe105"]
+
+[ext_resource type="Script" uid="uid://ctlw371cuawbd" path="res://Scripts/Character/Npc.cs" id="1_i8ab3"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="1_smt2w"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_i8ab3"]
+radius = 289.04324
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i8ab3"]
+size = Vector2(242, 202)
+
+[node name="NpcScene" type="Node2D" unique_id=1266535779]
+
+[node name="Npc" type="StaticBody2D" parent="." unique_id=2123701671]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_i8ab3")
+
+[node name="Sprite2D" type="Sprite2D" parent="Npc" unique_id=2019183832]
+scale = Vector2(13.823529, 11.823528)
+texture = ExtResource("1_smt2w")
+region_enabled = true
+region_rect = Rect2(161.13461, 111.54683, 17.472305, 17.220612)
+
+[node name="InteractionArea" type="Area2D" parent="Npc" unique_id=1734887902]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Npc/InteractionArea" unique_id=1213534076]
+shape = SubResource("CircleShape2D_i8ab3")
+
+[node name="Bodyshape" type="CollisionShape2D" parent="Npc" unique_id=449285038]
+position = Vector2(1, 0)
+shape = SubResource("RectangleShape2D_i8ab3")

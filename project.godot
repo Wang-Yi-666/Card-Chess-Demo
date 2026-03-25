@@ -17,28 +17,13 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GlobalGameSession="*res://Scripts/Battle/Shared/GlobalGameSession.cs"
-
-[display]
-
-window/size/viewport_width=320
-window/size/viewport_height=180
-window/size/window_width_override=1280
-window/size/window_height_override=720
-window/stretch/mode="viewport"
+GameSession="*res://AutoLoad/GameSession.cs"
+GlobalBattleContext="*res://AutoLoad/GlobalBattleContext.cs"
+PartnerManager="*res://AutoLoad/PartnerManager.cs"
 
 [dotnet]
 
 project/assembly_name="newproject"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
-
-[gui]
-
-theme/custom="res://Resources/UI/ProjectUiTheme.tres"
-theme/custom_font="res://Assets/Fonts/unifont_t-17.0.04.otf"
 
 [input]
 
@@ -70,10 +55,10 @@ interact={
 
 [layer_names]
 
-2d_physics/layer_1="Player"
-2d_physics/layer_2="Environment"
-2d_physics/layer_3="Enemy"
-2d_physics/layer_4="Interactable"
+2d_physics/layer_1="玩家"
+2d_physics/layer_2="环境"
+2d_physics/layer_3="怪物"
+2d_physics/layer_4="交互物"
 
 [physics]
 
@@ -83,3 +68,5 @@ interact={
 
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true
