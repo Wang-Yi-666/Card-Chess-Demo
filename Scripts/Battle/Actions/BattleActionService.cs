@@ -211,21 +211,6 @@ public sealed class BattleActionService
 
     public bool TryCreateIndestructibleObstacle(Vector2I targetCell, out string createdObjectId, out string failureReason)
     {
-        createdObjectId = string.Empty;
-        failureReason = string.Empty;
-
-        if (!_boardState.ContainsCell(targetCell))
-        {
-            failureReason = $"Cell {targetCell} is outside the board.";
-            return false;
-        }
-
-        if (_queryService.GetObjectsAtCell(targetCell).Count > 0)
-        {
-            failureReason = $"Cell {targetCell} is already occupied.";
-            return false;
-        }
-
         BoardObjectSpawnDefinition spawn = new()
         {
             ObjectId = $"arakawa_wall_{Guid.NewGuid():N}"[..21],
@@ -239,8 +224,22 @@ public sealed class BattleActionService
             StackableWithUnit = false,
         };
 
+        return TrySpawnBoardObject(spawn, out createdObjectId, out failureReason);
+    }
+
+    public bool TrySpawnBoardObject(BoardObjectSpawnDefinition spawn, out string createdObjectId, out string failureReason)
+    {
+        createdObjectId = string.Empty;
+        failureReason = string.Empty;
+
+        if (!_boardState.ContainsCell(spawn.Cell))
+        {
+            failureReason = $"Cell {spawn.Cell} is outside the board.";
+            return false;
+        }
+
         BoardObject boardObject = BoardObject.FromSpawn(spawn);
-        if (!OccupancyRules.CanPlaceObject(_boardState, _registry, boardObject, targetCell, out failureReason))
+        if (!OccupancyRules.CanPlaceObject(_boardState, _registry, boardObject, spawn.Cell, out failureReason))
         {
             return false;
         }
@@ -253,7 +252,7 @@ public sealed class BattleActionService
 
         _boardState.PlaceObject(boardObject);
         SyncPresentation();
-        _pieceViewManager.PlayTintPulse(boardObject.ObjectId, new Color(0.26f, 0.74f, 1.0f, 1.0f));
+        _pieceViewManager.PlayTintPulse(boardObject.ObjectId, ResolveSpawnPulseColor(boardObject));
         createdObjectId = boardObject.ObjectId;
         return true;
     }
@@ -261,6 +260,18 @@ public sealed class BattleActionService
     public async Task<bool> TryCreateIndestructibleObstacleAsync(Vector2I targetCell)
     {
         bool created = TryCreateIndestructibleObstacle(targetCell, out _, out _);
+        if (!created)
+        {
+            return false;
+        }
+
+        await WaitSeconds(UtilityPresentationDurationSeconds);
+        return true;
+    }
+
+    public async Task<bool> TrySpawnBoardObjectAsync(BoardObjectSpawnDefinition spawn)
+    {
+        bool created = TrySpawnBoardObject(spawn, out _, out _);
         if (!created)
         {
             return false;
@@ -481,5 +492,15 @@ public sealed class BattleActionService
         }
 
         return new[] { startCell, targetCell };
+    }
+
+    private static Color ResolveSpawnPulseColor(BoardObject boardObject)
+    {
+        return boardObject.Faction switch
+        {
+            BoardObjectFaction.Player => new Color(0.36f, 0.92f, 0.58f, 1.0f),
+            BoardObjectFaction.Enemy => new Color(0.96f, 0.36f, 0.36f, 1.0f),
+            _ => new Color(0.26f, 0.74f, 1.0f, 1.0f),
+        };
     }
 }

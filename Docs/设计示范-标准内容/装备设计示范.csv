@@ -1,0 +1,7 @@
+equipment_id,display_name,status,slot_type,rarity,source,required_progress,branch_affinity,grants_branch_mastery,grants_impact_capacity_bonus,grants_card_copy_bonus,grants_overlimit_slots,granted_card_ids,granted_temp_card_ids,required_card_tags_reduced_impact,impact_discount_value,modifies_learning,battle_stat_bonus,drawback,description,art_brief,notes
+equip_magnetic_scabbard,磁锁刀鞘,prototype,weapon,common,shop,early,melee,1,0,0,0,,,melee,1,false,"近战伤害 +1","无","使 1 张近战牌影响因子 -1","旧军用刀鞘 金属磨损明显","轻量近战过渡装备"
+equip_target_lens,校准瞄具,prototype,core,common,exploration,early,ranged,1,0,0,0,,,ranged,1,false,"远程射程判定更稳定","生命 -2","使 1 张远程牌影响因子 -1","单眼瞄准镜 红色标记圈","典型远程倾向装备"
+equip_phase_boots,相位短靴,prototype,module,uncommon,shop,mid,flex,1,1,0,0,,,flex,1,false,"移动力 +1","初始护盾 -1","灵活牌影响因子结算更宽松","薄底战术靴 带浅蓝残影效果","机动向装备"
+equip_archive_probe,档案探针,prototype,trinket,rare,boss_reward,mid,flex,0,1,0,1,card_learning_protocol,,learned,1,true,"学习相关判定更宽松","无","学习相关牌获得额外构筑支持","悬浮探针 数据投影屏","学习流核心辅助装备"
+equip_battery_pack,并联电池组,prototype,module,common,shop,early,,0,2,0,0,,,energy_positive,1,false,"初始能量 +1","初始手牌 -1","提升高负载牌组承载能力","背负式电池模组 黄白电量指示灯","通用资源向装备"
+equip_forbidden_patch,禁区补丁,prototype,trinket,rare,exploration,late,,0,0,0,1,card_emergency_cell,,quick_cycle,1,true,"无","学习牌费用 +1","提供 1 个超规槽位并附带应急电池","破损旧芯片 外壳裂纹带蓝光","高风险实验型装备"

@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ba16tb2eln8nt"
+
+[deps]
+
+files=["res://Docs/设计示范-标准内容/精英与Boss奖励示范.encounter.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.encounter.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.stage.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.exp.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.currency.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.material.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.equipment.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.learning.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.reward.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.reward.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.design.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.failure.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.notes.translation"]
+
+source_file="res://Docs/设计示范-标准内容/精英与Boss奖励示范.csv"
+dest_files=["res://Docs/设计示范-标准内容/精英与Boss奖励示范.encounter.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.encounter.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.stage.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.exp.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.currency.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.material.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.equipment.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.learning.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.reward.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.reward.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.design.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.failure.translation", "res://Docs/设计示范-标准内容/精英与Boss奖励示范.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

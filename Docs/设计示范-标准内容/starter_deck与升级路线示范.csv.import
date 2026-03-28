@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ddqn5ttqqxitb"
+
+[deps]
+
+files=["res://Docs/设计示范-标准内容/starter_deck与升级路线示范.stage.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.expected.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.deck.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.recommended.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.recommended.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.recommended.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.core.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.optional.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.remove.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.learning.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.impact.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.deck.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.upgrade.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.notes.translation"]
+
+source_file="res://Docs/设计示范-标准内容/starter_deck与升级路线示范.csv"
+dest_files=["res://Docs/设计示范-标准内容/starter_deck与升级路线示范.stage.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.expected.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.deck.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.recommended.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.recommended.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.recommended.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.core.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.optional.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.remove.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.learning.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.impact.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.deck.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.upgrade.translation", "res://Docs/设计示范-标准内容/starter_deck与升级路线示范.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -15,26 +15,26 @@ public partial class BattleCardLibrary : Resource
 		return Entries.FirstOrDefault(entry => string.Equals(entry.CardId, cardId, StringComparison.Ordinal));
 	}
 
-    public BattleCardDefinition[] BuildDefinitions()
-    {
-        return Entries
-            .Where(entry => entry != null)
-            .Select(entry => entry.BuildRuntimeDefinition())
-            .ToArray();
-    }
+	public BattleCardDefinition[] BuildDefinitions()
+	{
+		return Entries
+			.Where(entry => entry != null)
+			.Select(entry => entry.BuildRuntimeDefinition())
+			.ToArray();
+	}
 
-    public string[] BuildStarterDeckCardIds()
-    {
-        List<string> cardIds = new();
-        foreach (BattleCardTemplate template in Entries.Where(entry => entry != null))
-        {
-            int copies = Math.Max(0, template.DefaultStarterCopies);
-            for (int copyIndex = 0; copyIndex < copies; copyIndex++)
-            {
-                cardIds.Add(template.CardId);
-            }
-        }
+	public string[] BuildStarterDeckCardIds()
+	{
+		List<string> cardIds = new();
+		foreach (BattleCardTemplate template in Entries.Where(entry => entry != null))
+		{
+			int copies = Math.Max(0, template.DefaultStarterCopies);
+			for (int copyIndex = 0; copyIndex < copies; copyIndex++)
+			{
+				cardIds.Add(template.CardId);
+			}
+		}
 
-        return cardIds.ToArray();
-    }
+		return cardIds.ToArray();
+	}
 }

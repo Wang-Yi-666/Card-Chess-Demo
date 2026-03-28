@@ -93,6 +93,13 @@ public sealed class EnemyTurnResolver
             case EnemyAiDecisionType.Attack:
                 await _actionService.TryAttackObjectAsync(enemyId, decision.TargetObjectId);
                 break;
+
+            case EnemyAiDecisionType.Spawn:
+                if (decision.SpawnDefinition != null)
+                {
+                    await _actionService.TrySpawnBoardObjectAsync(decision.SpawnDefinition);
+                }
+                break;
         }
     }
 

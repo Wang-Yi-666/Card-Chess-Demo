@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://c167nwhdd6wfe"
+
+[deps]
+
+files=["res://Docs/设计模板/装备设计模板.display.translation", "res://Docs/设计模板/装备设计模板.status.translation", "res://Docs/设计模板/装备设计模板.slot.translation", "res://Docs/设计模板/装备设计模板.rarity.translation", "res://Docs/设计模板/装备设计模板.source.translation", "res://Docs/设计模板/装备设计模板.required.translation", "res://Docs/设计模板/装备设计模板.branch.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.en.translation", "res://Docs/设计模板/装备设计模板.en.translation", "res://Docs/设计模板/装备设计模板.required.translation", "res://Docs/设计模板/装备设计模板.impact.translation", "res://Docs/设计模板/装备设计模板.modifies.translation", "res://Docs/设计模板/装备设计模板.battle.translation", "res://Docs/设计模板/装备设计模板.drawback.translation", "res://Docs/设计模板/装备设计模板.description.translation", "res://Docs/设计模板/装备设计模板.art.translation", "res://Docs/设计模板/装备设计模板.notes.translation"]
+
+source_file="res://Docs/设计模板/装备设计模板.csv"
+dest_files=["res://Docs/设计模板/装备设计模板.display.translation", "res://Docs/设计模板/装备设计模板.status.translation", "res://Docs/设计模板/装备设计模板.slot.translation", "res://Docs/设计模板/装备设计模板.rarity.translation", "res://Docs/设计模板/装备设计模板.source.translation", "res://Docs/设计模板/装备设计模板.required.translation", "res://Docs/设计模板/装备设计模板.branch.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.grants.translation", "res://Docs/设计模板/装备设计模板.en.translation", "res://Docs/设计模板/装备设计模板.en.translation", "res://Docs/设计模板/装备设计模板.required.translation", "res://Docs/设计模板/装备设计模板.impact.translation", "res://Docs/设计模板/装备设计模板.modifies.translation", "res://Docs/设计模板/装备设计模板.battle.translation", "res://Docs/设计模板/装备设计模板.drawback.translation", "res://Docs/设计模板/装备设计模板.description.translation", "res://Docs/设计模板/装备设计模板.art.translation", "res://Docs/设计模板/装备设计模板.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

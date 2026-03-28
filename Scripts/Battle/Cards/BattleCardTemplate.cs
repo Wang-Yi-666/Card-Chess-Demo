@@ -29,38 +29,63 @@ public partial class BattleCardTemplate : Resource
 	[Export] public int RequiredPlayerLevel { get; set; } = 1;
 	[Export] public string[] RequiredTalentIds { get; set; } = Array.Empty<string>();
 	[Export] public string[] RequiredBranchTags { get; set; } = Array.Empty<string>();
+	[Export] public string[] CycleTags { get; set; } = Array.Empty<string>();
+	[Export] public bool IsLearnedCard { get; set; }
+	[Export] public bool DisallowOverlimitCarry { get; set; }
+	[Export] public int OverlimitCostPenalty { get; set; } = 1;
+	[Export(PropertyHint.Range, "0,1,0.05")] public float OverlimitEffectMultiplier { get; set; } = 0.8f;
+	[Export] public int OverlimitExtraBuildPoints { get; set; } = 1;
 
-	public BattleCardDefinition BuildRuntimeDefinition()
+	public BattleCardDefinition BuildRuntimeDefinition(bool applyOverlimitPenalty = false)
 	{
+		int cost = Cost;
+		int damage = Damage;
+		int healingAmount = HealingAmount;
+		int drawCount = DrawCount;
+		int energyGain = EnergyGain;
+		int shieldGain = ShieldGain;
+		string displayName = DisplayName;
+		string description = Description;
+
+		if (applyOverlimitPenalty)
+		{
+			float multiplier = Mathf.Clamp(OverlimitEffectMultiplier, 0.0f, 1.0f);
+			cost += Math.Max(0, OverlimitCostPenalty);
+			damage = ScalePositiveValue(damage, multiplier);
+			healingAmount = ScalePositiveValue(healingAmount, multiplier);
+			drawCount = ScalePositiveValue(drawCount, multiplier);
+			energyGain = ScalePositiveValue(energyGain, multiplier);
+			shieldGain = ScalePositiveValue(shieldGain, multiplier);
+			displayName = string.IsNullOrWhiteSpace(displayName) ? "超规卡牌" : $"{displayName} [超规]";
+			description = string.IsNullOrWhiteSpace(description)
+				? "以超规方式携带，费用或效果已受惩罚。"
+				: $"{description} / 超规携带：费用提高或效果衰减";
+		}
+
 		return new BattleCardDefinition(
 			cardId: CardId,
-			displayName: DisplayName,
-			description: Description,
-			cost: Cost,
+			displayName: displayName,
+			description: description,
+			cost: cost,
 			category: Category,
 			targetingMode: TargetingMode,
 			range: Range,
-			damage: Damage,
-			healingAmount: HealingAmount,
-			drawCount: DrawCount,
-			energyGain: EnergyGain,
-			shieldGain: ShieldGain,
+			damage: damage,
+			healingAmount: healingAmount,
+			drawCount: drawCount,
+			energyGain: energyGain,
+			shieldGain: shieldGain,
 			isQuick: IsQuick,
 			exhaustsOnPlay: ExhaustsOnPlay);
 	}
 
-	public bool IsUnlocked(ProgressionSnapshot snapshot)
+	public bool IsOwned(ProgressionSnapshot snapshot)
 	{
-		if (UnlockedByDefault)
-		{
-			return true;
-		}
+		return UnlockedByDefault || snapshot.UnlockedCardIds.Contains(CardId, StringComparer.Ordinal);
+	}
 
-		if (snapshot.UnlockedCardIds.Contains(CardId, StringComparer.Ordinal))
-		{
-			return true;
-		}
-
+	public bool MeetsCarryRequirements(ProgressionSnapshot snapshot)
+	{
 		if (snapshot.PlayerLevel < Math.Max(1, RequiredPlayerLevel))
 		{
 			return false;
@@ -76,6 +101,55 @@ public partial class BattleCardTemplate : Resource
 			return false;
 		}
 
-		return RequiredTalentIds.Length > 0 || RequiredBranchTags.Length > 0 || RequiredPlayerLevel > 1;
+		return true;
+	}
+
+	public bool CanCarryNormally(ProgressionSnapshot snapshot)
+	{
+		if (!MeetsCarryRequirements(snapshot))
+		{
+			return false;
+		}
+
+		return IsOwned(snapshot) || HasExplicitCarryRequirements();
+	}
+
+	public bool CanCarryOverlimit(ProgressionSnapshot snapshot)
+	{
+		if (DisallowOverlimitCarry)
+		{
+			return false;
+		}
+
+		return IsOwned(snapshot) && !CanCarryNormally(snapshot);
+	}
+
+	public bool IsUnlocked(ProgressionSnapshot snapshot)
+	{
+		return CanCarryNormally(snapshot);
+	}
+
+	public string[] GetNormalizedCycleTags()
+	{
+		return CycleTags
+			.Where(tag => !string.IsNullOrWhiteSpace(tag))
+			.Select(tag => tag.Trim().ToLowerInvariant())
+			.Distinct(StringComparer.Ordinal)
+			.ToArray();
+	}
+
+	private bool HasExplicitCarryRequirements()
+	{
+		return RequiredPlayerLevel > 1 || RequiredTalentIds.Length > 0 || RequiredBranchTags.Length > 0;
+	}
+
+	private static int ScalePositiveValue(int value, float multiplier)
+	{
+		if (value <= 0)
+		{
+			return 0;
+		}
+
+		return Math.Max(1, Mathf.FloorToInt(value * multiplier));
 	}
 }

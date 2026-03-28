@@ -97,7 +97,7 @@ public sealed class BattleObjectStateManager
         playerState.CurrentHp = _session.PlayerCurrentHp;
         playerState.MovePointsPerTurn = _session.PlayerMovePointsPerTurn;
         playerState.AttackRange = _session.PlayerAttackRange;
-        playerState.AttackDamage = _session.PlayerAttackDamage;
+        playerState.AttackDamage = _session.GetResolvedPlayerAttackDamage();
     }
 
     private BattleObjectState CreateState(BoardObject boardObject)
@@ -135,7 +135,7 @@ public sealed class BattleObjectStateManager
             state.CurrentHp = _session.PlayerCurrentHp;
             state.MovePointsPerTurn = _session.PlayerMovePointsPerTurn;
             state.AttackRange = _session.PlayerAttackRange;
-            state.AttackDamage = _session.PlayerAttackDamage;
+            state.AttackDamage = _session.GetResolvedPlayerAttackDamage();
         }
 
         return state;

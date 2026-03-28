@@ -27,7 +27,15 @@
 - `Docs/当前项目进度总览.md`
 - `Docs/项目接口文档.md`
 - `Docs/战斗对外交互接口方案.md`
+- `Docs/战斗机制规则书.md`
 - `Docs/卡牌系统与局外构筑README.md`
+- `Docs/天赋成长与卡组构筑正式方案.md`
+- `Docs/卡组构筑平衡规则方案.md`
+- `Docs/设计模板/README.md`
+- `Docs/设计示范-标准内容/README.md`
+- `Docs/场景脚本文稿-序章与世界观整合版.md`
 - `Docs/游戏机制与玩法循环深度拆解.md`
 - `Docs/游戏整体策划案-竞赛版.md`
 - `Docs/美术需求文稿-竞赛冲刺版.md`
+- `Docs/游戏策划拆解分析-竞赛版.html`
+- `Docs/项目阶段会议提纲.html`

@@ -18,6 +18,8 @@ public partial class GlobalGameSession : Node
 	[Export] public int PlayerMovePointsPerTurn { get; set; } = 4;
 	[Export] public int PlayerAttackRange { get; set; } = 1;
 	[Export] public int PlayerAttackDamage { get; set; } = 2;
+	[Export] public int PlayerDefenseDamageReductionPercent { get; set; } = 50;
+	[Export] public int PlayerDefenseShieldGain { get; set; } = 0;
 	[Export] public int ArakawaMaxEnergy { get; set; } = 3;
 	[Export] public int ArakawaCurrentEnergy { get; set; } = 3;
 	[Export] public int PlayerLevel { get; set; } = 1;
@@ -109,6 +111,24 @@ public partial class GlobalGameSession : Node
 	public void ApplyMovePointDelta(int delta)
 	{
 		SetPlayerMovePointsPerTurn(PlayerMovePointsPerTurn + delta);
+	}
+
+	public int GetResolvedPlayerAttackDamage()
+	{
+		return Math.Max(0, PlayerAttackDamage + SumTalentScalarBonuses("stat.attack_bonus."));
+	}
+
+	public int GetResolvedPlayerDefenseDamageReductionPercent()
+	{
+		return Mathf.Clamp(
+			PlayerDefenseDamageReductionPercent + SumTalentScalarBonuses("stat.defense_reduction_bonus."),
+			0,
+			100);
+	}
+
+	public int GetResolvedPlayerDefenseShieldGain()
+	{
+		return Math.Max(0, PlayerDefenseShieldGain + SumTalentScalarBonuses("stat.defense_shield_bonus."));
 	}
 
 	public void BeginBattle(BattleRequest? request = null)
@@ -560,6 +580,31 @@ public partial class GlobalGameSession : Node
 		}
 
 		return clone;
+	}
+
+	private int SumTalentScalarBonuses(string prefix)
+	{
+		if (string.IsNullOrWhiteSpace(prefix))
+		{
+			return 0;
+		}
+
+		int total = 0;
+		foreach (string talentId in ProgressionState.TalentIds)
+		{
+			if (string.IsNullOrWhiteSpace(talentId) || !talentId.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+			{
+				continue;
+			}
+
+			string valueText = talentId[prefix.Length..];
+			if (int.TryParse(valueText, out int value))
+			{
+				total += value;
+			}
+		}
+
+		return total;
 	}
 
 	private void SyncCompositeStateFromFields()

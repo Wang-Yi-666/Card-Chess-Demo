@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bmauqfu8u5nb8"
+
+[deps]
+
+files=["res://Docs/设计示范-标准内容/卡牌设计示范.display.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.status.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.source.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.rarity.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.branch.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.category.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.targeting.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.cost.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.impact.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.max.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.min.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.required.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.required.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.can.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.overlimit.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.is.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.exhausts.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.draw.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.energy.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.damage.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.healing.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.shield.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.range.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.cycle.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.learned.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.description.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.design.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.balance.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.art.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.notes.translation"]
+
+source_file="res://Docs/设计示范-标准内容/卡牌设计示范.csv"
+dest_files=["res://Docs/设计示范-标准内容/卡牌设计示范.display.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.status.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.source.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.rarity.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.branch.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.category.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.targeting.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.cost.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.impact.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.max.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.min.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.required.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.required.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.can.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.overlimit.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.is.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.exhausts.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.draw.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.energy.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.damage.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.healing.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.shield.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.range.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.cycle.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.learned.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.description.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.design.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.balance.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.art.translation", "res://Docs/设计示范-标准内容/卡牌设计示范.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -4,7 +4,11 @@
 
 [resource]
 script = ExtResource("1_rules")
-MinDeckSize = 8
+MinDeckSize = 10
 MaxDeckSize = 18
-BasePointBudget = 18
+BasePointBudget = 20
 BaseMaxCopiesPerCard = 2
+BaseCycleCardLimit = 4
+BaseQuickCycleCardLimit = 2
+BaseEnergyPositiveCardLimit = 2
+BaseOverlimitCarrySlots = 1

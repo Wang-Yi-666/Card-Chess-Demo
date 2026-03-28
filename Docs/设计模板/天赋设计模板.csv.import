@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://mipjrjiji5eb"
+
+[deps]
+
+files=["res://Docs/设计模板/天赋设计模板.display.translation", "res://Docs/设计模板/天赋设计模板.status.translation", "res://Docs/设计模板/天赋设计模板.layer.translation", "res://Docs/设计模板/天赋设计模板.branch.translation", "res://Docs/设计模板/天赋设计模板.row.translation", "res://Docs/设计模板/天赋设计模板.column.translation", "res://Docs/设计模板/天赋设计模板.cost.translation", "res://Docs/设计模板/天赋设计模板.en.translation", "res://Docs/设计模板/天赋设计模板.prerequisite.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.en.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.modifies.translation", "res://Docs/设计模板/天赋设计模板.description.translation", "res://Docs/设计模板/天赋设计模板.design.translation", "res://Docs/设计模板/天赋设计模板.implementation.translation", "res://Docs/设计模板/天赋设计模板.notes.translation"]
+
+source_file="res://Docs/设计模板/天赋设计模板.csv"
+dest_files=["res://Docs/设计模板/天赋设计模板.display.translation", "res://Docs/设计模板/天赋设计模板.status.translation", "res://Docs/设计模板/天赋设计模板.layer.translation", "res://Docs/设计模板/天赋设计模板.branch.translation", "res://Docs/设计模板/天赋设计模板.row.translation", "res://Docs/设计模板/天赋设计模板.column.translation", "res://Docs/设计模板/天赋设计模板.cost.translation", "res://Docs/设计模板/天赋设计模板.en.translation", "res://Docs/设计模板/天赋设计模板.prerequisite.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.en.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.grants.translation", "res://Docs/设计模板/天赋设计模板.modifies.translation", "res://Docs/设计模板/天赋设计模板.description.translation", "res://Docs/设计模板/天赋设计模板.design.translation", "res://Docs/设计模板/天赋设计模板.implementation.translation", "res://Docs/设计模板/天赋设计模板.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

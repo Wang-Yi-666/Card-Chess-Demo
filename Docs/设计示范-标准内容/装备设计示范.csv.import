@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://c6avc40ymomjc"
+
+[deps]
+
+files=["res://Docs/设计示范-标准内容/装备设计示范.display.translation", "res://Docs/设计示范-标准内容/装备设计示范.status.translation", "res://Docs/设计示范-标准内容/装备设计示范.slot.translation", "res://Docs/设计示范-标准内容/装备设计示范.rarity.translation", "res://Docs/设计示范-标准内容/装备设计示范.source.translation", "res://Docs/设计示范-标准内容/装备设计示范.required.translation", "res://Docs/设计示范-标准内容/装备设计示范.branch.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.granted.translation", "res://Docs/设计示范-标准内容/装备设计示范.en.translation", "res://Docs/设计示范-标准内容/装备设计示范.required.translation", "res://Docs/设计示范-标准内容/装备设计示范.impact.translation", "res://Docs/设计示范-标准内容/装备设计示范.modifies.translation", "res://Docs/设计示范-标准内容/装备设计示范.battle.translation", "res://Docs/设计示范-标准内容/装备设计示范.drawback.translation", "res://Docs/设计示范-标准内容/装备设计示范.description.translation", "res://Docs/设计示范-标准内容/装备设计示范.art.translation", "res://Docs/设计示范-标准内容/装备设计示范.notes.translation"]
+
+source_file="res://Docs/设计示范-标准内容/装备设计示范.csv"
+dest_files=["res://Docs/设计示范-标准内容/装备设计示范.display.translation", "res://Docs/设计示范-标准内容/装备设计示范.status.translation", "res://Docs/设计示范-标准内容/装备设计示范.slot.translation", "res://Docs/设计示范-标准内容/装备设计示范.rarity.translation", "res://Docs/设计示范-标准内容/装备设计示范.source.translation", "res://Docs/设计示范-标准内容/装备设计示范.required.translation", "res://Docs/设计示范-标准内容/装备设计示范.branch.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.grants.translation", "res://Docs/设计示范-标准内容/装备设计示范.granted.translation", "res://Docs/设计示范-标准内容/装备设计示范.en.translation", "res://Docs/设计示范-标准内容/装备设计示范.required.translation", "res://Docs/设计示范-标准内容/装备设计示范.impact.translation", "res://Docs/设计示范-标准内容/装备设计示范.modifies.translation", "res://Docs/设计示范-标准内容/装备设计示范.battle.translation", "res://Docs/设计示范-标准内容/装备设计示范.drawback.translation", "res://Docs/设计示范-标准内容/装备设计示范.description.translation", "res://Docs/设计示范-标准内容/装备设计示范.art.translation", "res://Docs/设计示范-标准内容/装备设计示范.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

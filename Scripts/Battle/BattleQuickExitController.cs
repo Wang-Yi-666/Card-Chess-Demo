@@ -87,4 +87,3 @@ public partial class BattleQuickExitController : Node2D
 		GD.Print($"BattleQuickExitController: 应用战斗结果 - HP变化: {result.hp_delta}, 能量变化: {result.arakawa_energy_delta}");
 	}
 }
-

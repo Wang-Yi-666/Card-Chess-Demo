@@ -22,7 +22,6 @@ namespace CardChessDemo.Battle;
 
 public partial class BattleSceneController : Node2D
 {
-	private static readonly DefenseActionDefinition BasicDefenseAction = new(damageReductionPercent: 50);
 	private const double PlayerActionResolveBufferSeconds = 0.24d;
 	private static readonly ArakawaAbilityDefinition BuildWallAbility = new("build_wall", "造墙", 1);
 	private static readonly ArakawaAbilityDefinition EnhanceCardAbility = new("enhance_card", "强化", 1);
@@ -547,6 +546,13 @@ public partial class BattleSceneController : Node2D
 	{
 	}
 
+	private DefenseActionDefinition BuildPlayerDefenseActionDefinition()
+	{
+		int reductionPercent = GlobalSession?.GetResolvedPlayerDefenseDamageReductionPercent() ?? 50;
+		int shieldGain = GlobalSession?.GetResolvedPlayerDefenseShieldGain() ?? 0;
+		return new DefenseActionDefinition(reductionPercent, shieldGain);
+	}
+
 	private void OnEndTurnRequested()
 	{
 		if (_battleFailureSequenceStarted)
@@ -693,7 +699,7 @@ public partial class BattleSceneController : Node2D
 			return;
 		}
 
-		await _actionService.ApplyDefenseActionAsync(playerState.ObjectId, BasicDefenseAction, TurnState.TurnIndex);
+		await _actionService.ApplyDefenseActionAsync(playerState.ObjectId, BuildPlayerDefenseActionDefinition(), TurnState.TurnIndex);
 		TurnState.MarkActed();
 		ResolveTurnPostPhase();
 	}
@@ -1236,6 +1242,25 @@ public partial class BattleSceneController : Node2D
 			.ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
 
 		BattleCardDefinition[] buildCards = ResolveCardDefinitionsFromSnapshot(_activeBattleRequest.DeckBuildSnapshot, "card_ids", definitionMap);
+		if (BattleCardLibrary != null && BattleDeckBuildRules != null)
+		{
+			DeckBuildSnapshot deckBuildSnapshot = DeckBuildSnapshot.FromDictionary(_activeBattleRequest.DeckBuildSnapshot);
+			ProgressionSnapshot progressionSnapshot = ProgressionSnapshot.FromDictionary(_activeBattleRequest.ProgressionSnapshot);
+			BattleDeckConstructionService constructionService = new(BattleCardLibrary, BattleDeckBuildRules);
+			BattleDeckValidationResult validationResult;
+			BattleCardDefinition[] resolvedBuildCards = constructionService.BuildRuntimeDefinitions(deckBuildSnapshot, progressionSnapshot, out validationResult);
+			if (validationResult.IsValid && resolvedBuildCards.Length > 0)
+			{
+				buildCards = resolvedBuildCards;
+				definitionMap = resolvedBuildCards
+					.GroupBy(definition => definition.CardId, StringComparer.Ordinal)
+					.ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+			}
+			else if (!validationResult.IsValid)
+			{
+				GD.PushWarning($"BattleSceneController: deck build snapshot failed validation. {string.Join(" | ", validationResult.Errors)}");
+			}
+		}
 		BattleCardDefinition[] startingHandCards = ResolveCardDefinitionsFromSnapshot(_activeBattleRequest.DeckRuntimeInitOverrides, "starting_hand_card_ids", definitionMap);
 		BattleCardDefinition[] startingDrawPileCards = ResolveCardDefinitionsFromSnapshot(_activeBattleRequest.DeckRuntimeInitOverrides, "starting_draw_pile_card_ids", definitionMap);
 		BattleCardDefinition[] startingDiscardPileCards = ResolveCardDefinitionsFromSnapshot(_activeBattleRequest.DeckRuntimeInitOverrides, "starting_discard_pile_card_ids", definitionMap);
@@ -1288,9 +1313,8 @@ public partial class BattleSceneController : Node2D
 	{
 		if (BattleCardLibrary != null && BattleCardLibrary.Entries.Length > 0)
 		{
-			ProgressionSnapshot progression = GlobalSession?.BuildProgressionSnapshotModel() ?? new ProgressionSnapshot();
 			return BattleCardLibrary.Entries
-				.Where(template => template != null && template.IsUnlocked(progression))
+				.Where(template => template != null)
 				.Select(template => template.BuildRuntimeDefinition())
 				.ToArray();
 		}

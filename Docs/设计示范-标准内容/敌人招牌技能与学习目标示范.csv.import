@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dc7elxfupgg5x"
+
+[deps]
+
+files=["res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.enemy.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.enemy.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.encounter.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.signature.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.signature.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.signature.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.telegraph.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learnable.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.is.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learning.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learning.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.required.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.recommended.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learned.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learned.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learned.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.normal.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.can.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.overlimit.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.art.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.notes.translation"]
+
+source_file="res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.csv"
+dest_files=["res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.enemy.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.enemy.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.encounter.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.signature.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.signature.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.signature.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.telegraph.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learnable.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.is.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learning.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learning.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.required.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.recommended.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learned.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learned.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.learned.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.normal.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.can.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.overlimit.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.art.translation", "res://Docs/设计示范-标准内容/敌人招牌技能与学习目标示范.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

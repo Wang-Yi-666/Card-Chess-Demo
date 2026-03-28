@@ -1,0 +1,6 @@
+reward_id,encounter_id,encounter_rank,stage_tier,exp_reward,currency_reward,material_rewards,equipment_reward_ids,learning_opportunity,reward_choice_type,reward_summary,design_goal,failure_or_retreat_rule,notes
+reward_elite_brute_01,pirate_brute_elite,elite,early_mid,80,30,steel_scrap:2|charged_core:1,equip_magnetic_scabbard,true,fixed_plus_learning,"经验 80 货币 30 材料 2+1 可学习高压突进 并固定掉落磁锁刀鞘","让第一只精英明确演示学习机制与近战爆发回报","撤退仅保留 40 经验与部分货币 学习失败","对应近战学习路线"
+reward_elite_hunter_01,alliance_hunter_elite,elite,mid,90,35,optical_part:2|alloy_chip:1,equip_target_lens,true,fixed_plus_learning,"经验 90 货币 35 材料 2+1 可学习猎手标定 并固定掉落校准瞄具","演示远程精英奖励更偏站位与精度","撤退保留 45 经验 学习失败","对应远程学习路线"
+reward_elite_medic_01,scrap_medic_elite,elite,mid,85,28,medical_gel:2|repair_kit:1,,true,fixed_plus_learning,"经验 85 货币 28 材料 2+1 可学习治疗相关能力","让支持型敌人也能成为学习目标，而不是只有输出型","撤退保留 40 经验 学习失败","适合放在迷宫中段"
+reward_boss_authority_01,boss_port_authority,boss,chapter_end,220,80,authority_core:1|high_density_battery:2,equip_archive_probe,true,boss_signature,"经验 220 货币 80 核心材料 1+2 固定掉落档案探针 并可学习过载光束","作为章节终局奖励，形成明显 build 飞跃","失败不给学习结果 仅保留基础剧情推进","Boss 学习牌不开放超规携带"
+reward_boss_hidden_01,boss_hidden_ruin,boss,late,260,90,ancient_data:2|phase_crystal:1,equip_forbidden_patch,true,boss_signature,"经验 260 货币 90 稀有材料 2+1 固定掉落禁区补丁 并开放高风险学习位","演示高风险实验型奖励的设计方向","失败仅保留 100 经验 不保留学习进度","可作为后续扩展示例"

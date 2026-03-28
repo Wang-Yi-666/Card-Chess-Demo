@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目阶段会议提纲</title>
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --card: #ffffff;
+    --ink: #242424;
+    --sub: #666;
+    --line: #ddd6cc;
+    --primary: #2f5d80;
+    --primary-2: #4a7ea8;
+    --accent: #d08a2f;
+    --danger: #c85046;
+    --ok: #4e8b55;
+    --soft: #eef3f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(180deg, #efe9df 0%, #f8f5ef 100%);
+    color: var(--ink);
+    line-height: 1.75;
+  }
+  .hero {
+    padding: 52px 28px 42px;
+    color: #fff;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(208,138,47,0.18), transparent 32%),
+      radial-gradient(circle at 78% 18%, rgba(74,126,168,0.18), transparent 34%),
+      linear-gradient(135deg, #17202b 0%, #243244 45%, #2e465f 100%);
+  }
+  .hero h1 {
+    max-width: 1120px;
+    margin: 0 auto;
+    font-size: 2.45em;
+    font-weight: 700;
+  }
+  .hero h1 span { color: #ffd18a; }
+  .hero p {
+    max-width: 1120px;
+    margin: 12px auto 0;
+    color: rgba(255,255,255,0.82);
+    font-size: 1.02em;
+  }
+  .meta {
+    max-width: 1120px;
+    margin: 20px auto 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .meta span {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.85em;
+  }
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 26px 20px 56px;
+  }
+  .toc, .section {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  }
+  .toc {
+    padding: 26px 30px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--accent);
+  }
+  .toc h2 {
+    color: var(--primary);
+    font-size: 1.18em;
+    margin-bottom: 12px;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px 18px;
+  }
+  .toc a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.92em;
+    padding: 4px 0;
+  }
+  .toc a::before { content: "→ "; color: var(--accent); font-weight: 700; }
+  .section {
+    padding: 28px 30px;
+    margin-bottom: 22px;
+  }
+  .section h2 {
+    font-size: 1.42em;
+    color: var(--primary);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #eef2f5;
+  }
+  .section h3 {
+    font-size: 1.06em;
+    color: var(--primary-2);
+    margin: 18px 0 10px;
+  }
+  .section p, .section li { font-size: 0.95em; }
+  .section ul, .section ol { padding-left: 20px; margin: 8px 0; }
+  .section li { margin-bottom: 4px; }
+  .grid-2, .grid-3 {
+    display: grid;
+    gap: 16px;
+    margin: 12px 0;
+  }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    background: #f7fafc;
+    border: 1px solid #e7edf3;
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .card h4 {
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: 0.98em;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.92em;
+  }
+  th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--soft);
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .info {
+    margin: 14px 0;
+    padding: 16px 18px;
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    background: linear-gradient(135deg, #f9f6f0, #fdfaf5);
+  }
+  .highlight {
+    margin: 16px 0;
+    padding: 22px 24px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), #22374d);
+  }
+  .highlight h3 {
+    color: #ffd18a;
+    margin-top: 0;
+  }
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.82em;
+    font-weight: 600;
+  }
+  .tag-blue { background: rgba(74,126,168,0.14); color: #2d6592; }
+  .tag-green { background: rgba(78,139,85,0.14); color: #2d6d33; }
+  .tag-red { background: rgba(200,80,70,0.14); color: #9b332b; }
+  .tag-gold { background: rgba(208,138,47,0.15); color: #8c5d17; }
+  .tag-gray { background: rgba(80,80,80,0.10); color: #555; }
+  .footer {
+    text-align: center;
+    color: var(--sub);
+    font-size: 0.84em;
+    padding: 20px 12px 36px;
+  }
+  @media (max-width: 860px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.9em; }
+    .section { padding: 24px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>项目阶段会议提纲：<span>长线成长战棋卡牌RPG</span></h1>
+  <p>基于当前项目代码、文档和竞赛范围收束后的会议版摘要。用于统一认知、明确优先级和后续合作方式。</p>
+  <div class="meta">
+    <span>📅 阶段会议</span>
+    <span>🧭 竞赛版垂直切片</span>
+    <span>⚔️ 战斗主链优先</span>
+    <span>🗺️ 空港探索 + 迷宫 + Boss</span>
+    <span>📝 面向协作与决策</span>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h2>📑 目录</h2>
+  <div class="toc-grid">
+    <a href="#progress">1. 总结前面的进度</a>
+    <a href="#compare">2. 重新理解策划案：同类游戏对比</a>
+    <a href="#problems">3. 目前开发的问题</a>
+    <a href="#priority">4. 梳理开发优先级</a>
+    <a href="#collab">5. 之后的合作方式</a>
+    <a href="#signup">6. 记得比赛报名</a>
+  </div>
+</div>
+
+<div class="section" id="progress">
+  <h2>📊 1. 总结前面的进度</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h4>目前最成熟的部分</h4>
+      <ul>
+        <li>战斗核心原型已经成立</li>
+        <li>卡牌系统已进入模板资源化阶段</li>
+        <li>局外构筑已有最小入口</li>
+        <li>战斗对外接口框架已成型</li>
+        <li>房间池/地形池的玩法价值已经明确</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>目前仍较薄弱的部分</h4>
+      <ul>
+        <li>地图探索内容还没有形成完整流程</li>
+        <li>奖励 / 成长 / 存档仍偏骨架</li>
+        <li>内容量和美术交付压力大</li>
+        <li>竞赛版主循环尚未真正串联成品</li>
+      </ul>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>模块</th><th>当前状态</th><th>结论</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>战斗核心</td><td>棋盘、攻击、防御、冥想、逃跑、敌方 AI、荒川能力、逐格移动已可玩</td><td>已成型</td></tr>
+      <tr><td>卡牌系统</td><td>已有模板化定义、默认牌库、牌堆查看、治疗卡支持</td><td>部分完成</td></tr>
+      <tr><td>局外构筑</td><td>已有默认规则、点数预算、最小构筑入口</td><td>部分完成</td></tr>
+      <tr><td>接口框架</td><td>请求/结果/奖励/存档/结果编排服务壳已建立</td><td>较完整</td></tr>
+      <tr><td>地图探索</td><td>仍是原型，缺完整节奏与内容组织</td><td>未成型</td></tr>
+      <tr><td>成品闭环</td><td>还没把教程、空港、迷宫、Boss 串完</td><td>待落地</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info">
+    <strong>会议判断：</strong>目前最正确的策略不是继续横向扩系统，而是围绕已经成熟的战斗主链，尽快做出一个短而完整的竞赛版切片。
+  </div>
+</div>
+
+<div class="section" id="compare">
+  <h2>🎮 2. 重新理解策划案：同类游戏对比</h2>
+
+  <h3>2.1 这款游戏到底像什么</h3>
+  <div class="tag-row">
+    <span class="tag tag-blue">小棋盘战棋</span>
+    <span class="tag tag-red">卡牌驱动战斗</span>
+    <span class="tag tag-green">局外成长与构筑</span>
+    <span class="tag tag-gold">迷宫式切片体验</span>
+    <span class="tag tag-gray">边境科幻叙事</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>参考类型</th><th>我们吸收什么</th><th>我们不做什么</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>《杀戮尖塔》类卡牌 roguelike</td><td>构筑感、战斗节奏、成长反馈</td><td>不做纯房间文本爬塔</td></tr>
+      <tr><td>《陷阵之志》类小棋盘战棋</td><td>每格都值钱、短回合强决策</td><td>不做纯机制解谜式硬核战棋</td></tr>
+      <tr><td>传统 SRPG</td><td>角色成长、身份感</td><td>不做超长剧情战役</td></tr>
+      <tr><td>DRPG / 迷宫探索</td><td>迷宫切片、遭遇与推进节奏</td><td>不做超复杂地图结构</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 竞赛版真正的差异化</h3>
+  <div class="highlight">
+    <h3>一句话差异化</h3>
+    <p>“卡牌构筑的可塑性 + 小棋盘战棋的空间张力 + 房间地形池带来的 roguelike 随机感。”</p>
+  </div>
+  <ul>
+    <li>不是单纯卡牌游戏，因为有明确空间关系。</li>
+    <li>不是单纯战棋，因为节奏和打法由卡牌塑形。</li>
+    <li>不是纯剧情 RPG，因为重心是短闭环策略体验。</li>
+    <li>不是纯迷宫游戏，因为迷宫只是承载战斗与成长循环的切片结构。</li>
+  </ul>
+</div>
+
+<div class="section" id="problems">
+  <h2>⚠️ 3. 目前开发的问题</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h4>内容问题</h4>
+      <ul>
+        <li>地图流程没有真正打通</li>
+        <li>缺少一个完整可交付切片</li>
+        <li>迷宫和 Boss 还未落地</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>系统问题</h4>
+      <ul>
+        <li>奖励、成长、存档多为服务壳</li>
+        <li>局外构筑 UI 仍偏原型</li>
+        <li>卡牌库虽已资源化，但内容量不够</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>制作问题</h4>
+      <ul>
+        <li>工期极短</li>
+        <li>美术单人</li>
+        <li>如果继续横向扩展，成品感会被摊薄</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>当前最需要警惕的事情</h3>
+  <ul>
+    <li>继续加新系统，而没有先把现有系统串成一条可体验的主循环。</li>
+    <li>地图做得过大，导致战斗和美术的最强卖点无法充分展示。</li>
+    <li>内容量不够，又试图做长流程，最后变成“什么都有一点，但没有一个部分打透”。</li>
+  </ul>
+</div>
+
+<div class="section" id="priority">
+  <h2>🧭 4. 梳理开发优先级</h2>
+
+  <h3>P0：必须先做完的东西</h3>
+  <ol>
+    <li>幽灵船教程桥段</li>
+    <li>荒川登场与迫降空港</li>
+    <li>空港小型探索区</li>
+    <li>迷宫切片</li>
+    <li>Boss 战</li>
+    <li>对应最小美术资源</li>
+  </ol>
+
+  <h3>P1：在 P0 之后补强 demo 质感</h3>
+  <ul>
+    <li>更明显的房间池差异</li>
+    <li>更多能体现流派差异的卡牌</li>
+    <li>构筑界面的视觉统一</li>
+    <li>奖励/成长反馈更清晰</li>
+  </ul>
+
+  <h3>4.1 当前美术需求优先级</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>P0 美术必须交付</h4>
+      <ul>
+        <li>主角像素角色</li>
+        <li>基础敌人像素角色</li>
+        <li>基础飞船 / 空港 tile</li>
+        <li>战斗房间 tile 与三类障碍物区分</li>
+        <li>卡牌框架统一风格</li>
+        <li>HUD 基础风格统一</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>P1 美术建议补强</h4>
+      <ul>
+        <li>荒川图标 / 最小头像</li>
+        <li>房间池差异化地形语言</li>
+        <li>Boss 单位识别度</li>
+        <li>攻击 / 治疗 / 护盾 / 荒川能力基础特效</li>
+        <li>构筑界面与牌堆弹窗卡面统一感</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info">
+    <strong>美术会议重点：</strong>这次版本不要追求大而全。重点是保证主角、敌人、地形、卡牌和 HUD 五类资源统一风格且可读，让评委在短时间内看懂玩法和世界气质。
+  </div>
+
+  <h3>当前推荐开发顺序</h3>
+  <div class="flow">
+    <div class="flow-item">教程桥段</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">空港区</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">迷宫</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">Boss</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-item">补质感</div>
+  </div>
+
+  <div class="info">
+    <strong>原则：</strong>优先完成“可被完整玩完的一次体验”，再继续追求系统广度和内容数量。
+  </div>
+</div>
+
+<div class="section" id="collab">
+  <h2>🤝 5. 之后的合作方式</h2>
+
+  <h3>5.1 当前推荐协作模式</h3>
+  <table>
+    <thead>
+      <tr><th>角色</th><th>建议职责</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>战斗/系统主线</td><td>继续由当前主链维护，优先保证战斗切片可交付</td></tr>
+      <tr><td>地图/关卡搭建</td><td>按教程段、空港、迷宫、Boss 四块拆分推进</td></tr>
+      <tr><td>美术</td><td>严格围绕竞赛冲刺版美术文稿交付 P0 资源</td></tr>
+      <tr><td>文档与同步</td><td>继续保持 `Docs + devlog` 双轨更新</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 协作原则</h3>
+  <ul>
+    <li>battle 主链继续优先，不再频繁切换方向。</li>
+    <li>地图和成长系统围绕现有接口对接，不绕过边界硬接。</li>
+    <li>每完成一个小阶段，就更新 `Docs` 和 `devlog`。</li>
+    <li>优先使用当前主文档，不再反复参考已删除或过时文稿。</li>
+    <li>后续改动时完全尊重现有接口规范。</li>
+    <li>一旦对接出现问题，优先调整自己这边的实现代码，而不是先改接口定义。</li>
+    <li>接口只有在双方确认确实存在结构性错误时才允许修改，避免两边同时改动导致新的未知问题。</li>
+  </ul>
+
+  <h3>5.3 美术协作方式</h3>
+  <ul>
+    <li>美术优先依据 `竞赛冲刺版美术需求文稿` 执行，不以旧版本文稿为准。</li>
+    <li>资源交付以“可读性 > 风格统一 > 数量扩张”为顺序。</li>
+    <li>优先保证教程段、空港、迷宫、Boss 对应的最小关键资源，而不是平均铺资源。</li>
+    <li>卡牌、牌堆、构筑界面尽量复用同一套卡面视觉，不做多套分裂风格。</li>
+  </ul>
+</div>
+
+<div class="section" id="signup">
+  <h2>📌 6. 记得比赛报名</h2>
+  <div class="highlight">
+    <h3>别忘了最现实的一步</h3>
+    <p>无论系统和内容推进到什么程度，比赛报名和提交流程必须尽早确认。包括：</p>
+    <ul>
+      <li>报名截止日期</li>
+      <li>作品提交格式</li>
+      <li>是否需要宣传图、封面图、玩法说明</li>
+      <li>是否需要试玩视频或答辩材料</li>
+      <li>团队信息、成员署名、版权说明</li>
+    </ul>
+  </div>
+  <p>这件事看起来和开发无关，但实际上会直接决定最后能不能顺利完成交付。</p>
+</div>
+
+</div>
+
+<div class="footer">
+  项目阶段会议提纲 · 2026 年 3 月 · 基于当前项目代码与文档整理
+</div>
+
+</body>
+</html>

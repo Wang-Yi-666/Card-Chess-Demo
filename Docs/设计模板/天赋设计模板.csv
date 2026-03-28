@@ -1,0 +1,2 @@
+talent_id,display_name,status,layer_type,branch_tag,row_index,column_index,cost_mastery_points,prerequisite_talent_ids,prerequisite_branch_mastery,grants_branch_mastery,unlock_card_ids,grants_card_copy_bonus,grants_impact_capacity_bonus,grants_overlimit_slots,grants_player_hp,grants_energy,grants_move,modifies_learning,description,design_goal,implementation_priority,notes
+talent_example_melee_1,近战训练I,draft,card_branch,melee,1,1,1,,0,1,,0,0,0,0,0,0,false,"近战专精 +1","作为近战流派的第一层入口节点","P0","把这一行复制后再开始填自己的天赋"

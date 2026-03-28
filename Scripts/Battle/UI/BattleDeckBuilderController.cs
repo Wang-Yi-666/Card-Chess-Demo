@@ -92,14 +92,24 @@ public partial class BattleDeckBuilderController : Control
 		_availableList.Clear();
 		foreach (BattleCardTemplate template in _availableTemplates)
 		{
-			_availableList.AddItem($"{template.DisplayName}  C{template.Cost}  P{template.BuildPoints}");
+			bool isOverlimitCandidate = !template.CanCarryNormally(progression) && template.CanCarryOverlimit(progression);
+			string learnedLabel = template.IsLearnedCard ? "  [学习]" : string.Empty;
+			string overlimitLabel = isOverlimitCandidate ? "  [超规]" : string.Empty;
+			_availableList.AddItem($"{template.DisplayName}{learnedLabel}{overlimitLabel}  C{template.Cost}  I{template.BuildPoints}");
 		}
 
 		_deckList.Clear();
 		foreach (string cardId in _workingDeck)
 		{
 			BattleCardTemplate? template = BattleCardLibrary.FindTemplate(cardId);
-			_deckList.AddItem(template != null ? template.DisplayName : cardId);
+			if (template == null)
+			{
+				_deckList.AddItem(cardId);
+				continue;
+			}
+
+			bool usesOverlimitCarry = !template.CanCarryNormally(progression) && template.CanCarryOverlimit(progression);
+			_deckList.AddItem(usesOverlimitCarry ? $"{template.DisplayName} [超规]" : template.DisplayName);
 		}
 
 		_poolSummaryLabel.Text = $"可选牌库 {_availableTemplates.Length} 张";
@@ -111,7 +121,7 @@ public partial class BattleDeckBuilderController : Control
 			RelicIds = _session.DeckBuildState.RelicIds,
 		};
 		BattleDeckValidationResult validation = _constructionService.ValidateDeck(snapshot, progression);
-		_deckSummaryLabel.Text = $"当前牌组 {validation.TotalCardCount} 张 / {validation.TotalBuildPoints} 点";
+		_deckSummaryLabel.Text = $"当前牌组 {validation.TotalCardCount} 张 / 影响 {validation.TotalBuildPoints} / 超规 {validation.UsedOverlimitCarrySlots}";
 		_validationLabel.Text = BuildValidationText(validation);
 		_saveButton.Disabled = !validation.IsValid;
 
@@ -125,9 +135,11 @@ public partial class BattleDeckBuilderController : Control
 	{
 		List<string> lines = new()
 		{
-			$"卡数范围: {validation.TotalCardCount}/{validation.EffectiveMinDeckSize}-{validation.EffectiveMaxDeckSize}",
-			$"构筑点数: {validation.TotalBuildPoints}/{validation.EffectivePointBudget}",
+			$"最低卡数: {validation.TotalCardCount}/{validation.EffectiveMinDeckSize}",
+			$"影响因子: {validation.TotalBuildPoints}/{validation.EffectivePointBudget}",
 			$"同名上限: {validation.EffectiveMaxCopiesPerCard}",
+			$"超规槽位: {validation.UsedOverlimitCarrySlots}/{validation.EffectiveOverlimitCarrySlots}",
+			$"循环限制: cycle {validation.EffectiveCycleCardLimit} / quick_cycle {validation.EffectiveQuickCycleCardLimit} / energy_positive {validation.EffectiveEnergyPositiveCardLimit}",
 		};
 
 		if (validation.Errors.Count == 0)
@@ -138,6 +150,12 @@ public partial class BattleDeckBuilderController : Control
 		{
 			lines.Add("状态: 不通过");
 			lines.AddRange(validation.Errors.Select(error => $"- {error}"));
+		}
+
+		if (validation.Warnings.Count > 0)
+		{
+			lines.Add("提示:");
+			lines.AddRange(validation.Warnings.Select(warning => $"- {warning}"));
 		}
 
 		return string.Join('\n', lines);
@@ -171,9 +189,11 @@ public partial class BattleDeckBuilderController : Control
 		{
 			$"[b]{template.DisplayName}[/b] ({template.CardId})",
 			template.Description,
-			$"费用 {template.Cost} / 范围 {template.Range} / 点数 {template.BuildPoints}",
+			$"费用 {template.Cost} / 范围 {template.Range} / 影响因子 {template.BuildPoints}",
 			$"伤害 {template.Damage} / 治疗 {template.HealingAmount} / 抽牌 {template.DrawCount} / 回能 {template.EnergyGain} / 护盾 {template.ShieldGain}",
 			$"目标 {template.TargetingMode} / Quick {template.IsQuick} / Exhaust {template.ExhaustsOnPlay}",
+			$"学习牌 {template.IsLearnedCard} / 可超规 {(!template.DisallowOverlimitCarry)} / 同名上限 {template.MaxCopiesInDeck}",
+			$"循环标签: {(template.CycleTags.Length == 0 ? "无" : string.Join(", ", template.CycleTags))}",
 		});
 	}
 

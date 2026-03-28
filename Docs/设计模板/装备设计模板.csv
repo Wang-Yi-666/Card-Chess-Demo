@@ -1,0 +1,2 @@
+equipment_id,display_name,status,slot_type,rarity,source,required_progress,branch_affinity,grants_branch_mastery,grants_impact_capacity_bonus,grants_card_copy_bonus,grants_overlimit_slots,granted_card_ids,granted_temp_card_ids,required_card_tags_reduced_impact,impact_discount_value,modifies_learning,battle_stat_bonus,drawback,description,art_brief,notes
+equipment_example_scabbard,示例战术刀鞘,draft,weapon,common,shop,early,melee,1,0,0,0,,,melee,1,false,"无","无","近战牌影响因子 -1（仅限一张）","旧时代军用刀鞘，金属磨损明显","把这一行复制后再开始填自己的装备"

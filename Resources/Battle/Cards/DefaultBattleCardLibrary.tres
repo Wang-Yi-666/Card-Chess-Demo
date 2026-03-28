@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="BattleCardLibrary" format=3]
+[gd_resource type="Resource" script_class="BattleCardLibrary" format=3 uid="uid://bnixgj7wxdnev"]
 
-[ext_resource type="Script" path="res://Scripts/Battle/Cards/BattleCardLibrary.cs" id="1_library"]
-[ext_resource type="Script" path="res://Scripts/Battle/Cards/BattleCardTemplate.cs" id="2_template"]
+[ext_resource type="Script" uid="uid://b2k5ifwp60ism" path="res://Scripts/Battle/Cards/BattleCardLibrary.cs" id="1_library"]
+[ext_resource type="Script" uid="uid://3y2fjqm1b11n" path="res://Scripts/Battle/Cards/BattleCardTemplate.cs" id="2_template"]
 
 [sub_resource type="Resource" id="Card_cross_slash"]
 script = ExtResource("2_template")
@@ -13,7 +13,6 @@ TargetingMode = 1
 Cost = 1
 Range = 1
 Damage = 3
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 
@@ -24,11 +23,9 @@ DisplayName = "疾斩"
 Description = "邻近 2 伤"
 Category = 0
 TargetingMode = 1
-Cost = 0
 Range = 1
 Damage = 2
 IsQuick = true
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 
@@ -42,7 +39,6 @@ TargetingMode = 2
 Cost = 1
 Range = 4
 Damage = 2
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 
@@ -66,70 +62,65 @@ script = ExtResource("2_template")
 CardId = "battle_read"
 DisplayName = "整备"
 Description = "抽 2 张"
-Category = 1
-TargetingMode = 0
 Cost = 1
 DrawCount = 2
-BuildPoints = 1
+BuildPoints = 2
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("cycle", "draw_positive")
 
 [sub_resource type="Resource" id="Card_meditate"]
 script = ExtResource("2_template")
 CardId = "meditate"
 DisplayName = "调息"
 Description = "抽 1 回 1 能"
-Category = 1
-TargetingMode = 0
-Cost = 0
 DrawCount = 1
 EnergyGain = 1
 IsQuick = true
-BuildPoints = 1
-MaxCopiesInDeck = 2
+ExhaustsOnPlay = true
+BuildPoints = 3
+MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("cycle", "quick_cycle", "energy_positive")
 
 [sub_resource type="Resource" id="Card_surge"]
 script = ExtResource("2_template")
 CardId = "surge"
 DisplayName = "蓄能"
 Description = "回 2 能"
-Category = 1
-TargetingMode = 0
 Cost = 1
 EnergyGain = 2
 ExhaustsOnPlay = true
 BuildPoints = 2
 MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("energy_positive")
 
 [sub_resource type="Resource" id="Card_draw_spark"]
 script = ExtResource("2_template")
 CardId = "draw_spark"
 DisplayName = "灵感"
 Description = "抽 1 回 1 能"
-Category = 1
-TargetingMode = 0
 Cost = 1
 DrawCount = 1
 EnergyGain = 1
-BuildPoints = 1
-MaxCopiesInDeck = 2
+BuildPoints = 3
+MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("cycle", "energy_positive")
 
 [sub_resource type="Resource" id="Card_quick_plan"]
 script = ExtResource("2_template")
 CardId = "quick_plan"
 DisplayName = "快谋"
 Description = "抽 2 张"
-Category = 1
-TargetingMode = 0
-Cost = 0
 DrawCount = 2
 IsQuick = true
-BuildPoints = 1
-MaxCopiesInDeck = 2
+ExhaustsOnPlay = true
+BuildPoints = 3
+MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("cycle", "quick_cycle", "draw_positive")
 
 [sub_resource type="Resource" id="Card_burning_edge"]
 script = ExtResource("2_template")
@@ -156,7 +147,6 @@ TargetingMode = 2
 Cost = 1
 Range = 4
 Damage = 3
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 
@@ -165,53 +155,46 @@ script = ExtResource("2_template")
 CardId = "deep_focus"
 DisplayName = "沉念"
 Description = "抽 3 张"
-Category = 1
-TargetingMode = 0
 Cost = 2
 DrawCount = 3
 BuildPoints = 2
 MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("cycle", "draw_positive")
 
 [sub_resource type="Resource" id="Card_spark_charge"]
 script = ExtResource("2_template")
 CardId = "spark_charge"
 DisplayName = "火花"
 Description = "回 1 能 抽 1 张"
-Category = 1
-TargetingMode = 0
-Cost = 0
 DrawCount = 1
 EnergyGain = 1
 IsQuick = true
-BuildPoints = 1
-MaxCopiesInDeck = 2
+ExhaustsOnPlay = true
+BuildPoints = 4
+MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("cycle", "quick_cycle", "energy_positive")
 
 [sub_resource type="Resource" id="Card_burst_drive"]
 script = ExtResource("2_template")
 CardId = "burst_drive"
 DisplayName = "爆驱"
 Description = "回 2 能"
-Category = 1
-TargetingMode = 0
-Cost = 0
 EnergyGain = 2
 ExhaustsOnPlay = true
 BuildPoints = 2
 MaxCopiesInDeck = 1
 DefaultStarterCopies = 1
+CycleTags = PackedStringArray("energy_positive")
 
 [sub_resource type="Resource" id="Card_guard_up"]
 script = ExtResource("2_template")
 CardId = "guard_up"
 DisplayName = "举盾"
 Description = "得 3 盾"
-Category = 1
-TargetingMode = 0
 Cost = 1
 ShieldGain = 3
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 
@@ -220,8 +203,6 @@ script = ExtResource("2_template")
 CardId = "brace"
 DisplayName = "架势"
 Description = "得 5 盾"
-Category = 1
-TargetingMode = 0
 Cost = 2
 ShieldGain = 5
 BuildPoints = 2
@@ -233,12 +214,8 @@ script = ExtResource("2_template")
 CardId = "quick_guard"
 DisplayName = "瞬守"
 Description = "得 2 盾"
-Category = 1
-TargetingMode = 0
-Cost = 0
 ShieldGain = 2
 IsQuick = true
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 
@@ -247,12 +224,10 @@ script = ExtResource("2_template")
 CardId = "field_patch"
 DisplayName = "现场包扎"
 Description = "2 格内友方回复 3 点生命"
-Category = 1
 TargetingMode = 3
 Cost = 1
 Range = 2
 HealingAmount = 3
-BuildPoints = 1
 MaxCopiesInDeck = 2
 DefaultStarterCopies = 1
 

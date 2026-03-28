@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bfhlnrt1cdufr"
+
+[deps]
+
+files=["res://Docs/设计模板/卡牌设计模板.display.translation", "res://Docs/设计模板/卡牌设计模板.status.translation", "res://Docs/设计模板/卡牌设计模板.source.translation", "res://Docs/设计模板/卡牌设计模板.rarity.translation", "res://Docs/设计模板/卡牌设计模板.branch.translation", "res://Docs/设计模板/卡牌设计模板.category.translation", "res://Docs/设计模板/卡牌设计模板.targeting.translation", "res://Docs/设计模板/卡牌设计模板.cost.translation", "res://Docs/设计模板/卡牌设计模板.impact.translation", "res://Docs/设计模板/卡牌设计模板.max.translation", "res://Docs/设计模板/卡牌设计模板.min.translation", "res://Docs/设计模板/卡牌设计模板.en.translation", "res://Docs/设计模板/卡牌设计模板.required.translation", "res://Docs/设计模板/卡牌设计模板.can.translation", "res://Docs/设计模板/卡牌设计模板.overlimit.translation", "res://Docs/设计模板/卡牌设计模板.is.translation", "res://Docs/设计模板/卡牌设计模板.exhausts.translation", "res://Docs/设计模板/卡牌设计模板.draw.translation", "res://Docs/设计模板/卡牌设计模板.energy.translation", "res://Docs/设计模板/卡牌设计模板.damage.translation", "res://Docs/设计模板/卡牌设计模板.healing.translation", "res://Docs/设计模板/卡牌设计模板.shield.translation", "res://Docs/设计模板/卡牌设计模板.range.translation", "res://Docs/设计模板/卡牌设计模板.en.translation", "res://Docs/设计模板/卡牌设计模板.en.translation", "res://Docs/设计模板/卡牌设计模板.description.translation", "res://Docs/设计模板/卡牌设计模板.design.translation", "res://Docs/设计模板/卡牌设计模板.balance.translation", "res://Docs/设计模板/卡牌设计模板.art.translation", "res://Docs/设计模板/卡牌设计模板.notes.translation"]
+
+source_file="res://Docs/设计模板/卡牌设计模板.csv"
+dest_files=["res://Docs/设计模板/卡牌设计模板.display.translation", "res://Docs/设计模板/卡牌设计模板.status.translation", "res://Docs/设计模板/卡牌设计模板.source.translation", "res://Docs/设计模板/卡牌设计模板.rarity.translation", "res://Docs/设计模板/卡牌设计模板.branch.translation", "res://Docs/设计模板/卡牌设计模板.category.translation", "res://Docs/设计模板/卡牌设计模板.targeting.translation", "res://Docs/设计模板/卡牌设计模板.cost.translation", "res://Docs/设计模板/卡牌设计模板.impact.translation", "res://Docs/设计模板/卡牌设计模板.max.translation", "res://Docs/设计模板/卡牌设计模板.min.translation", "res://Docs/设计模板/卡牌设计模板.en.translation", "res://Docs/设计模板/卡牌设计模板.required.translation", "res://Docs/设计模板/卡牌设计模板.can.translation", "res://Docs/设计模板/卡牌设计模板.overlimit.translation", "res://Docs/设计模板/卡牌设计模板.is.translation", "res://Docs/设计模板/卡牌设计模板.exhausts.translation", "res://Docs/设计模板/卡牌设计模板.draw.translation", "res://Docs/设计模板/卡牌设计模板.energy.translation", "res://Docs/设计模板/卡牌设计模板.damage.translation", "res://Docs/设计模板/卡牌设计模板.healing.translation", "res://Docs/设计模板/卡牌设计模板.shield.translation", "res://Docs/设计模板/卡牌设计模板.range.translation", "res://Docs/设计模板/卡牌设计模板.en.translation", "res://Docs/设计模板/卡牌设计模板.en.translation", "res://Docs/设计模板/卡牌设计模板.description.translation", "res://Docs/设计模板/卡牌设计模板.design.translation", "res://Docs/设计模板/卡牌设计模板.balance.translation", "res://Docs/设计模板/卡牌设计模板.art.translation", "res://Docs/设计模板/卡牌设计模板.notes.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
