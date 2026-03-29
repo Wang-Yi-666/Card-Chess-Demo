@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://tln526npf6w6"]
 
-[ext_resource type="Script" uid="uid://dp24voj6vtjr1" path="res://Scripts/Character/Enemy.cs" id="1_enemy"]
+[ext_resource type="Script" uid="uid://dp24voj6vtjr1" path="res://Scripts/Map/Interaction/Enemy.cs" id="1_enemy"]
 [ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="2_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enemy_interact"]
@@ -15,9 +15,9 @@ collision_mask = 0
 script = ExtResource("1_enemy")
 EncounterId = &"debug_grunt"
 PromptText = "战斗"
-BattleScenePath = "res://Scene/Battle.tscn"
-CompletedFlowNodeId = "maze_fight_1"
-NextActiveFlowNodeId = "maze_event_1"
+BattleScenePath = "res://Scene/Battle/Battle.tscn"
+BusyText = "战斗中..."
+DisableAfterInteract = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1523731312]
 position = Vector2(-3.500002, -1.5000019)
