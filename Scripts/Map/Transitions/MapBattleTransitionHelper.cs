@@ -30,7 +30,7 @@ public static class MapBattleTransitionHelper
         }
 
         string currentScenePath = contextNode.GetTree().CurrentScene?.SceneFilePath ?? string.Empty;
-        globalSession.BeginBattle(BattleRequest.FromSession(globalSession));
+        globalSession.BeginBattle(BattleRequest.FromSession(globalSession, battleEncounterId));
         globalSession.SetPendingBattleEncounterId(battleEncounterId);
         globalSession.SetPendingMapResumeContext(new MapResumeContext(currentScenePath, player.GlobalPosition));
 

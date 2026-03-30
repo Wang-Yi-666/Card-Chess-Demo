@@ -93,9 +93,9 @@ public sealed class BattleObjectStateManager
         // 玩家单位的显示名、生命和移动力以全局 session 为准，
         // 这样 HUD 调试改动能立即反馈到战斗表现。
         playerState.DisplayName = _session.PlayerDisplayName;
-        playerState.MaxHp = _session.PlayerMaxHp;
+        playerState.MaxHp = _session.GetResolvedPlayerMaxHp();
         playerState.CurrentHp = _session.PlayerCurrentHp;
-        playerState.MovePointsPerTurn = _session.PlayerMovePointsPerTurn;
+        playerState.MovePointsPerTurn = _session.GetResolvedPlayerMovePointsPerTurn();
         playerState.AttackRange = _session.PlayerAttackRange;
         playerState.AttackDamage = _session.GetResolvedPlayerAttackDamage();
     }
@@ -131,9 +131,9 @@ public sealed class BattleObjectStateManager
             // 玩家是当前唯一会被外部全局状态覆盖的对象。
             // 敌人和障碍物暂时没有独立持久化来源。
             state.DisplayName = _session.PlayerDisplayName;
-            state.MaxHp = _session.PlayerMaxHp;
+            state.MaxHp = _session.GetResolvedPlayerMaxHp();
             state.CurrentHp = _session.PlayerCurrentHp;
-            state.MovePointsPerTurn = _session.PlayerMovePointsPerTurn;
+            state.MovePointsPerTurn = _session.GetResolvedPlayerMovePointsPerTurn();
             state.AttackRange = _session.PlayerAttackRange;
             state.AttackDamage = _session.GetResolvedPlayerAttackDamage();
         }
@@ -149,7 +149,7 @@ public sealed class BattleObjectStateManager
         if (isPlayer)
         {
             boardObject.SyncCombatStats(
-                _session.PlayerMaxHp,
+                _session.GetResolvedPlayerMaxHp(),
                 _session.PlayerCurrentHp,
                 boardObject.MaxShield,
                 boardObject.CurrentShield);

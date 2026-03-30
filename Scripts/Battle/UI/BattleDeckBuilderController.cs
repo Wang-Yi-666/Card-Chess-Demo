@@ -79,6 +79,12 @@ public partial class BattleDeckBuilderController : Control
 		_workingDeck = _session.DeckBuildState.CardIds.ToList();
 	}
 
+	public void RefreshFromExternalState()
+	{
+		LoadWorkingDeckFromSession();
+		RefreshAll();
+	}
+
 	private void RefreshAll()
 	{
 		if (_session == null || _constructionService == null || BattleCardLibrary == null || BattleDeckBuildRules == null)

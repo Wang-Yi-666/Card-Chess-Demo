@@ -1,15 +1,15 @@
-[gd_scene format=3 uid="uid://dmkxodopr7rea"]
+[gd_scene format=3 uid="uid://disesyij2btfk"]
 
-[ext_resource type="Script" uid="uid://h3alstl9g0u1" path="res://Scripts/Item/HealStation.cs" id="1_pqxix"]
+[ext_resource type="Script" uid="uid://cp05snpqauo0p" path="res://Scripts/Map/Interaction/HealStation.cs" id="1_pqxix"]
 [ext_resource type="Texture2D" uid="uid://cqccafampgoje" path="res://icon.svg" id="1_tqhqu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_pqxix"]
 radius = 94.04786
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4x77d"]
-radius = 262.27466
+radius = 628.1345
 
-[node name="HealingStation" type="Node2D" unique_id=836515479]
+[node name="Healing" type="Node2D" unique_id=836515479]
 
 [node name="HealingStation" type="StaticBody2D" parent="." unique_id=1395213242]
 collision_layer = 2

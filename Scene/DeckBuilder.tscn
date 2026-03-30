@@ -32,11 +32,11 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="Margin/Root"]
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 16
 text = "战斗局外构筑"
 
 [node name="Columns" type="HBoxContainer" parent="Margin/Root"]
-custom_minimum_size = Vector2(0, 320)
+custom_minimum_size = Vector2(0, 126)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
@@ -55,7 +55,7 @@ layout_mode = 2
 text = "可选牌库 0 张"
 
 [node name="AvailableList" type="ItemList" parent="Margin/Root/Columns/AvailableColumn"]
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -85,7 +85,7 @@ layout_mode = 2
 text = "当前牌组 0 张 / 0 点"
 
 [node name="DeckList" type="ItemList" parent="Margin/Root/Columns/DeckColumn"]
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -94,7 +94,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="DetailText" type="RichTextLabel" parent="Margin/Root/DetailPanel"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 bbcode_enabled = true
 fit_content = false
@@ -106,7 +106,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="ValidationText" type="RichTextLabel" parent="Margin/Root/ValidationPanel"]
-custom_minimum_size = Vector2(0, 110)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 bbcode_enabled = false
 fit_content = false

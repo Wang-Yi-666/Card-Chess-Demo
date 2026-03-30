@@ -111,7 +111,7 @@ public partial class BattleCardTemplate : Resource
 			return false;
 		}
 
-		return IsOwned(snapshot) || HasExplicitCarryRequirements();
+		return IsOwned(snapshot);
 	}
 
 	public bool CanCarryOverlimit(ProgressionSnapshot snapshot)
@@ -136,11 +136,6 @@ public partial class BattleCardTemplate : Resource
 			.Select(tag => tag.Trim().ToLowerInvariant())
 			.Distinct(StringComparer.Ordinal)
 			.ToArray();
-	}
-
-	private bool HasExplicitCarryRequirements()
-	{
-		return RequiredPlayerLevel > 1 || RequiredTalentIds.Length > 0 || RequiredBranchTags.Length > 0;
 	}
 
 	private static int ScalePositiveValue(int value, float multiplier)

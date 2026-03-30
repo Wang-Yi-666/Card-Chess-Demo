@@ -14,14 +14,6 @@ public partial class SceneDoor : InteractableTemplate
 
 	private bool _isTransitioning;
 
-	public override void _Ready()
-	{
-		if (!HasValidDestination())
-		{
-			GD.PushWarning("SceneDoor: no valid destination is configured.");
-		}
-	}
-
 	public override string GetInteractText(Player player)
 	{
 		if (_isTransitioning)

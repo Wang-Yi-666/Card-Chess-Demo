@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://cygseefr5cx8a" path="res://Scene/MainPlayer.tscn" id="5_xawni"]
 [ext_resource type="PackedScene" uid="uid://tln526npf6w6" path="res://Scene/Enemy.tscn" id="6_enemy_scene"]
 [ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="7_save_tex"]
-[ext_resource type="PackedScene" uid="uid://c0v263dw3prrw" path="res://Scene/Legacy/SceneDoor.tscn" id="8_scene_door"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hub_save_interact"]
 radius = 120.0
@@ -39,9 +38,6 @@ position = Vector2(-578, 2)
 
 [node name="NpcScene" parent="." unique_id=1266535779 instance=ExtResource("3_pyta8")]
 position = Vector2(-876, -367)
-
-[node name="DoorToScene2" parent="." unique_id=147900008 instance=ExtResource("8_scene_door")]
-position = Vector2(1034, -27)
 
 [node name="HubEntrySavePoint" type="StaticBody2D" parent="." unique_id=147900003]
 position = Vector2(-172, -404)

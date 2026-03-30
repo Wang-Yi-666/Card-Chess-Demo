@@ -37,6 +37,9 @@ public partial class GlobalGameSession : Node
 	[Export] public string DeckBuildName { get; set; } = "default";
 	[Export] public string[] DeckCardIds { get; set; } = Array.Empty<string>();
 	[Export] public string[] DeckRelicIds { get; set; } = Array.Empty<string>();
+	[Export] public string EquippedWeaponItemId { get; set; } = string.Empty;
+	[Export] public string EquippedArmorItemId { get; set; } = string.Empty;
+	[Export] public string EquippedAccessoryItemId { get; set; } = string.Empty;
 	[Export] public string LastCheckpointSaveId { get; set; } = string.Empty;
 	[Export] public string LastManualSaveId { get; set; } = string.Empty;
 	[Export] public string AutoSaveSlotId { get; set; } = "autosave";
@@ -115,20 +118,112 @@ public partial class GlobalGameSession : Node
 
 	public int GetResolvedPlayerAttackDamage()
 	{
-		return Math.Max(0, PlayerAttackDamage + SumTalentScalarBonuses("stat.attack_bonus."));
+		return Math.Max(0, PlayerAttackDamage + SumTalentScalarBonuses("stat.attack_bonus.") + GetEquipmentAttackBonus());
 	}
 
 	public int GetResolvedPlayerDefenseDamageReductionPercent()
 	{
 		return Mathf.Clamp(
-			PlayerDefenseDamageReductionPercent + SumTalentScalarBonuses("stat.defense_reduction_bonus."),
+			PlayerDefenseDamageReductionPercent + SumTalentScalarBonuses("stat.defense_reduction_bonus.") + GetEquipmentDefenseReductionBonus(),
 			0,
 			100);
 	}
 
 	public int GetResolvedPlayerDefenseShieldGain()
 	{
-		return Math.Max(0, PlayerDefenseShieldGain + SumTalentScalarBonuses("stat.defense_shield_bonus."));
+		return Math.Max(0, PlayerDefenseShieldGain + SumTalentScalarBonuses("stat.defense_shield_bonus.") + GetEquipmentDefenseShieldBonus());
+	}
+
+	public int GetResolvedPlayerMaxHp()
+	{
+		return Math.Max(1, PlayerMaxHp + GetEquipmentMaxHpBonus());
+	}
+
+	public int GetResolvedPlayerMovePointsPerTurn()
+	{
+		return Math.Max(0, PlayerMovePointsPerTurn + GetEquipmentMoveBonus());
+	}
+
+	public bool IsEquipmentOwned(string itemId)
+	{
+		if (string.IsNullOrWhiteSpace(itemId))
+		{
+			return false;
+		}
+
+		return InventoryItemCounts.TryGetValue(itemId, out Variant amount) && amount.AsInt32() > 0;
+	}
+
+	public string GetEquippedItemId(string slotId)
+	{
+		return NormalizeEquipmentSlotId(slotId) switch
+		{
+			"weapon" => EquippedWeaponItemId,
+			"armor" => EquippedArmorItemId,
+			"accessory" => EquippedAccessoryItemId,
+			_ => string.Empty,
+		};
+	}
+
+	public bool TryEquipItem(string slotId, string itemId, out string failureReason)
+	{
+		string normalizedSlotId = NormalizeEquipmentSlotId(slotId);
+		if (string.IsNullOrWhiteSpace(normalizedSlotId))
+		{
+			failureReason = "unknown_slot";
+			return false;
+		}
+
+		string normalizedItemId = itemId?.Trim() ?? string.Empty;
+		if (string.IsNullOrWhiteSpace(normalizedItemId))
+		{
+			failureReason = "missing_item";
+			return false;
+		}
+
+		if (!IsEquipmentOwned(normalizedItemId))
+		{
+			failureReason = "item_not_owned";
+			return false;
+		}
+
+		if (!CanEquipItemInSlot(normalizedItemId, normalizedSlotId))
+		{
+			failureReason = "slot_mismatch";
+			return false;
+		}
+
+		SetEquippedItemId(normalizedSlotId, normalizedItemId);
+		failureReason = string.Empty;
+		return true;
+	}
+
+	public void UnequipItem(string slotId)
+	{
+		string normalizedSlotId = NormalizeEquipmentSlotId(slotId);
+		if (string.IsNullOrWhiteSpace(normalizedSlotId))
+		{
+			return;
+		}
+
+		SetEquippedItemId(normalizedSlotId, string.Empty);
+	}
+
+	public int GetExperienceRequiredForNextLevel()
+	{
+		return GetExperienceRequirementForLevel(PlayerLevel);
+	}
+
+	public int GetExperienceProgressWithinLevel()
+	{
+		int currentLevelFloor = GetAccumulatedExperienceForLevel(PlayerLevel);
+		return Math.Max(0, PlayerExperience - currentLevelFloor);
+	}
+
+	public int GetExperienceNeededToLevelUp()
+	{
+		int target = GetAccumulatedExperienceForLevel(PlayerLevel + 1);
+		return Math.Max(0, target - PlayerExperience);
 	}
 
 	public void BeginBattle(BattleRequest? request = null)
@@ -228,11 +323,11 @@ public partial class GlobalGameSession : Node
 		return new Godot.Collections.Dictionary
 		{
 			["display_name"] = PartyState.Player.DisplayName,
-			["max_hp"] = PartyState.Player.MaxHp,
+			["max_hp"] = GetResolvedPlayerMaxHp(),
 			["current_hp"] = PartyState.Player.CurrentHp,
-			["move_points_per_turn"] = PartyState.Player.MovePointsPerTurn,
+			["move_points_per_turn"] = GetResolvedPlayerMovePointsPerTurn(),
 			["attack_range"] = PartyState.Player.AttackRange,
-			["attack_damage"] = PartyState.Player.AttackDamage,
+			["attack_damage"] = GetResolvedPlayerAttackDamage(),
 			["arakawa_max_energy"] = PartyState.Arakawa.MaxEnergy,
 			["arakawa_current_energy"] = PartyState.Arakawa.CurrentEnergy,
 		};
@@ -602,6 +697,115 @@ public partial class GlobalGameSession : Node
 			{
 				total += value;
 			}
+		}
+
+		return total;
+	}
+
+	private static string NormalizeEquipmentSlotId(string? slotId)
+	{
+		return slotId?.Trim().ToLowerInvariant() switch
+		{
+			"weapon" => "weapon",
+			"armor" => "armor",
+			"accessory" => "accessory",
+			_ => string.Empty,
+		};
+	}
+
+	private static bool CanEquipItemInSlot(string itemId, string slotId)
+	{
+		return NormalizeEquipmentSlotId(slotId) switch
+		{
+			"weapon" => itemId is "rusted_blade" or "ion_pistol",
+			"armor" => itemId is "patched_coat" or "reactive_plate",
+			"accessory" => itemId is "signal_charm" or "tactical_chip",
+			_ => false,
+		};
+	}
+
+	private void SetEquippedItemId(string slotId, string itemId)
+	{
+		switch (NormalizeEquipmentSlotId(slotId))
+		{
+			case "weapon":
+				EquippedWeaponItemId = itemId;
+				break;
+			case "armor":
+				EquippedArmorItemId = itemId;
+				break;
+			case "accessory":
+				EquippedAccessoryItemId = itemId;
+				break;
+		}
+	}
+
+	private int GetEquipmentAttackBonus()
+	{
+		return GetEquippedItemId("weapon") switch
+		{
+			"rusted_blade" => 1,
+			"ion_pistol" => 2,
+			_ => 0,
+		};
+	}
+
+	private int GetEquipmentDefenseReductionBonus()
+	{
+		int bonus = 0;
+		bonus += GetEquippedItemId("armor") switch
+		{
+			"patched_coat" => 5,
+			"reactive_plate" => 10,
+			_ => 0,
+		};
+		bonus += GetEquippedItemId("accessory") switch
+		{
+			"tactical_chip" => 5,
+			_ => 0,
+		};
+		return bonus;
+	}
+
+	private int GetEquipmentDefenseShieldBonus()
+	{
+		return GetEquippedItemId("armor") switch
+		{
+			"reactive_plate" => 1,
+			_ => 0,
+		};
+	}
+
+	private int GetEquipmentMaxHpBonus()
+	{
+		return GetEquippedItemId("armor") switch
+		{
+			"patched_coat" => 4,
+			"reactive_plate" => 2,
+			_ => 0,
+		};
+	}
+
+	private int GetEquipmentMoveBonus()
+	{
+		return GetEquippedItemId("accessory") switch
+		{
+			"signal_charm" => 1,
+			_ => 0,
+		};
+	}
+
+	private static int GetExperienceRequirementForLevel(int level)
+	{
+		return Math.Max(10, 10 + (Math.Max(1, level) - 1) * 5);
+	}
+
+	private static int GetAccumulatedExperienceForLevel(int level)
+	{
+		int total = 0;
+		for (int current = 1; current < Math.Max(1, level); current++)
+		{
+			total += GetExperienceRequirementForLevel(current);
 		}
 
 		return total;

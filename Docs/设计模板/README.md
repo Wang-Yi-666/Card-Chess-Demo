@@ -45,6 +45,13 @@
 - `can_overlimit_carry`
 - `overlimit_penalty_profile`
 
+这里的 `overlimit / 超限` 统一表示：
+
+- 已拥有
+- 但未满足正常携带要求
+
+不表示可以突破牌组影响因子预算。
+
 ## 3. 天赋模板填写建议
 
 天赋设计时，优先确认这些列：

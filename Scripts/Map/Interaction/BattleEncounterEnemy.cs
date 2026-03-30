@@ -42,9 +42,11 @@ public partial class BattleEncounterEnemy : InteractableTemplate
 	protected override void OnInteract(Player player)
 	{
 		_isTransitioning = true;
+		PromptText = BusyText;
 		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, BattleEncounterId, out string failureReason))
 		{
 			_isTransitioning = false;
+			PromptText = $"失败: {failureReason}";
 			GD.PushError($"BattleEncounterEnemy: {failureReason}");
 			return;
 		}

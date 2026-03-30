@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://dxdg3s8r3l7qa"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/BattleSceneController.cs" id="1_hq08r"]
+[ext_resource type="Script" path="res://Scripts/Battle/Visual/BattleBoardOverlay.cs" id="2_7r48u"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Rooms/GruntDebugRoomA.tscn" id="3_room_a"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Rooms/GruntDebugRoomB.tscn" id="4_room_b"]
+[ext_resource type="Resource" path="res://Resources/Battle/Rooms/DebugBattleRoomPool.tres" id="5_room_pool"]
+[ext_resource type="Resource" path="res://Resources/Battle/Presentation/DefaultBattlePrefabLibrary.tres" id="6_prefab"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/UI/BattleHud.tscn" id="7_hud"]
+[ext_resource type="Resource" path="res://Resources/Battle/Encounters/DebugBattleEncounterLibrary.tres" id="8_encounter"]
+[ext_resource type="Script" path="res://Scripts/Battle/Visual/BattleFloatingTextLayer.cs" id="9_float"]
+
+[node name="Battle" type="Node2D"]
+script = ExtResource("1_hq08r")
+ForcedBattleRoomScene = ExtResource("4_room_b")
+BattleRoomScenes = [ExtResource("3_room_a"), ExtResource("4_room_b")]
+BattleRoomPools = ExtResource("5_room_pool")
+BattlePrefabLibrary = ExtResource("6_prefab")
+EncounterLibrary = ExtResource("8_encounter")
+EncounterId = "grunt_debug"
+RandomSeed = 20260320
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(160, 90)
+
+[node name="BackdropRoot" type="Node2D" parent="."]
+
+[node name="RoomContainer" type="Node2D" parent="."]
+position = Vector2(32, 26)
+
+[node name="BoardOverlay" type="Node2D" parent="RoomContainer"]
+script = ExtResource("2_7r48u")
+
+[node name="PieceRoot" type="Node2D" parent="RoomContainer"]
+
+[node name="FloatingTextLayer" type="Node2D" parent="RoomContainer"]
+script = ExtResource("9_float")
+
+[node name="OverlayRoot" type="Node2D" parent="."]
+
+[node name="BattleHud" parent="." instance=ExtResource("7_hud")]
+
+[node name="BattleFailOverlay" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Flash" type="ColorRect" parent="BattleFailOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.45, 0.04, 0.06, 0)
+
+[node name="DefeatLabel" type="Label" parent="BattleFailOverlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -54.0
+offset_top = -10.0
+offset_right = 54.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Defeat"
+horizontal_alignment = 1
+vertical_alignment = 1

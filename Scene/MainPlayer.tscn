@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cygseefr5cx8a"]
 
-[ext_resource type="Script" uid="uid://b8l5yhi5thqn" path="res://Scripts/Character/Player.cs" id="1_mv7q2"]
+[ext_resource type="Script" uid="uid://d0j3xk9r9plm1" path="res://Scripts/Character/Player.cs" id="1_mv7q2"]
 [ext_resource type="Texture2D" uid="uid://bjv3c3t7r52lh" path="res://Assets/Character/Idle/idle_001.png" id="3_idle1"]
 [ext_resource type="Texture2D" uid="uid://dpvopjty3t5ji" path="res://Assets/Character/Idle/idle_002.png" id="4_idle2"]
 [ext_resource type="FontFile" uid="uid://ct58dk6apiarx" path="res://Assets/Fonts/unifont_t-17.0.04.otf" id="5_ui_font"]
