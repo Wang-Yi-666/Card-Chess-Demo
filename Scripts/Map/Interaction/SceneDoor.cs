@@ -4,15 +4,23 @@ namespace CardChessDemo.Map;
 
 public partial class SceneDoor : InteractableTemplate
 {
-	[Export] public PackedScene? NextScene;
+	[Export] public PackedScene NextScene;
 	[Export(PropertyHint.File, "*.tscn")] public string NextScenePath = string.Empty;
 	[Export] public bool StartsBattle = false;
-	[Export] public PackedScene? BattleScene;
+	[Export] public PackedScene BattleScene;
 	[Export(PropertyHint.File, "*.tscn")] public string BattleScenePath = "res://Scene/Battle/Battle.tscn";
 	[Export] public string BattleEncounterId = "grunt_debug";
 	[Export] public string BusyText = "切换中...";
 
 	private bool _isTransitioning;
+
+	public override void _Ready()
+	{
+		if (!HasValidDestination())
+		{
+			GD.PushWarning($"SceneDoor: no valid destination is configured at '{GetPath()}'. Set NextScene/NextScenePath (or BattleScene/BattleScenePath when StartsBattle=true).");
+		}
+	}
 
 	public override string GetInteractText(Player player)
 	{

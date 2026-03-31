@@ -1,13 +1,13 @@
-[gd_scene format=3 uid="uid://clfyfxbbjiapg"]
+[gd_scene format=3 uid="uid://vnei6k7os1lo"]
 
 [ext_resource type="Script" uid="uid://b8l5yhi5thqn" path="res://Scripts/Map/Actors/Player.cs" id="1_dx8mo"]
 [ext_resource type="Script" uid="uid://bacvjmwtxs21k" path="res://Scripts/Map/Controllers/MapSceneController.cs" id="1_map_controller"]
-[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="2_j8rcl"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_j8rcl"]
 [ext_resource type="PackedScene" uid="uid://c1ojey6clae1h" path="res://Scene/Chest.tscn" id="3_5o5ic"]
-[ext_resource type="PackedScene" uid="uid://cgf2evpc6ty4e" path="res://Scene/Legacy/Healing.tscn" id="3_j8rcl"]
-[ext_resource type="PackedScene" uid="uid://cko4roccpe105" path="res://Scene/Legacy/NpcScene.tscn" id="5_5o5ic"]
+[ext_resource type="PackedScene" uid="uid://cgf2evpc6ty4e" path="res://Scene/HealingStation.tscn" id="3_j8rcl"]
+[ext_resource type="PackedScene" uid="uid://cko4roccpe105" path="res://Scene/NpcScene.tscn" id="5_5o5ic"]
 [ext_resource type="PackedScene" uid="uid://c0v263dw3prrw" path="res://Scene/Legacy/SceneDoor.tscn" id="6_ujx8d"]
-[ext_resource type="PackedScene" path="res://Scene/BattleEncounterEnemy.tscn" id="7_enemy"]
+[ext_resource type="PackedScene" uid="uid://dpjk4j87l3r8q" path="res://Scene/BattleEncounterEnemy.tscn" id="7_enemy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3jdkb"]
 
@@ -16,7 +16,6 @@ radius = 243.0
 
 [node name="Node2D" type="Node2D" unique_id=94755713]
 script = ExtResource("1_map_controller")
-PlayerPath = NodePath("Player")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=2130330233]
 collision_mask = 14
@@ -55,6 +54,7 @@ position = Vector2(631, -21)
 
 [node name="Door" parent="." unique_id=583652748 instance=ExtResource("6_ujx8d")]
 position = Vector2(611, 649)
+NextScenePath = "uid://b2vauhq8lj6nq"
 
 [node name="Enemy" parent="." unique_id=270315686 instance=ExtResource("7_enemy")]
 position = Vector2(184, 170)

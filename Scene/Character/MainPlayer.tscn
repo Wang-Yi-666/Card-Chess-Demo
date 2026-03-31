@@ -1,0 +1,214 @@
+[gd_scene format=3 uid="uid://cygseefr5cx8a"]
+
+[ext_resource type="Script" uid="uid://b8l5yhi5thqn" path="res://Scripts/Map/Actors/Player.cs" id="1_mv7q2"]
+[ext_resource type="Texture2D" uid="uid://s6s6xq8q0lch" path="res://Assets/Character/MainPlayer/Idle/Idle_Down.png" id="3_idle1"]
+[ext_resource type="Texture2D" uid="uid://djpp6f2o5g31w" path="res://Assets/Character/MainPlayer/Idle/Idle_Up.png" id="4_idle2"]
+[ext_resource type="FontFile" uid="uid://ct58dk6apiarx" path="res://Assets/Fonts/unifont_t-17.0.04.otf" id="5_ui_font"]
+[ext_resource type="Script" uid="uid://2chf2u34r2xb" path="res://Scripts/UI/InventoryPanelController.cs" id="6_inventory_controller"]
+[ext_resource type="Texture2D" path="res://Assets/Character/MainPlayer/Shadow.png" id="7_shadow"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle_down_first"]
+atlas = ExtResource("3_idle1")
+region = Rect2(0, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idle_up_first"]
+atlas = ExtResource("4_idle2")
+region = Rect2(0, 0, 48, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_idle"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle_down_first")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idle_up_first")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p5hms"]
+size = Vector2(12, 10)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5xq6q"]
+radius = 96.0
+
+[sub_resource type="Animation" id="Animation_sm3hs"]
+resource_name = "idle-up"
+
+[sub_resource type="Animation" id="Animation_y5sln"]
+resource_name = "idle_down"
+
+[sub_resource type="Animation" id="Animation_eg1p8"]
+resource_name = "idle_left"
+
+[sub_resource type="Animation" id="Animation_ugcf4"]
+resource_name = "idle_right"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_p47jp"]
+_data = {
+&"idle-up": SubResource("Animation_sm3hs"),
+&"idle_down": SubResource("Animation_y5sln"),
+&"idle_left": SubResource("Animation_eg1p8"),
+&"idle_right": SubResource("Animation_ugcf4")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qrlkk"]
+animation = &"idle-up"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_pqoke"]
+animation = &"idle_down"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_j31vc"]
+animation = &"idle_left"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_i5noo"]
+animation = &"idle_right"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_dr3n2"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_qrlkk")
+blend_point_0/pos = Vector2(0, 1)
+blend_point_1/node = SubResource("AnimationNodeAnimation_pqoke")
+blend_point_1/pos = Vector2(0, -0.90000004)
+blend_point_2/node = SubResource("AnimationNodeAnimation_j31vc")
+blend_point_2/pos = Vector2(-1, 0)
+blend_point_3/node = SubResource("AnimationNodeAnimation_i5noo")
+blend_point_3/pos = Vector2(1, 0)
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_7oeik"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qn6vy"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ln2wm"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fkena"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_3o3jk"]
+states/Idle/node = SubResource("AnimationNodeBlendSpace2D_dr3n2")
+states/Idle/position = Vector2(354.66666, 110)
+states/Walk/node = SubResource("AnimationNodeBlendSpace2D_7oeik")
+states/Walk/position = Vector2(602, 100.666664)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_qn6vy"), "Idle", "Walk", SubResource("AnimationNodeStateMachineTransition_ln2wm"), "Walk", "End", SubResource("AnimationNodeStateMachineTransition_fkena")]
+
+[node name="MainPlayer" type="Node2D" unique_id=375524829]
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=272412821]
+collision_mask = 14
+z_index = 5
+script = ExtResource("1_mv7q2")
+Speed = 120.0
+
+[node name="Shadow" type="Sprite2D" parent="Player" unique_id=401530228]
+position = Vector2(0, 6)
+scale = Vector2(0.9, 0.9)
+z_index = 0
+texture = ExtResource("7_shadow")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=373331228]
+scale = Vector2(1.3, 1.3)
+z_index = 1
+sprite_frames = SubResource("SpriteFrames_idle")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=160022622]
+position = Vector2(0, 9)
+shape = SubResource("RectangleShape2D_p5hms")
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1876884036]
+process_callback = 0
+
+[node name="InteractionArea" type="Area2D" parent="Player" unique_id=1568551401]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/InteractionArea" unique_id=968322492]
+shape = SubResource("CircleShape2D_5xq6q")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=3466703]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player" unique_id=1703438973]
+libraries/ = SubResource("AnimationLibrary_p47jp")
+
+[node name="AnimationTree" type="AnimationTree" parent="Player" unique_id=317205015]
+tree_root = SubResource("AnimationNodeStateMachine_3o3jk")
+anim_player = NodePath("../AnimationPlayer")
+parameters/Idle/blend_position = Vector2(0, 0)
+parameters/Walk/blend_position = Vector2(0, 0)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=462736160]
+
+[node name="InteractionHintLabel" type="Label" parent="UI" unique_id=194744206]
+visible = false
+z_index = 30
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -312.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 0.96, 0.68, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("5_ui_font")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="InventoryPanel" type="Panel" parent="UI" unique_id=900120001]
+visible = false
+offset_left = 32.0
+offset_top = 18.0
+offset_right = 288.0
+offset_bottom = 156.0
+
+[node name="Margin" type="MarginContainer" parent="UI/InventoryPanel" unique_id=900120002]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="VBox" type="VBoxContainer" parent="UI/InventoryPanel/Margin" unique_id=900120003]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="UI/InventoryPanel/Margin/VBox" unique_id=900120004]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_ui_font")
+theme_override_font_sizes/font_size = 16
+text = "背包"
+
+[node name="ContentLabel" type="Label" parent="UI/InventoryPanel/Margin/VBox" unique_id=900120005]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("5_ui_font")
+theme_override_font_sizes/font_size = 14
+text = "普通物品：
+- （空）
+
+关键物品：
+- （无）"
+autowrap_mode = 2
+
+[node name="HintLabel" type="Label" parent="UI/InventoryPanel/Margin/VBox" unique_id=900120006]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_fonts/font = ExtResource("5_ui_font")
+theme_override_font_sizes/font_size = 14
+text = "Tab 关闭背包"
+
+[node name="InventoryController" type="Node" parent="UI" unique_id=900120007]
+script = ExtResource("6_inventory_controller")

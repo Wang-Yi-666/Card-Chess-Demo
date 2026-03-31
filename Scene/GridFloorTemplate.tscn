@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dghav5ugwnnfi"]
+[gd_scene format=3 uid="uid://cbq83jlmxtoga"]
 
 [ext_resource type="Script" uid="uid://cpup5hxw7kfxg" path="res://Scripts/World/Systems/GridFloor.cs" id="1_grid"]
 [ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_bg8e5"]

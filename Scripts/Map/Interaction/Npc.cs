@@ -9,7 +9,7 @@ public partial class Npc : InteractableTemplate
 
 	protected override void OnInteract(Player player)
 	{
-		GD.Print($"{NpcName}：{DialogueText}");
+			GalDialogueOverlay.Show(this, NpcName, DialogueText);
 		PlayInteractionPulse();
 	}
 }

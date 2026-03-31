@@ -4,7 +4,19 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="legacy\**\*.cs" />
+    <!-- Exclude only the top-level Legacy archive from compilation. -->
+	<Compile Remove="Legacy/**/*.cs" />
+    <Compile Remove="Scripts\Character\Enemy.cs" />
+    <Compile Remove="Scripts\Character\Npc.cs" />
+    <Compile Remove="Scripts\Item\Chest.cs" />
+    <Compile Remove="Scripts\Item\HealStation.cs" />
   </ItemGroup>
+
+  <Target Name="ForceExcludeLegacyBeforeCompile" BeforeTargets="CoreCompile">
+    <ItemGroup>
+	  <Compile Remove="Legacy/**/*.cs" />
+    </ItemGroup>
+  </Target>
 </Project>

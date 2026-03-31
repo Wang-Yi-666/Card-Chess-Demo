@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dghav5ugwnnfi" path="res://Scene/Legacy/GridFloorTemplate.tscn" id="1_floor"]
 [ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://CosmicLegacy_PetricakeGamesPNG.png" id="2_37v2h"]
-[ext_resource type="PackedScene" uid="uid://cygseefr5cx8a" path="res://Scene/MainPlayer.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://cygseefr5cx8a" path="res://Scene/Character/MainPlayer.tscn" id="2_player"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_37v2h"]
 texture = ExtResource("2_37v2h")

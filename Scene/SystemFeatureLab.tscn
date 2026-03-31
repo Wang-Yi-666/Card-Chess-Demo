@@ -1,11 +1,11 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene format=3 uid="uid://cw3xwrn0mikxn"]
 
-[ext_resource type="Script" path="res://Scripts/Map/Controllers/MapResolutionController.cs" id="1_map_resolution"]
-[ext_resource type="Script" path="res://Scripts/Map/Controllers/MapSceneController.cs" id="2_map_controller"]
-[ext_resource type="Script" path="res://Scripts/Map/Actors/Player.cs" id="3_player"]
+[ext_resource type="Script" uid="uid://dyw2yvmw0516w" path="res://Scripts/Map/Controllers/MapResolutionController.cs" id="1_map_resolution"]
+[ext_resource type="Script" uid="uid://bacvjmwtxs21k" path="res://Scripts/Map/Controllers/MapSceneController.cs" id="2_map_controller"]
+[ext_resource type="Script" uid="uid://b8l5yhi5thqn" path="res://Scripts/Map/Actors/Player.cs" id="3_player"]
 [ext_resource type="Script" path="res://Scripts/Map/UI/SystemFeatureLabController.cs" id="4_ui"]
-[ext_resource type="PackedScene" path="res://Scene/BattleEncounterEnemy.tscn" id="5_enemy"]
-[ext_resource type="Texture2D" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="6_tiles"]
+[ext_resource type="PackedScene" uid="uid://dpjk4j87l3r8q" path="res://Scene/BattleEncounterEnemy.tscn" id="5_enemy"]
+[ext_resource type="Texture2D" uid="uid://cbnn0o0mufyk5" path="res://Assets/Tilemap/CosmicLegacy_PetricakeGamesPNG.png" id="6_tiles"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player_body"]
 size = Vector2(48, 52)
@@ -37,84 +37,76 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[node name="SystemFeatureLab" type="Node2D"]
+[node name="SystemFeatureLab" type="Node2D" unique_id=735711914]
 script = ExtResource("1_map_resolution")
 
-[node name="MapSceneControllerNode" type="Node2D" parent="."]
+[node name="MapSceneControllerNode" type="Node2D" parent="." unique_id=2076620619]
 script = ExtResource("2_map_controller")
 PlayerPath = NodePath("../Player")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="Background" type="Sprite2D" parent="." unique_id=2027799473]
 position = Vector2(320, 180)
 scale = Vector2(52, 40)
 texture = ExtResource("6_tiles")
 region_enabled = true
 region_rect = Rect2(129, 81, 16, 16)
 
-[node name="BackdropAccent" type="Sprite2D" parent="."]
+[node name="BackdropAccent" type="Sprite2D" parent="." unique_id=1657804956]
+modulate = Color(0.55, 0.82, 1, 0.12)
 position = Vector2(472, 132)
 scale = Vector2(18, 14)
-modulate = Color(0.55, 0.82, 1, 0.12)
 texture = ExtResource("6_tiles")
 region_enabled = true
 region_rect = Rect2(145, 81, 16, 16)
 
-[node name="Player" type="CharacterBody2D" parent="."]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=342685729]
 position = Vector2(124, 190)
 collision_mask = 14
 script = ExtResource("3_player")
 Speed = 150.0
 InteractionRange = 180.0
-ShowInteractionGizmo = false
 
-[node name="Sprite2D" type="Sprite2D" parent="Player"]
-scale = Vector2(3.1, 3.0)
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1272227670]
+scale = Vector2(3.1, 3)
 texture = ExtResource("6_tiles")
 region_enabled = true
 region_rect = Rect2(159, 47, 16, 16)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=562650904]
 shape = SubResource("RectangleShape2D_player_body")
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1247530960]
 zoom = Vector2(0.6, 0.6)
 position_smoothing_enabled = true
 
-[node name="InteractionArea" type="Area2D" parent="Player"]
+[node name="InteractionArea" type="Area2D" parent="Player" unique_id=321016359]
 collision_layer = 0
 collision_mask = 8
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/InteractionArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/InteractionArea" unique_id=1652629970]
 shape = SubResource("CircleShape2D_player_interact")
 
-[node name="BattleEnemy" parent="." instance=ExtResource("5_enemy")]
+[node name="BattleEnemy" parent="." unique_id=58139524 instance=ExtResource("5_enemy")]
 position = Vector2(276, 184)
 
-[node name="Enemy" parent="BattleEnemy"]
-EnemyDisplayName = "训练敌人"
-BattleEncounterId = "grunt_debug"
-PromptText = "E 挑战训练敌人"
-BattleScenePath = "res://Scene/Battle/SystemFeatureLabBattle.tscn"
-
-[node name="SystemUI" type="CanvasLayer" parent="."]
+[node name="SystemUI" type="CanvasLayer" parent="." unique_id=2066667203]
 script = ExtResource("4_ui")
-PlayerPath = NodePath("../Player")
 
-[node name="HintLabel" type="Label" parent="SystemUI"]
+[node name="HintLabel" type="Label" parent="SystemUI" unique_id=840234374]
 offset_left = 12.0
 offset_top = 10.0
 offset_right = 520.0
 offset_bottom = 28.0
 text = "WASD 移动  E 交互  C 打开系统面板"
 
-[node name="StatusLabel" type="Label" parent="SystemUI"]
+[node name="StatusLabel" type="Label" parent="SystemUI" unique_id=541255890]
 offset_left = 12.0
 offset_top = 30.0
 offset_right = 610.0
 offset_bottom = 52.0
 text = "就近靠近训练敌人后按 E 进入固定 roomB"
 
-[node name="PanelRoot" type="Control" parent="SystemUI"]
+[node name="PanelRoot" type="Control" parent="SystemUI" unique_id=1860487014]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -123,7 +115,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Dim" type="ColorRect" parent="SystemUI/PanelRoot"]
+[node name="Dim" type="ColorRect" parent="SystemUI/PanelRoot" unique_id=1512816617]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -132,7 +124,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.55)
 
-[node name="Window" type="PanelContainer" parent="SystemUI/PanelRoot"]
+[node name="Window" type="PanelContainer" parent="SystemUI/PanelRoot" unique_id=780463687]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -143,180 +135,185 @@ offset_left = -306.0
 offset_top = -170.0
 offset_right = 306.0
 offset_bottom = 170.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_window")
 
-[node name="Margin" type="MarginContainer" parent="SystemUI/PanelRoot/Window"]
+[node name="Margin" type="MarginContainer" parent="SystemUI/PanelRoot/Window" unique_id=1957168004]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="Root" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin"]
+[node name="Root" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin" unique_id=1442968754]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="TitleLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root"]
+[node name="TitleLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root" unique_id=2014301919]
 layout_mode = 2
 text = "系统功能实验场 · 按 C 关闭"
 
-[node name="Tabs" type="TabContainer" parent="SystemUI/PanelRoot/Window/Margin/Root"]
+[node name="Tabs" type="TabContainer" parent="SystemUI/PanelRoot/Window/Margin/Root" unique_id=1477952407]
 custom_minimum_size = Vector2(0, 258)
 layout_mode = 2
 size_flags_vertical = 3
+current_tab = 0
 
-[node name="StatusTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs"]
+[node name="StatusTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs" unique_id=1190089092]
 layout_mode = 2
 theme_override_constants/separation = 6
+metadata/_tab_index = 0
 
-[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab"]
+[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab" unique_id=1723121631]
 custom_minimum_size = Vector2(0, 236)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="StatusColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns"]
+[node name="StatusColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns" unique_id=1251678386]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/StatusColumn"]
+[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/StatusColumn" unique_id=563119501]
 layout_mode = 2
 text = "角色状态"
 
-[node name="StatusText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/StatusColumn"]
+[node name="StatusText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/StatusColumn" unique_id=1841421778]
 custom_minimum_size = Vector2(0, 210)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "角色状态"
 
-[node name="EquipmentColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns"]
+[node name="EquipmentColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns" unique_id=1768573564]
 custom_minimum_size = Vector2(192, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn"]
+[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn" unique_id=2145983281]
 layout_mode = 2
 text = "装备管理"
 
-[node name="SlotList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn"]
+[node name="SlotList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn" unique_id=248805972]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 
-[node name="CandidateTitle" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn"]
+[node name="CandidateTitle" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn" unique_id=1108857156]
 layout_mode = 2
 text = "可装备物品"
 
-[node name="CandidateList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn"]
+[node name="CandidateList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn" unique_id=177246285]
 custom_minimum_size = Vector2(0, 68)
 layout_mode = 2
 
-[node name="ActionRow" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn"]
+[node name="ActionRow" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn" unique_id=1780937877]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="EquipButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn/ActionRow"]
+[node name="EquipButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn/ActionRow" unique_id=780205485]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "装备"
 
-[node name="UnequipButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn/ActionRow"]
+[node name="UnequipButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn/ActionRow" unique_id=916972459]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "卸下"
 
-[node name="EquipmentDetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn"]
+[node name="EquipmentDetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn" unique_id=1991569618]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="EquipmentDetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn/EquipmentDetailPanel"]
+[node name="EquipmentDetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/StatusTab/Columns/EquipmentColumn/EquipmentDetailPanel" unique_id=1621275715]
 custom_minimum_size = Vector2(0, 74)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "装备详情"
 
-[node name="InventoryTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs"]
+[node name="InventoryTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs" unique_id=1918785616]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 6
+metadata/_tab_index = 1
 
-[node name="InventoryText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab"]
+[node name="InventoryText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab" unique_id=1025024167]
 custom_minimum_size = Vector2(0, 176)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "背包信息"
 
-[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab"]
+[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab" unique_id=1756442057]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SeedInventoryButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab/Footer"]
+[node name="SeedInventoryButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab/Footer" unique_id=513084655]
 layout_mode = 2
 text = "填充测试物资"
 
-[node name="ClearInventoryButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab/Footer"]
+[node name="ClearInventoryButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/InventoryTab/Footer" unique_id=693589207]
 layout_mode = 2
 text = "清空测试物资"
 
-[node name="TalentTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs"]
+[node name="TalentTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs" unique_id=1538178264]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 6
+metadata/_tab_index = 2
 
-[node name="Header" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab"]
+[node name="Header" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab" unique_id=1847665915]
 layout_mode = 2
 theme_override_constants/separation = 3
 
-[node name="MasteryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Header"]
+[node name="MasteryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Header" unique_id=284132687]
 layout_mode = 2
 text = "专精点"
 
-[node name="CombatSummaryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Header"]
+[node name="CombatSummaryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Header" unique_id=1557693180]
 layout_mode = 2
 text = "战斗属性摘要"
 
-[node name="Body" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab"]
+[node name="Body" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab" unique_id=432470149]
 custom_minimum_size = Vector2(0, 156)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="TalentTreeScroll" type="ScrollContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body"]
+[node name="TalentTreeScroll" type="ScrollContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body" unique_id=1044780204]
 custom_minimum_size = Vector2(0, 156)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.45
 size_flags_vertical = 3
+size_flags_stretch_ratio = 1.45
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="TalentTreeCanvas" type="Control" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll"]
+[node name="TalentTreeCanvas" type="Control" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll" unique_id=1446935791]
 custom_minimum_size = Vector2(820, 420)
 layout_mode = 2
 
-[node name="CardTreeRootBackdrop" type="ColorRect" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas"]
+[node name="CardTreeRootBackdrop" type="ColorRect" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas" unique_id=761049278]
+layout_mode = 0
 offset_left = 108.0
 offset_top = 22.0
 offset_right = 266.0
 offset_bottom = 64.0
 color = Color(0.15, 0.24, 0.34, 0.92)
 
-[node name="RoleTreeRootBackdrop" type="ColorRect" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas"]
+[node name="RoleTreeRootBackdrop" type="ColorRect" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas" unique_id=783358345]
+layout_mode = 0
 offset_left = 492.0
 offset_top = 22.0
 offset_right = 692.0
 offset_bottom = 64.0
 color = Color(0.33, 0.24, 0.14, 0.92)
 
-[node name="CardTreeLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas"]
+[node name="CardTreeLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas" unique_id=1164800966]
+layout_mode = 0
 offset_left = 126.0
 offset_top = 28.0
 offset_right = 248.0
@@ -328,7 +325,8 @@ theme_override_font_sizes/font_size = 18
 text = "卡牌树"
 horizontal_alignment = 1
 
-[node name="RoleTreeLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas"]
+[node name="RoleTreeLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/TalentTreeScroll/TalentTreeCanvas" unique_id=1043834392]
+layout_mode = 0
 offset_left = 510.0
 offset_top = 28.0
 offset_right = 674.0
@@ -340,7 +338,7 @@ theme_override_font_sizes/font_size = 18
 text = "角色能力树"
 horizontal_alignment = 1
 
-[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body"]
+[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body" unique_id=290107523]
 visible = false
 custom_minimum_size = Vector2(236, 0)
 layout_mode = 2
@@ -349,245 +347,242 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.95
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="Margin" type="MarginContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel"]
+[node name="Margin" type="MarginContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel" unique_id=2143899061]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="Content" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin"]
+[node name="Content" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin" unique_id=2081980218]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content"]
+[node name="TitleLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content" unique_id=220336880]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "天赋详情"
 
-[node name="ActionHint" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content"]
+[node name="ActionHint" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content" unique_id=1794010354]
 layout_mode = 2
-autowrap_mode = 3
 text = "点击节点只会选中，不会直接消耗点数。"
+autowrap_mode = 3
 
-[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content"]
+[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content" unique_id=2075408189]
 custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "选择一个天赋查看详情。"
 
-[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content"]
+[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content" unique_id=1874595624]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="UnlockTalentButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content/Footer"]
+[node name="UnlockTalentButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content/Footer" unique_id=963742186]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "解锁"
 
-[node name="RefundTalentButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content/Footer"]
+[node name="RefundTalentButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Body/DetailPanel/Margin/Content/Footer" unique_id=1961451598]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "退点"
 
-[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab"]
+[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab" unique_id=192947929]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="GrantPointButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Footer"]
+[node name="GrantPointButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Footer" unique_id=1394963276]
 layout_mode = 2
 text = "+1 专精点"
 
-[node name="RevokePointButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Footer"]
+[node name="RevokePointButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Footer" unique_id=2143536174]
 layout_mode = 2
 text = "-1 专精点"
 
-[node name="ResetTalentButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Footer"]
+[node name="ResetTalentButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/TalentTab/Footer" unique_id=612532951]
 layout_mode = 2
 text = "重置测试天赋"
 
-[node name="CodexTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs"]
+[node name="CodexTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs" unique_id=137451083]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 6
+metadata/_tab_index = 3
 
-[node name="CodexTabs" type="TabContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab"]
+[node name="CodexTabs" type="TabContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab" unique_id=863256119]
 custom_minimum_size = Vector2(0, 236)
 layout_mode = 2
 size_flags_vertical = 3
+current_tab = 0
 
-[node name="CardCodex" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs"]
+[node name="CardCodex" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs" unique_id=296768857]
 layout_mode = 2
+metadata/_tab_index = 0
 
-[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex"]
+[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex" unique_id=1604100963]
 custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="ListColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns"]
+[node name="ListColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns" unique_id=793066763]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns/ListColumn"]
+[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns/ListColumn" unique_id=498634023]
 layout_mode = 2
 text = "卡牌图鉴"
 
-[node name="CardList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns/ListColumn"]
+[node name="CardList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns/ListColumn" unique_id=623522819]
 custom_minimum_size = Vector2(152, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns"]
+[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns" unique_id=1023995357]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns/DetailPanel"]
+[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/CardCodex/Columns/DetailPanel" unique_id=2098876001]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "选择一张卡查看图鉴。"
 
-[node name="EnemyCodex" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs"]
+[node name="EnemyCodex" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs" unique_id=1102882966]
+visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
-[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex"]
+[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex" unique_id=1737415414]
 custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="ListColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns"]
+[node name="ListColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns" unique_id=952899154]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns/ListColumn"]
+[node name="Title" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns/ListColumn" unique_id=1117160996]
 layout_mode = 2
 text = "敌人图鉴"
 
-[node name="EnemyList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns/ListColumn"]
+[node name="EnemyList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns/ListColumn" unique_id=1923437280]
 custom_minimum_size = Vector2(152, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns"]
+[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns" unique_id=1446680942]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns/DetailPanel"]
+[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/CodexTab/CodexTabs/EnemyCodex/Columns/DetailPanel" unique_id=138326861]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "选择一个敌人查看图鉴。"
 
-[node name="DeckTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs"]
+[node name="DeckTab" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs" unique_id=89891176]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 6
+metadata/_tab_index = 4
 
-[node name="Header" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab"]
+[node name="Header" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab" unique_id=6455094]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PoolSummaryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Header"]
+[node name="PoolSummaryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Header" unique_id=1438451597]
 layout_mode = 2
 text = "可选 0"
 
-[node name="DeckSummaryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Header"]
+[node name="DeckSummaryLabel" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Header" unique_id=675252827]
 layout_mode = 2
 text = "当前 0 张 / 影响 0"
 
-[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab"]
+[node name="Columns" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab" unique_id=376368810]
 custom_minimum_size = Vector2(0, 116)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="AvailableColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns"]
+[node name="AvailableColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns" unique_id=1749383908]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="AvailableTitle" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/AvailableColumn"]
+[node name="AvailableTitle" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/AvailableColumn" unique_id=1040852538]
 layout_mode = 2
 text = "可选牌"
 
-[node name="AvailableList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/AvailableColumn"]
+[node name="AvailableList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/AvailableColumn" unique_id=1624464648]
 custom_minimum_size = Vector2(122, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ControlColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns"]
+[node name="ControlColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns" unique_id=2099751576]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="AddButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/ControlColumn"]
+[node name="AddButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/ControlColumn" unique_id=2110379742]
 layout_mode = 2
 text = "加入 ->"
 
-[node name="RemoveButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/ControlColumn"]
+[node name="RemoveButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/ControlColumn" unique_id=308582346]
 layout_mode = 2
 text = "<- 移除"
 
-[node name="DeckColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns"]
+[node name="DeckColumn" type="VBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns" unique_id=395938886]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="DeckTitle" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/DeckColumn"]
+[node name="DeckTitle" type="Label" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/DeckColumn" unique_id=1132367858]
 layout_mode = 2
 text = "当前牌组"
 
-[node name="DeckList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/DeckColumn"]
+[node name="DeckList" type="ItemList" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Columns/DeckColumn" unique_id=1229984653]
 custom_minimum_size = Vector2(122, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab"]
+[node name="DetailPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab" unique_id=1530148359]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/DetailPanel"]
+[node name="DetailText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/DetailPanel" unique_id=511596188]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
 text = "选择一张卡查看详情。"
 
-[node name="ValidationPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab"]
+[node name="ValidationPanel" type="PanelContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab" unique_id=931614577]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="ValidationText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/ValidationPanel"]
+[node name="ValidationText" type="RichTextLabel" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/ValidationPanel" unique_id=1158519257]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-bbcode_enabled = false
-fit_content = false
-scroll_active = true
 text = "等待校验"
 
-[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab"]
+[node name="Footer" type="HBoxContainer" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab" unique_id=673999460]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="StarterButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Footer"]
+[node name="StarterButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Footer" unique_id=1046959403]
 layout_mode = 2
 text = "默认牌组"
 
-[node name="ResetButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Footer"]
+[node name="ResetButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Footer" unique_id=1720975826]
 layout_mode = 2
 text = "恢复会话"
 
-[node name="SaveButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Footer"]
+[node name="SaveButton" type="Button" parent="SystemUI/PanelRoot/Window/Margin/Root/Tabs/DeckTab/Footer" unique_id=1527062820]
 layout_mode = 2
 text = "保存构筑"
