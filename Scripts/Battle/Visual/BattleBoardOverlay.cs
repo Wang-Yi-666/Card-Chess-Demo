@@ -12,6 +12,8 @@ public partial class BattleBoardOverlay : Node2D
     [Export] public Color ReachableColor { get; set; } = new(0.2f, 1.0f, 0.45f, 0.18f);
     [Export] public Color AttackTargetColor { get; set; } = new(1.0f, 0.35f, 0.35f, 0.22f);
     [Export] public Color SupportTargetColor { get; set; } = new(0.28f, 0.76f, 1.0f, 0.22f);
+    [Export] public Color EscapeCellColor { get; set; } = new(0.22f, 0.92f, 0.38f, 0.22f);
+    [Export] public Color EscapeArrowColor { get; set; } = new(0.82f, 1.0f, 0.86f, 0.92f);
     [Export] public Color PathColor { get; set; } = new(1.0f, 0.9f, 0.3f, 0.82f);
     [Export(PropertyHint.Range, "0.01,0.40,0.01")] public float CellRevealDuration { get; set; } = 0.16f;
     [Export(PropertyHint.Range, "0.00,0.20,0.005")] public float CellRingDelaySeconds { get; set; } = 0.018f;
@@ -23,6 +25,7 @@ public partial class BattleBoardOverlay : Node2D
     private readonly AnimatedCellLayer _reachableCells = new();
     private readonly AnimatedCellLayer _attackTargetCells = new();
     private readonly AnimatedCellLayer _supportTargetCells = new();
+    private readonly List<Vector2I> _escapeCells = new();
     private readonly List<Vector2I> _previewPath = new();
     private double _previewPathAnimationStartTimeSeconds;
     private bool _isPreviewPathAnimating;
@@ -50,6 +53,24 @@ public partial class BattleBoardOverlay : Node2D
     public void SetSupportTargetCells(IEnumerable<Vector2I> cells, Vector2I? originCell = null)
     {
         SetAnimatedLayerCells(_supportTargetCells, cells, originCell);
+        QueueRedraw();
+    }
+
+    public void SetEscapeCells(IEnumerable<Vector2I> cells)
+    {
+        Vector2I[] orderedCells = cells
+            .Distinct()
+            .OrderBy(cell => cell.Y)
+            .ThenBy(cell => cell.X)
+            .ToArray();
+
+        if (_escapeCells.SequenceEqual(orderedCells))
+        {
+            return;
+        }
+
+        _escapeCells.Clear();
+        _escapeCells.AddRange(orderedCells);
         QueueRedraw();
     }
 
@@ -95,6 +116,7 @@ public partial class BattleBoardOverlay : Node2D
         DrawAnimatedCells(_reachableCells, ReachableColor);
         DrawAnimatedCells(_attackTargetCells, AttackTargetColor);
         DrawAnimatedCells(_supportTargetCells, SupportTargetColor);
+        DrawEscapeCells();
 
         if (_previewPath.Count > 1)
         {
@@ -250,6 +272,88 @@ public partial class BattleBoardOverlay : Node2D
         Color borderColor = fillColor.Darkened(0.42f);
         borderColor.A = Mathf.Clamp(fillColor.A + 0.24f, 0.0f, 1.0f);
         return borderColor;
+    }
+
+    private void DrawEscapeCells()
+    {
+        if (_room == null)
+        {
+            return;
+        }
+
+        Color borderColor = BuildCellBorderColor(EscapeCellColor);
+        foreach (Vector2I cell in _escapeCells)
+        {
+            Rect2 cellRect = _room.GetCellRect(cell);
+            DrawRect(cellRect, EscapeCellColor, true);
+            DrawRect(cellRect.Grow(-1.0f), borderColor, false, 2.0f);
+            DrawEscapeArrow(cellRect, ResolveEscapeArrowDirection(cell));
+        }
+    }
+
+    private void DrawEscapeArrow(Rect2 cellRect, Vector2 direction)
+    {
+        Vector2 center = cellRect.GetCenter();
+        Vector2 shaftEnd = center + direction * (Mathf.Min(cellRect.Size.X, cellRect.Size.Y) * 0.26f);
+        DrawLine(center, shaftEnd, EscapeArrowColor, 2.0f, true);
+
+        Vector2 normal = new(-direction.Y, direction.X);
+        Vector2 tip = center + direction * (Mathf.Min(cellRect.Size.X, cellRect.Size.Y) * 0.40f);
+        Vector2 headBase = shaftEnd;
+        Vector2[] arrowHead =
+        {
+            tip,
+            headBase - direction * 2.0f + normal * 3.0f,
+            headBase - direction * 2.0f - normal * 3.0f,
+        };
+        DrawColoredPolygon(arrowHead, EscapeArrowColor);
+    }
+
+    private Vector2 ResolveEscapeArrowDirection(Vector2I cell)
+    {
+        if (_room == null)
+        {
+            return Vector2.Right;
+        }
+
+        int maxX = _room.BoardSize.X - 1;
+        int maxY = _room.BoardSize.Y - 1;
+        if (cell == Vector2I.Zero)
+        {
+            return Vector2.Left;
+        }
+
+        if (cell.X == maxX && cell.Y == 0)
+        {
+            return Vector2.Up;
+        }
+
+        if (cell.X == maxX && cell.Y == maxY)
+        {
+            return Vector2.Right;
+        }
+
+        if (cell.X == 0 && cell.Y == maxY)
+        {
+            return Vector2.Down;
+        }
+
+        if (cell.Y == 0)
+        {
+            return Vector2.Up;
+        }
+
+        if (cell.X == maxX)
+        {
+            return Vector2.Right;
+        }
+
+        if (cell.Y == maxY)
+        {
+            return Vector2.Down;
+        }
+
+        return Vector2.Left;
     }
 
     private static double GetNowSeconds()

@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" path="res://Scene/Battle/UI/BattleHud.tscn" id="7_hud"]
 [ext_resource type="Resource" uid="uid://bmpjfpqs2pghk" path="res://Resources/Battle/Encounters/DebugBattleEncounterLibrary.tres" id="8_encounter"]
 [ext_resource type="Script" uid="uid://co7rnt3ribqx8" path="res://Scripts/Battle/Visual/BattleFloatingTextLayer.cs" id="9_float"]
-
 [node name="Battle" type="Node2D" unique_id=990095149]
 script = ExtResource("1_hq08r")
 BattleRoomScenes = [ExtResource("3_oxbdf"), ExtResource("4_fypyy")]
@@ -22,8 +21,6 @@ RandomSeed = 20260320
 [node name="Camera2D" type="Camera2D" parent="." unique_id=41489898]
 position = Vector2(160, 90)
 
-[node name="BackdropRoot" type="Node2D" parent="." unique_id=1528764606]
-
 [node name="RoomContainer" type="Node2D" parent="." unique_id=444181665]
 position = Vector2(32, 26)
 
@@ -32,6 +29,9 @@ script = ExtResource("2_7r48u")
 
 [node name="PieceRoot" type="Node2D" parent="RoomContainer" unique_id=1217213128]
 y_sort_enabled = true
+
+[node name="KillFxRoot" type="Node2D" parent="RoomContainer" unique_id=1022043171]
+y_sort_enabled = false
 
 [node name="FloatingTextLayer" type="Node2D" parent="RoomContainer" unique_id=1829250619]
 script = ExtResource("9_float")

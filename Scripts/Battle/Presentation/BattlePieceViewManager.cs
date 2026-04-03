@@ -12,12 +12,13 @@ namespace CardChessDemo.Battle.Presentation;
 public sealed class BattlePieceViewManager
 {
     private readonly Node _pieceRoot;
+    private readonly Node _killFxRoot;
     private readonly BattlePrefabLibrary _prefabLibrary;
     private readonly Dictionary<string, BattleAnimatedViewBase> _views = new(StringComparer.Ordinal);
-
-    public BattlePieceViewManager(Node pieceRoot, BattlePrefabLibrary prefabLibrary)
+    public BattlePieceViewManager(Node pieceRoot, Node killFxRoot, BattlePrefabLibrary prefabLibrary)
     {
         _pieceRoot = pieceRoot;
+        _killFxRoot = killFxRoot;
         _prefabLibrary = prefabLibrary;
     }
 
@@ -145,6 +146,114 @@ public sealed class BattlePieceViewManager
         {
             view.PlayDefeat();
         }
+    }
+
+    public async Task PlayKillSequenceAsync(
+        string objectId,
+        Vector2 knockbackDirection,
+        float knockbackDistance,
+        double knockbackDuration,
+        double whiteFlashDuration,
+        double shatterDuration)
+    {
+        if (!_views.TryGetValue(objectId, out BattleAnimatedViewBase? view))
+        {
+            return;
+        }
+
+        Vector2 spriteAnchor = view.CaptureSpriteLocalPosition();
+
+        Node2D killGhost = new()
+        {
+            Name = $"{view.Name}_KillGhost",
+            Position = view.Position + spriteAnchor,
+            Scale = view.Scale,
+            ZIndex = 999,
+        };
+
+        Polygon2D baseSquare = new()
+        {
+            Polygon = new[]
+            {
+                new Vector2(-8.0f, -8.0f),
+                new Vector2(8.0f, -8.0f),
+                new Vector2(8.0f, 8.0f),
+                new Vector2(-8.0f, 8.0f),
+            },
+            Color = Colors.White,
+        };
+        killGhost.AddChild(baseSquare);
+
+        Vector2[] shardDirections =
+        {
+            new Vector2(-0.8f, -0.9f),
+            new Vector2(0.9f, -0.7f),
+            new Vector2(-0.7f, 0.8f),
+            new Vector2(0.85f, 0.95f),
+        };
+
+        Vector2[] shardOrigins =
+        {
+            new Vector2(-8.0f, -8.0f),
+            new Vector2(0.0f, -8.0f),
+            new Vector2(-8.0f, 0.0f),
+            new Vector2(0.0f, 0.0f),
+        };
+
+        List<Polygon2D> shardSprites = new();
+        for (int index = 0; index < 4; index++)
+        {
+            Polygon2D shard = new()
+            {
+                Polygon = new[]
+                {
+                    Vector2.Zero,
+                    new Vector2(8.0f, 0.0f),
+                    new Vector2(8.0f, 8.0f),
+                    new Vector2(0.0f, 8.0f),
+                },
+                Position = shardOrigins[index],
+                Color = new Color(1.0f, 1.0f, 1.0f, 0.0f),
+            };
+            killGhost.AddChild(shard);
+            shardSprites.Add(shard);
+        }
+
+        _killFxRoot.AddChild(killGhost);
+
+        _views.Remove(objectId);
+        view.QueueFree();
+
+        Vector2 resolvedDirection = knockbackDirection == Vector2.Zero ? Vector2.Right : knockbackDirection.Normalized();
+        Tween rootTween = killGhost.CreateTween();
+        rootTween.SetEase(Tween.EaseType.Out);
+        rootTween.SetTrans(Tween.TransitionType.Cubic);
+        rootTween.TweenProperty(killGhost, "position", killGhost.Position + resolvedDirection * knockbackDistance, knockbackDuration);
+
+        double shardDelay = Math.Max(whiteFlashDuration * 0.35d, 0.02d);
+        Tween flashTween = killGhost.CreateTween();
+        flashTween.SetEase(Tween.EaseType.Out);
+        flashTween.SetTrans(Tween.TransitionType.Cubic);
+        flashTween.TweenProperty(baseSquare, "color", Colors.White, whiteFlashDuration * 0.45d);
+        flashTween.TweenProperty(baseSquare, "color", new Color(1.0f, 1.0f, 1.0f, 0.0f), shatterDuration).SetDelay(shardDelay);
+
+        for (int index = 0; index < shardSprites.Count; index++)
+        {
+            Polygon2D shard = shardSprites[index];
+            Vector2 shardDrift = (resolvedDirection * 0.8f + shardDirections[index]).Normalized() * (knockbackDistance * 0.95f + 6.0f);
+            Tween shardTween = killGhost.CreateTween();
+            shardTween.SetParallel();
+            shardTween.SetEase(Tween.EaseType.Out);
+            shardTween.SetTrans(Tween.TransitionType.Cubic);
+            shardTween.TweenProperty(shard, "color", Colors.White, 0.01d).SetDelay(shardDelay);
+            shardTween.TweenProperty(shard, "position", shard.Position + shardDrift, shatterDuration).SetDelay(shardDelay);
+            shardTween.TweenProperty(shard, "rotation_degrees", (index % 2 == 0 ? -1.0f : 1.0f) * (20.0f + index * 12.0f), shatterDuration).SetDelay(shardDelay);
+            shardTween.TweenProperty(shard, "color", new Color(1.0f, 1.0f, 1.0f, 0.0f), shatterDuration).SetDelay(shardDelay);
+        }
+
+        double totalDuration = Math.Max(knockbackDuration, Math.Max(whiteFlashDuration, shardDelay + shatterDuration));
+        await killGhost.ToSignal(killGhost.GetTree().CreateTimer(totalDuration), SceneTreeTimer.SignalName.Timeout);
+        killGhost.QueueFree();
     }
 
     public void PlayCue(string objectId, StringName animationName)

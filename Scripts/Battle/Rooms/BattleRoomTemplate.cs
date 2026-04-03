@@ -28,17 +28,21 @@ public partial class BattleRoomTemplate : Node2D
 	[Export] public Godot.Collections.Array<Vector2I> DefaultDestructibleObstacleCells { get; set; } = new() { new Vector2I(6, 2) };
 	[Export] public Godot.Collections.Array<Vector2I> DefaultIndestructibleObstacleCells { get; set; } = new() { new Vector2I(7, 5) };
 	[Export] public Godot.Collections.Array<Vector2I> DefaultSlowPassObstacleCells { get; set; } = new() { new Vector2I(9, 3) };
+	[Export] public Godot.Collections.Array<Vector2I> DefaultEscapeCells { get; set; } = new();
 	[Export] public int FloorSourceId { get; set; } = 0;
 	[Export] public Vector2I DefaultFloorAtlasCoords { get; set; } = Vector2I.Zero;
 	[Export] public int MarkerSourceId { get; set; } = 1;
+	[Export] public int EscapeSourceId { get; set; } = 1;
 	[Export] public int PlayerMarkerTileId { get; set; } = 1;
 	[Export] public int EnemyMarkerTileId { get; set; } = 2;
 	[Export] public int DestructibleObstacleMarkerTileId { get; set; } = 3;
 	[Export] public int IndestructibleObstacleMarkerTileId { get; set; } = 4;
 	[Export] public int SlowPassObstacleMarkerTileId { get; set; } = 5;
+	[Export] public int EscapeMarkerTileId { get; set; } = 6;
 
 	private TileMapLayer _floorLayer = null!;
 	private TileMapLayer _markerLayer = null!;
+	private TileMapLayer _escapeLayer = null!;
 	private BoardTopology _topology = null!;
 
 	public BoardTopology Topology => _topology;
@@ -58,7 +62,33 @@ public partial class BattleRoomTemplate : Node2D
 		if (!Engine.IsEditorHint())
 		{
 			_markerLayer.Visible = false;
+			_escapeLayer.Visible = false;
 		}
+	}
+
+	public IReadOnlyList<Vector2I> GetEscapeCells()
+	{
+		EnsureReferences();
+		EnsureTopology();
+
+		List<Vector2I> cells = new();
+		foreach (Vector2I cell in _escapeLayer.GetUsedCells())
+		{
+			if (!_topology.IsInsideBoard(cell))
+			{
+				continue;
+			}
+
+			int sourceId = _escapeLayer.GetCellSourceId(cell);
+			if (sourceId != EscapeSourceId)
+			{
+				continue;
+			}
+
+			cells.Add(cell);
+		}
+
+		return cells;
 	}
 
 	public RoomLayoutDefinition BuildLayoutDefinition(string enemyDefinitionId = "battle_enemy")
@@ -206,6 +236,7 @@ public partial class BattleRoomTemplate : Node2D
 	{
 		_floorLayer ??= GetNode<TileMapLayer>("FloorLayer");
 		_markerLayer ??= GetNode<TileMapLayer>("MarkerLayer");
+		_escapeLayer ??= GetNode<TileMapLayer>("EscapeLayer");
 	}
 
 	private void EnsureTopology()
@@ -217,6 +248,10 @@ public partial class BattleRoomTemplate : Node2D
 	{
 		if (_floorLayer.TileSet != null && _markerLayer.TileSet != null)
 		{
+			if (_escapeLayer.TileSet == null)
+			{
+				_escapeLayer.TileSet = _floorLayer.TileSet;
+			}
 			return;
 		}
 
@@ -224,16 +259,19 @@ public partial class BattleRoomTemplate : Node2D
 		PackedScene playerScene = GD.Load<PackedScene>("res://Scene/Battle/Tiles/BattlePlayerToken.tscn");
 		PackedScene enemyScene = GD.Load<PackedScene>("res://Scene/Battle/Tiles/BattleEnemyToken.tscn");
 		PackedScene obstacleScene = GD.Load<PackedScene>("res://Scene/Battle/Tiles/BattleObstacleToken.tscn");
+		PackedScene escapeScene = GD.Load<PackedScene>("res://Scene/Battle/Tiles/BattleEscapeTile.tscn");
 
 		TileSet tileSet = BattleRoomTileSetFactory.CreateTileSet(
 			floorTexture,
 			playerScene,
 			enemyScene,
 			obstacleScene,
+			escapeScene,
 			CellSizePixels);
 
 		_floorLayer.TileSet = tileSet;
 		_markerLayer.TileSet = tileSet;
+		_escapeLayer.TileSet = tileSet;
 	}
 
 	private void EnsureDefaultPaint()
@@ -273,6 +311,14 @@ public partial class BattleRoomTemplate : Node2D
 				PaintMarker(cell, SlowPassObstacleMarkerTileId);
 			}
 		}
+
+		if (_escapeLayer.GetUsedCells().Count == 0)
+		{
+			foreach (Vector2I cell in DefaultEscapeCells)
+			{
+				PaintEscapeMarker(cell);
+			}
+		}
 	}
 
 	private void PaintMarker(Vector2I cell, int tileId)
@@ -283,6 +329,16 @@ public partial class BattleRoomTemplate : Node2D
 		}
 
 		_markerLayer.SetCell(cell, MarkerSourceId, Vector2I.Zero, tileId);
+	}
+
+	private void PaintEscapeMarker(Vector2I cell)
+	{
+		if (!_topology.IsInsideBoard(cell))
+		{
+			return;
+		}
+
+		_escapeLayer.SetCell(cell, EscapeSourceId, Vector2I.Zero, EscapeMarkerTileId);
 	}
 
 	private int ResolveObstacleMarkerTileId(BoardObject boardObject)

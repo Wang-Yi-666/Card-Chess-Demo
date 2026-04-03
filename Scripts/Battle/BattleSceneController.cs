@@ -23,28 +23,30 @@ namespace CardChessDemo.Battle;
 public partial class BattleSceneController : Node2D
 {
 	private const double PlayerActionResolveBufferSeconds = 0.24d;
-	private static readonly ArakawaAbilityDefinition BuildWallAbility = new("build_wall", "閫犲", 1);
-	private static readonly ArakawaAbilityDefinition EnhanceCardAbility = new("enhance_card", "寮哄寲", 1);
+	private const string BattleBackgroundTexturePath = "res://Assets/Background/94180512_p2_master1200.jpg";
+	private const string BattleReturnTransitionOverlayScenePath = "res://Scene/Transitions/BattleReturnTransitionOverlay.tscn";
+	private static readonly ArakawaAbilityDefinition BuildWallAbility = new("build_wall", "造墙", 1);
+	private static readonly ArakawaAbilityDefinition EnhanceCardAbility = new("enhance_card", "强化", 1);
 	private static readonly IReadOnlyDictionary<string, BattleCardEnhancementDefinition> PrototypeCardEnhancements =
 		new Dictionary<string, BattleCardEnhancementDefinition>(StringComparer.Ordinal)
 		{
-			["cross_slash"] = new BattleCardEnhancementDefinition("+", "浼ゅ +2", damageDelta: 2),
-			["quick_cut"] = new BattleCardEnhancementDefinition("+", "浼ゅ +1", damageDelta: 1),
-			["line_shot"] = new BattleCardEnhancementDefinition("+", "浼ゅ +2", damageDelta: 2),
-			["heavy_shot"] = new BattleCardEnhancementDefinition("+", "浼ゅ +2", damageDelta: 2),
-			["battle_read"] = new BattleCardEnhancementDefinition("+", "棰濆鎶?1", drawCountDelta: 1),
-			["meditate"] = new BattleCardEnhancementDefinition("+", "棰濆鎶?1", drawCountDelta: 1),
-			["surge"] = new BattleCardEnhancementDefinition("+", "棰濆鑾峰緱 1 鑳介噺", energyGainDelta: 1),
-			["draw_spark"] = new BattleCardEnhancementDefinition("+", "棰濆鎶?1", drawCountDelta: 1),
-			["quick_plan"] = new BattleCardEnhancementDefinition("+", "棰濆鎶?1", drawCountDelta: 1),
-			["burning_edge"] = new BattleCardEnhancementDefinition("+", "浼ゅ +2", damageDelta: 2),
-			["hook_shot"] = new BattleCardEnhancementDefinition("+", "浼ゅ +2", damageDelta: 2),
-			["deep_focus"] = new BattleCardEnhancementDefinition("+", "棰濆鎶?1", drawCountDelta: 1),
-			["spark_charge"] = new BattleCardEnhancementDefinition("+", "棰濆鑾峰緱 1 鑳介噺", energyGainDelta: 1),
-			["burst_drive"] = new BattleCardEnhancementDefinition("+", "棰濆鑾峰緱 1 鑳介噺", energyGainDelta: 1),
-			["guard_up"] = new BattleCardEnhancementDefinition("+", "鑾峰緱棰濆 2 鎶ょ浘", shieldGainDelta: 2),
-			["brace"] = new BattleCardEnhancementDefinition("+", "鑾峰緱棰濆 3 鎶ょ浘", shieldGainDelta: 3),
-			["quick_guard"] = new BattleCardEnhancementDefinition("+", "鑾峰緱棰濆 2 鎶ょ浘", shieldGainDelta: 2),
+			["cross_slash"] = new BattleCardEnhancementDefinition("+", "伤害+2", damageDelta: 2),
+			["quick_cut"] = new BattleCardEnhancementDefinition("+", "伤害+1", damageDelta: 1),
+			["line_shot"] = new BattleCardEnhancementDefinition("+", "伤害+2", damageDelta: 2),
+			["heavy_shot"] = new BattleCardEnhancementDefinition("+", "伤害+2", damageDelta: 2),
+			["battle_read"] = new BattleCardEnhancementDefinition("+", "抽牌+1", drawCountDelta: 1),
+			["meditate"] = new BattleCardEnhancementDefinition("+", "抽牌+1", drawCountDelta: 1),
+			["surge"] = new BattleCardEnhancementDefinition("+", "能量+1", energyGainDelta: 1),
+			["draw_spark"] = new BattleCardEnhancementDefinition("+", "抽牌+1", drawCountDelta: 1),
+			["quick_plan"] = new BattleCardEnhancementDefinition("+", "抽牌+1", drawCountDelta: 1),
+			["burning_edge"] = new BattleCardEnhancementDefinition("+", "伤害+2", damageDelta: 2),
+			["hook_shot"] = new BattleCardEnhancementDefinition("+", "伤害+2", damageDelta: 2),
+			["deep_focus"] = new BattleCardEnhancementDefinition("+", "抽牌+1", drawCountDelta: 1),
+			["spark_charge"] = new BattleCardEnhancementDefinition("+", "能量+1", energyGainDelta: 1),
+			["burst_drive"] = new BattleCardEnhancementDefinition("+", "能量+1", energyGainDelta: 1),
+			["guard_up"] = new BattleCardEnhancementDefinition("+", "护盾+2", shieldGainDelta: 2),
+			["brace"] = new BattleCardEnhancementDefinition("+", "护盾+3", shieldGainDelta: 3),
+			["quick_guard"] = new BattleCardEnhancementDefinition("+", "护盾+2", shieldGainDelta: 2),
 		};
 	[Export] public PackedScene? ForcedBattleRoomScene { get; set; }
 	[Export] public PackedScene[] BattleRoomScenes { get; set; } = Array.Empty<PackedScene>();
@@ -64,8 +66,11 @@ public partial class BattleSceneController : Node2D
 	[Export(PropertyHint.Range, "16,320,1")] public int CameraResetDurationMs { get; set; } = 180;
 	[Export(PropertyHint.Range, "20,480,1")] public float CameraPanPixelsPerSecond { get; set; } = 160.0f;
 	[Export(PropertyHint.Range, "0.1,1.0,0.05")] public float CameraMinBoardVisibleRatio { get; set; } = 0.8f;
-	[Export(PropertyHint.Range, "0.5,1.0,0.02")] public float CameraFocusZoomMultiplier { get; set; } = 2.0f;
+	[Export(PropertyHint.Range, "1,4,1")] public float CameraFocusZoomMultiplier { get; set; } = 2.0f;
 	[Export(PropertyHint.Range, "0.02,1.2,0.01")] public float CameraFocusHoldSeconds { get; set; } = 1.8f;
+	[Export(PropertyHint.Range, "0.05,3.0,0.05")] public float AttackFocusHoldSeconds { get; set; } = 2.0f;
+	[Export(PropertyHint.Range, "0.05,3.0,0.05")] public float ArakawaBuildFocusHoldSeconds { get; set; } = 0.8f;
+	[Export] public bool ShowBattleFloorLayer { get; set; } = true;
 	[Export] public int PlayerHandSize { get; set; } = 7;
 	[Export] public int PlayerEnergyPerTurn { get; set; } = 3;
 
@@ -99,6 +104,7 @@ public partial class BattleSceneController : Node2D
 	private int _retreatStartHp = -1;
 	private bool _isPlayerMoveResolving;
 	private Camera2D? _battleCamera;
+	private Sprite2D? _battleBackground;
 	private Rect2 _cameraPanBounds = new();
 	private Vector2 _cameraRestPosition = Vector2.Zero;
 	private Tween? _cameraResetTween;
@@ -146,6 +152,10 @@ public partial class BattleSceneController : Node2D
 		Node2D roomContainer = GetNode<Node2D>("RoomContainer");
 		roomContainer.AddChild(CurrentRoom);
 		roomContainer.MoveChild(CurrentRoom, 0);
+		_battleBackground = EnsureBattleBackground(roomContainer);
+		AttachBattleBackgroundToRoom();
+		ConfigureBattleBackground(roomContainer);
+		ConfigureBattleFloorLayerVisibility();
 
 		RoomLayoutDefinition layout = CurrentRoom.BuildLayoutDefinition(EncounterEnemyDefinitionId);
 		BoardInitializer initializer = new(BoardState, Registry);
@@ -162,7 +172,12 @@ public partial class BattleSceneController : Node2D
 		StateManager.Initialize();
 		StateManager.SyncAllFromRegistry();
 
-		_pieceViewManager = new BattlePieceViewManager(GetNode<Node>("RoomContainer/PieceRoot"), BattlePrefabLibrary);
+		Node pieceRoot = GetNode<Node>("RoomContainer/PieceRoot");
+		Node killFxRoot = EnsureRoomLayerRoot("KillFxRoot", false);
+		_pieceViewManager = new BattlePieceViewManager(
+			pieceRoot,
+			killFxRoot,
+			BattlePrefabLibrary);
 		_pieceViewManager.Rebuild(Registry, StateManager, CurrentRoom);
 		_floatingTextLayer = GetNodeOrNull<BattleFloatingTextLayer>("RoomContainer/FloatingTextLayer");
 		_actionService = new BattleActionService(BoardState, Registry, QueryService, Pathfinder, StateManager, _pieceViewManager, CurrentRoom, GlobalSession, _floatingTextLayer);
@@ -204,6 +219,116 @@ public partial class BattleSceneController : Node2D
 		ConfigureCameraForBattle();
 
 		GD.Print($"BattleSceneController: layout={layout.LayoutId}, size={layout.BoardSize}, objects={Registry.Count}");
+	}
+
+	private Sprite2D? EnsureBattleBackground(Node2D roomContainer)
+	{
+		Sprite2D? existing = roomContainer.GetNodeOrNull<Sprite2D>("BattleBackground");
+		if (existing != null)
+		{
+			return existing;
+		}
+
+		Texture2D? texture = GD.Load<Texture2D>(BattleBackgroundTexturePath);
+		if (texture == null)
+		{
+			GD.Print($"BattleSceneController: failed to load background texture at {BattleBackgroundTexturePath}.");
+			return null;
+		}
+
+		Sprite2D background = new()
+		{
+			Name = "BattleBackground",
+			Texture = texture,
+			Centered = true,
+			ZIndex = 0,
+		};
+		roomContainer.AddChild(background);
+		GD.Print($"BattleSceneController: battle background created at runtime from {BattleBackgroundTexturePath}.");
+		return background;
+	}
+
+	private Node EnsureRoomLayerRoot(string nodeName, bool ySortEnabled)
+	{
+		Node2D roomContainer = GetNode<Node2D>("RoomContainer");
+		if (roomContainer.GetNodeOrNull<Node>(nodeName) is Node existing)
+		{
+			return existing;
+		}
+
+		Node2D created = new()
+		{
+			Name = nodeName,
+			YSortEnabled = ySortEnabled,
+		};
+		roomContainer.AddChild(created);
+		GD.Print($"BattleSceneController: created missing room layer root '{nodeName}' at runtime.");
+		return created;
+	}
+
+	private void ConfigureBattleBackground(Node2D roomContainer)
+	{
+		if (_battleBackground == null || CurrentRoom == null || _battleBackground.Texture == null)
+		{
+			GD.Print("BattleSceneController: battle background missing or texture unresolved.");
+			return;
+		}
+
+		Vector2 boardPixelSize = new(
+			CurrentRoom.BoardSize.X * CurrentRoom.CellSizePixels,
+			CurrentRoom.BoardSize.Y * CurrentRoom.CellSizePixels);
+		Vector2 textureSize = _battleBackground.Texture.GetSize();
+		if (textureSize.X <= 0.0f || textureSize.Y <= 0.0f)
+		{
+			return;
+		}
+
+		const float horizontalPadding = 128.0f;
+		const float verticalPadding = 128.0f;
+		float scale = Math.Max(
+			(boardPixelSize.X + horizontalPadding) / textureSize.X,
+			(boardPixelSize.Y + verticalPadding) / textureSize.Y);
+
+		_battleBackground.Scale = new Vector2(scale, scale);
+		_battleBackground.Position = boardPixelSize * 0.5f;
+		GD.Print(
+			$"BattleSceneController: background configured parent={_battleBackground.GetParent()?.Name}, " +
+			$"pos={_battleBackground.Position}, scale={_battleBackground.Scale}, " +
+			$"size={textureSize}, visible={_battleBackground.Visible}, z={_battleBackground.ZIndex}");
+	}
+
+	private void AttachBattleBackgroundToRoom()
+	{
+		if (_battleBackground == null || CurrentRoom == null)
+		{
+			GD.Print("BattleSceneController: battle background node or current room missing before attach.");
+			return;
+		}
+
+		_battleBackground.Reparent(CurrentRoom, false);
+
+		int insertionIndex = 0;
+		if (CurrentRoom.GetNodeOrNull<Node>("FloorLayer") is Node floorLayer)
+		{
+			insertionIndex = floorLayer.GetIndex();
+		}
+
+		CurrentRoom.MoveChild(_battleBackground, insertionIndex);
+		GD.Print(
+			$"BattleSceneController: background attached to room={CurrentRoom.Name}, " +
+			$"childIndex={_battleBackground.GetIndex()}, insertionIndex={insertionIndex}");
+	}
+
+	private void ConfigureBattleFloorLayerVisibility()
+	{
+		if (CurrentRoom?.GetNodeOrNull<TileMapLayer>("FloorLayer") is not TileMapLayer floorLayer)
+		{
+			GD.Print("BattleSceneController: floor layer not found when configuring floor visibility.");
+			return;
+		}
+
+		floorLayer.Visible = ShowBattleFloorLayer;
+		GD.Print($"BattleSceneController: floor layer visible={floorLayer.Visible}");
 	}
 
 	public override void _ExitTree()
@@ -262,6 +387,7 @@ public partial class BattleSceneController : Node2D
 				_playerDeck.DiscardPileCards,
 				_playerDeck.ExhaustPileCards);
 		}
+		BattleObjectState? playerState = StateManager.GetPrimaryPlayerState();
 		if (_hud != null && GlobalSession != null)
 		{
 			bool canUseArakawa = CanUseArakawaThisTurn();
@@ -280,6 +406,7 @@ public partial class BattleSceneController : Node2D
 				canUseArakawa,
 				_isArakawaWheelOpen,
 				GetCurrentArakawaAbilityId());
+			_hud.SetRetreatActionState(playerState != null && IsPlayerStandingOnEscapeCell(playerState.Cell) && IsRetreatFeatureAvailable());
 			_hud.SetActionLogState(_currentTurnActionLogTurnIndex, _currentTurnActionLogEntries, _previousTurnActionLogTurnIndex, _previousTurnActionLogEntries);
 		}
 
@@ -290,6 +417,8 @@ public partial class BattleSceneController : Node2D
 		{
 			return;
 		}
+
+		overlay.SetEscapeCells(CurrentRoom.GetEscapeCells());
 
 		if (_isPlayerMoveResolving)
 		{
@@ -309,7 +438,6 @@ public partial class BattleSceneController : Node2D
 			return;
 		}
 
-		BattleObjectState? playerState = StateManager.GetPrimaryPlayerState();
 		if (playerState == null)
 		{
 			overlay.SetReachableCells(Array.Empty<Vector2I>());
@@ -743,7 +871,7 @@ public partial class BattleSceneController : Node2D
 		_playerDeck.DrawToHandSize();
 		if (StateManager?.GetPrimaryPlayerState() is BattleObjectState playerState)
 		{
-			AppendBattleActionLog($"{playerState.DisplayName}->{playerState.DisplayName} 鍐ユ兂");
+			AppendBattleActionLog($"{playerState.DisplayName}->{playerState.DisplayName} 冥想");
 		}
 		TurnState.MarkActed();
 		ResolveTurnPostPhase();
@@ -780,8 +908,8 @@ public partial class BattleSceneController : Node2D
 		await _actionService.ApplyDefenseActionAsync(playerState.ObjectId, BuildPlayerDefenseActionDefinition(), TurnState.TurnIndex);
 		int defenseShieldGain = GlobalSession?.GetResolvedPlayerDefenseShieldGain() ?? 0;
 		AppendBattleActionLog(defenseShieldGain > 0
-			? $"{playerState.DisplayName}->{playerState.DisplayName} 鎶ょ浘{defenseShieldGain}"
-			: $"{playerState.DisplayName}->{playerState.DisplayName} 闃插尽");
+			? $"{playerState.DisplayName}->{playerState.DisplayName} 护盾{defenseShieldGain}"
+			: $"{playerState.DisplayName}->{playerState.DisplayName} 防御");
 		TurnState.MarkActed();
 		ResolveTurnPostPhase();
 	}
@@ -810,15 +938,14 @@ public partial class BattleSceneController : Node2D
 
 		CancelArakawaAbilityMode();
 		_isArakawaWheelOpen = false;
-		_retreatPending = true;
-		_retreatTurnIndex = TurnState.TurnIndex;
-		_retreatStartHp = GlobalSession.PlayerCurrentHp;
+		_retreatPending = false;
+		_retreatTurnIndex = -1;
+		_retreatStartHp = -1;
 		if (StateManager?.GetPrimaryPlayerState() is BattleObjectState playerState)
 		{
-			AppendBattleActionLog($"{playerState.DisplayName}->{playerState.DisplayName} 閫冭窇");
+			AppendBattleActionLog($"{playerState.DisplayName}->{playerState.DisplayName} 立即脱离战斗");
 		}
-		TurnState.MarkActed();
-		ResolveTurnPostPhase();
+		CommitBattleResult(BattleOutcome.Retreat);
 	}
 
 	private void OnArakawaWheelRequested()
@@ -882,7 +1009,22 @@ public partial class BattleSceneController : Node2D
 
 	private bool CanAttemptRetreatThisTurn()
 	{
-		if (TurnState?.CanRetreat != true || GlobalSession == null)
+		if (TurnState?.CanRetreat != true || GlobalSession == null || StateManager?.GetPrimaryPlayerState() is not BattleObjectState playerState)
+		{
+			return false;
+		}
+
+		if (!IsPlayerStandingOnEscapeCell(playerState.Cell))
+		{
+			return false;
+		}
+
+		return IsRetreatFeatureAvailable();
+	}
+
+	private bool IsRetreatFeatureAvailable()
+	{
+		if (GlobalSession == null)
 		{
 			return false;
 		}
@@ -895,6 +1037,11 @@ public partial class BattleSceneController : Node2D
 		}
 
 		return true;
+	}
+
+	private bool IsPlayerStandingOnEscapeCell(Vector2I playerCell)
+	{
+		return CurrentRoom != null && CurrentRoom.GetEscapeCells().Contains(playerCell);
 	}
 
 	private void BeginArakawaAbilityMode(ArakawaAbilityMode abilityMode)
@@ -1056,7 +1203,20 @@ public partial class BattleSceneController : Node2D
 				return false;
 			}
 
-			DamageApplicationResult damageResult = _actionService.ApplyDamageToTarget(targetObject.ObjectId, cardInstance.Definition.Damage, out _, out string damageFailureReason);
+			Vector2 knockbackDirection = Vector2.Zero;
+			if (Registry != null && Registry.TryGet(attackerId, out BoardObject? attackerObject) && attackerObject != null)
+			{
+				knockbackDirection = new Vector2(
+					targetObject.Cell.X - attackerObject.Cell.X,
+					targetObject.Cell.Y - attackerObject.Cell.Y);
+			}
+
+			DamageApplicationResult damageResult = _actionService.ApplyDamageToTarget(
+				targetObject.ObjectId,
+				cardInstance.Definition.Damage,
+				knockbackDirection,
+				out bool wasDestroyed,
+				out string damageFailureReason);
 			if (!string.IsNullOrWhiteSpace(damageFailureReason))
 			{
 				failureReason = damageFailureReason;
@@ -1066,8 +1226,14 @@ public partial class BattleSceneController : Node2D
 			int damageAmount = SumImpactAmount(damageResult, CombatImpactType.HealthDamage, CombatImpactType.ShieldDamage);
 			if (damageAmount > 0)
 			{
-				TriggerBattleCameraFocusForObjects(attackerId, targetObject.ObjectId);
-				AppendBattleActionLog($"{ResolveObjectDisplayName(attackerId)}->{ResolveObjectDisplayName(targetObject.ObjectId)} 鏀诲嚮{damageAmount}");
+				if (wasDestroyed && targetObject.ObjectType == BoardObjectType.Unit && targetObject.Faction == BoardObjectFaction.Enemy)
+				{
+					Vector2I attackerCell = Registry != null && Registry.TryGet(attackerId, out BoardObject? attackerObjectForFocus) && attackerObjectForFocus != null
+						? attackerObjectForFocus.Cell
+						: targetObject.Cell;
+					TriggerBattleCameraFocusForCells(attackerCell, targetObject.Cell);
+				}
+				AppendBattleActionLog($"{ResolveObjectDisplayName(attackerId)}->{ResolveObjectDisplayName(targetObject.ObjectId)} 閺€璇插毊{damageAmount}");
 			}
 		}
 
@@ -1094,7 +1260,7 @@ public partial class BattleSceneController : Node2D
 			int shieldGain = SumImpactAmount(shieldResult, CombatImpactType.ShieldGain);
 			if (shieldGain > 0)
 			{
-				AppendBattleActionLog($"{ResolveObjectDisplayName(attackerId)}->{ResolveObjectDisplayName(attackerId)} 鎶ょ浘{shieldGain}");
+				AppendBattleActionLog($"{ResolveObjectDisplayName(attackerId)}->{ResolveObjectDisplayName(attackerId)} 护盾{shieldGain}");
 			}
 		}
 
@@ -1117,7 +1283,7 @@ public partial class BattleSceneController : Node2D
 			int healAmount = SumImpactAmount(healingResult, CombatImpactType.HealthHeal);
 			if (healAmount > 0)
 			{
-				AppendBattleActionLog($"{ResolveObjectDisplayName(attackerId)}->{ResolveObjectDisplayName(healingTargetId)} 娌荤枟{healAmount}");
+				AppendBattleActionLog($"{ResolveObjectDisplayName(attackerId)}->{ResolveObjectDisplayName(healingTargetId)} 治疗{healAmount}");
 			}
 		}
 
@@ -1148,12 +1314,35 @@ public partial class BattleSceneController : Node2D
 			return false;
 		}
 
-		if (!_actionService.TryAttackObject(attackerId, targetId, out failureReason))
+		Vector2I attackerCell = Vector2I.Zero;
+		Vector2I targetCell = Vector2I.Zero;
+		BoardObjectFaction targetFaction = BoardObjectFaction.World;
+		BoardObjectType targetType = BoardObjectType.Obstacle;
+		if (Registry != null)
+		{
+			if (Registry.TryGet(attackerId, out BoardObject? attackerObject) && attackerObject != null)
+			{
+				attackerCell = attackerObject.Cell;
+			}
+
+			if (Registry.TryGet(targetId, out BoardObject? targetObject) && targetObject != null)
+			{
+				targetCell = targetObject.Cell;
+				targetFaction = targetObject.Faction;
+				targetType = targetObject.ObjectType;
+			}
+		}
+
+		if (!_actionService.TryAttackObject(attackerId, targetId, out bool wasDestroyed, out failureReason))
 		{
 			return false;
 		}
 
-		TriggerBattleCameraFocusForObjects(attackerId, targetId);
+		if (wasDestroyed && targetType == BoardObjectType.Unit && targetFaction == BoardObjectFaction.Enemy)
+		{
+			TriggerBattleCameraFocusForCells(attackerCell, targetCell);
+		}
+
 		TurnState.MarkActed();
 		ResolveTurnPostPhase();
 		return true;
@@ -1360,10 +1549,15 @@ public partial class BattleSceneController : Node2D
 					.GroupBy(definition => definition.CardId, StringComparer.Ordinal)
 					.ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
 			}
-			else if (!validationResult.IsValid)
-			{
-				GD.PushWarning($"BattleSceneController: deck build snapshot failed validation. {string.Join(" | ", validationResult.Errors)}");
-			}
+		else if (!validationResult.IsValid)
+		{
+			GD.PushWarning($"BattleSceneController: deck build snapshot failed validation. {string.Join(" | ", validationResult.Errors)}");
+		}
+	}
+		if (definitionMap.TryGetValue("debug_finisher", out BattleCardDefinition? debugFinisher)
+			&& !buildCards.Any(definition => string.Equals(definition.CardId, "debug_finisher", StringComparison.Ordinal)))
+		{
+			buildCards = new[] { debugFinisher }.Concat(buildCards).ToArray();
 		}
 		BattleCardDefinition[] startingHandCards = ResolveCardDefinitionsFromSnapshot(_activeBattleRequest.DeckRuntimeInitOverrides, "starting_hand_card_ids", definitionMap);
 		BattleCardDefinition[] startingDrawPileCards = ResolveCardDefinitionsFromSnapshot(_activeBattleRequest.DeckRuntimeInitOverrides, "starting_draw_pile_card_ids", definitionMap);
@@ -1469,12 +1663,20 @@ public partial class BattleSceneController : Node2D
 		return snapshot.TryGetValue(key, out Variant value) ? value.AsInt32() : -1;
 	}
 
-	private void ReturnToPendingMapSceneIfAny()
+	private async void ReturnToPendingMapSceneIfAny()
 	{
 		if (GlobalSession?.PeekPendingMapResumeContext() is not MapResumeContext resumeContext
 			|| string.IsNullOrWhiteSpace(resumeContext.ScenePath))
 		{
 			return;
+		}
+
+		if (GD.Load<PackedScene>(BattleReturnTransitionOverlayScenePath) is PackedScene overlayScene
+			&& overlayScene.Instantiate() is CardChessDemo.Map.BattleReturnTransitionOverlay overlay)
+		{
+			GetTree().Root.AddChild(overlay);
+			await overlay.PlayAsync();
+			overlay.QueueFree();
 		}
 
 		Error result = GetTree().ChangeSceneToFile(resumeContext.ScenePath);
@@ -1630,8 +1832,19 @@ public partial class BattleSceneController : Node2D
 			return;
 		}
 
-		double holdDuration = Math.Max(CameraFocusHoldSeconds, BattleActionService.UtilityPresentationDurationSeconds);
+		double holdDuration = Math.Max(ArakawaBuildFocusHoldSeconds, BattleActionService.UtilityPresentationDurationSeconds);
 		_ = PlayBattleCameraFocusAsync(GetBattleWorldPositionForCell(cell), holdDuration);
+	}
+
+	private void TriggerBattleCameraFocusForCells(Vector2I firstCell, Vector2I secondCell)
+	{
+		Vector2 focusPosition = (GetBattleWorldPositionForCell(firstCell) + GetBattleWorldPositionForCell(secondCell)) * 0.5f;
+		double holdDuration = Math.Max(
+			AttackFocusHoldSeconds,
+			Math.Max(
+				BattleActionService.AttackPresentationDurationSeconds,
+				_actionService?.LastImpactPresentationDurationSeconds ?? 0.0d));
+		_ = PlayBattleCameraFocusAsync(focusPosition, holdDuration);
 	}
 
 	private void TriggerBattleCameraFocusForObjects(string firstObjectId, string secondObjectId)
@@ -1645,7 +1858,7 @@ public partial class BattleSceneController : Node2D
 
 		Vector2 focusPosition = (GetBattleWorldPositionForCell(firstObject.Cell) + GetBattleWorldPositionForCell(secondObject.Cell)) * 0.5f;
 		double holdDuration = Math.Max(
-			CameraFocusHoldSeconds,
+			AttackFocusHoldSeconds,
 			Math.Max(
 				BattleActionService.AttackPresentationDurationSeconds,
 				_actionService?.LastImpactPresentationDurationSeconds ?? 0.0d));
@@ -1676,7 +1889,8 @@ public partial class BattleSceneController : Node2D
 		Vector2 previousPosition = _battleCamera.Position;
 		Vector2 previousZoom = _battleCamera.Zoom;
 		Vector2 clampedFocus = ClampBattleCameraPosition(focusPosition);
-		float zoomMultiplier = Mathf.Clamp(CameraFocusZoomMultiplier, 0.5f, 1.0f);
+		float zoomMultiplier = Mathf.Clamp(Mathf.Round(CameraFocusZoomMultiplier), 1.0f, 4.0f);
+		// 像素表现要求整数缩放，运行时强制取整，避免非整数倍率导致的像素畸变。
 		Vector2 focusZoom = new(previousZoom.X * zoomMultiplier, previousZoom.Y * zoomMultiplier);
 
 		_battleCamera.Position = clampedFocus;
@@ -1929,7 +2143,7 @@ public partial class BattleSceneController : Node2D
 		}
 		TriggerBattleCameraFocusForCell(targetCell);
 
-		AppendBattleActionLog($"鑽掑窛->({targetCell.X},{targetCell.Y}) 閫犲");
+		AppendBattleActionLog($"荒川->({targetCell.X},{targetCell.Y}) 造墙");
 
 		CancelArakawaAbilityMode();
 	}
@@ -1963,7 +2177,7 @@ public partial class BattleSceneController : Node2D
 		}
 
 		_hud.PlayCardEnhancementEffect(cardInstanceId);
-		AppendBattleActionLog($"鑽掑窛->{cardInstance.Definition.DisplayName} 寮哄寲");
+		AppendBattleActionLog($"荒川->{cardInstance.Definition.DisplayName} 强化");
 		CancelArakawaAbilityMode();
 	}
 
@@ -2188,9 +2402,19 @@ public partial class BattleSceneController : Node2D
 		return new[]
 		{
 			new BattleCardDefinition(
+				"debug_finisher",
+				"澶勫喅",
+				"杩戦偦 99 浼ゅ",
+				1,
+				BattleCardCategory.Attack,
+				BattleCardTargetingMode.EnemyUnit,
+				range: 1,
+				damage: 99,
+				exhaustsOnPlay: true),
+			new BattleCardDefinition(
 				"cross_slash",
-				"交斩",
-				"近邻 3 伤害",
+				"浜ゆ柀",
+				"杩戦偦 3 浼ゅ",
 				1,
 				BattleCardCategory.Attack,
 				BattleCardTargetingMode.EnemyUnit,
@@ -2198,8 +2422,8 @@ public partial class BattleSceneController : Node2D
 				damage: 3),
 			new BattleCardDefinition(
 				"quick_cut",
-				"疾斩",
-				"近邻 2 伤害",
+				"鐤炬柀",
+				"杩戦偦 2 浼ゅ",
 				0,
 				BattleCardCategory.Attack,
 				BattleCardTargetingMode.EnemyUnit,
@@ -2208,8 +2432,8 @@ public partial class BattleSceneController : Node2D
 				isQuick: true),
 			new BattleCardDefinition(
 				"line_shot",
-				"贯射",
-				"直线首敌 2 伤害",
+				"璐皠",
+				"鐩寸嚎棣栨晫 2 浼ゅ",
 				1,
 				BattleCardCategory.Attack,
 				BattleCardTargetingMode.StraightLineEnemy,
@@ -2217,8 +2441,8 @@ public partial class BattleSceneController : Node2D
 				damage: 2),
 			new BattleCardDefinition(
 				"heavy_shot",
-				"重铳",
-				"直线首敌 5 伤害",
+				"閲嶉摮",
+				"鐩寸嚎棣栨晫 5 浼ゅ",
 				2,
 				BattleCardCategory.Attack,
 				BattleCardTargetingMode.StraightLineEnemy,
@@ -2235,8 +2459,8 @@ public partial class BattleSceneController : Node2D
 				drawCount: 2),
 			new BattleCardDefinition(
 				"meditate",
-				"调息",
-				"抽 1 张并回 1 能量",
+				"璋冩伅",
+				"鎶?1 寮犲苟鍥?1 鑳介噺",
 				0,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
@@ -2245,8 +2469,8 @@ public partial class BattleSceneController : Node2D
 				isQuick: true),
 			new BattleCardDefinition(
 				"surge",
-				"蓄能",
-				"回 2 能量",
+				"钃勮兘",
+				"鍥?2 鑳介噺",
 				1,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
@@ -2254,8 +2478,8 @@ public partial class BattleSceneController : Node2D
 				exhaustsOnPlay: true),
 			new BattleCardDefinition(
 				"draw_spark",
-				"灵感",
-				"抽 1 张并回 1 能量",
+				"鐏垫劅",
+				"鎶?1 寮犲苟鍥?1 鑳介噺",
 				1,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
@@ -2272,8 +2496,8 @@ public partial class BattleSceneController : Node2D
 				isQuick: true),
 			new BattleCardDefinition(
 				"burning_edge",
-				"燃刃",
-				"近邻 4 伤害",
+				"鐕冨垉",
+				"杩戦偦 4 浼ゅ",
 				1,
 				BattleCardCategory.Attack,
 				BattleCardTargetingMode.EnemyUnit,
@@ -2282,8 +2506,8 @@ public partial class BattleSceneController : Node2D
 				exhaustsOnPlay: true),
 			new BattleCardDefinition(
 				"hook_shot",
-				"钩射",
-				"直线首敌 3 伤害",
+				"閽╁皠",
+				"鐩寸嚎棣栨晫 3 浼ゅ",
 				1,
 				BattleCardCategory.Attack,
 				BattleCardTargetingMode.StraightLineEnemy,
@@ -2300,7 +2524,7 @@ public partial class BattleSceneController : Node2D
 			new BattleCardDefinition(
 				"spark_charge",
 				"火花",
-				"回 1 能量并抽 1 张",
+				"获得 1 能量并抽 1 张",
 				0,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
@@ -2309,8 +2533,8 @@ public partial class BattleSceneController : Node2D
 				isQuick: true),
 			new BattleCardDefinition(
 				"burst_drive",
-				"爆驱",
-				"回 2 能量",
+				"鐖嗛┍",
+				"鍥?2 鑳介噺",
 				0,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
@@ -2318,24 +2542,24 @@ public partial class BattleSceneController : Node2D
 				exhaustsOnPlay: true),
 			new BattleCardDefinition(
 				"guard_up",
-				"举盾",
-				"获得 3 护盾",
+				"涓剧浘",
+				"鑾峰緱 3 鎶ょ浘",
 				1,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
 				shieldGain: 3),
 			new BattleCardDefinition(
 				"brace",
-				"架势",
-				"获得 5 护盾",
+				"鏋跺娍",
+				"鑾峰緱 5 鎶ょ浘",
 				2,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
 				shieldGain: 5),
 			new BattleCardDefinition(
 				"quick_guard",
-				"瞬守",
-				"获得 2 护盾",
+				"鐬畧",
+				"鑾峰緱 2 鎶ょ浘",
 				0,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.None,
@@ -2343,8 +2567,8 @@ public partial class BattleSceneController : Node2D
 				isQuick: true),
 			new BattleCardDefinition(
 				"field_patch",
-				"现场包扎",
-				"2 格内友方恢复 3 生命",
+				"鐜板満鍖呮墡",
+				"2 鏍煎唴鍙嬫柟鎭㈠ 3 鐢熷懡",
 				1,
 				BattleCardCategory.Skill,
 				BattleCardTargetingMode.FriendlyUnit,

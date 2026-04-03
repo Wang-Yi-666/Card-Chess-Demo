@@ -35,6 +35,10 @@ public sealed class BattleActionService
     public const double DefensePresentationDurationSeconds = 0.22d;
     public const double UtilityPresentationDurationSeconds = 0.24d;
     public const double ImpactFlowWaitRatio = 0.82d;
+    public const double KillShatterPresentationDurationSeconds = 0.26d;
+    public const double KillWhitenPresentationDurationSeconds = 0.07d;
+    public const double KillKnockbackPresentationDurationSeconds = 0.10d;
+    public const float KillKnockbackDistancePixels = 11.0f;
 
     public BattleActionService(
         BoardState boardState,
@@ -107,9 +111,10 @@ public sealed class BattleActionService
         return true;
     }
 
-    public bool TryAttackObject(string attackerId, string targetId, out string failureReason)
+    public bool TryAttackObject(string attackerId, string targetId, out bool wasDestroyed, out string failureReason)
     {
         failureReason = string.Empty;
+        wasDestroyed = false;
 
         if (!_registry.TryGet(attackerId, out BoardObject? attacker) || attacker == null)
         {
@@ -135,8 +140,10 @@ public sealed class BattleActionService
             return false;
         }
 
-        PlayAttackPresentation(attacker, target);
-        DamageApplicationResult result = ApplyDamageToTarget(target, attackerState.AttackDamage);
+        Vector2 attackDirection = new(target.Cell.X - attacker.Cell.X, target.Cell.Y - attacker.Cell.Y);
+        PlayAttackPresentation(attacker, target, attackDirection);
+        DamageApplicationResult result = ApplyDamageToTarget(target, attackerState.AttackDamage, attackDirection);
+        wasDestroyed = target.IsDestroyed;
         PublishActionLog($"{ResolveObjectDisplayName(attacker.ObjectId)}->{ResolveObjectDisplayName(target.ObjectId)} 攻击{SumDamageImpactAmount(result)}");
         SyncPresentation();
         return true;
@@ -144,7 +151,7 @@ public sealed class BattleActionService
 
     public async Task<bool> TryAttackObjectAsync(string attackerId, string targetId)
     {
-        bool attacked = TryAttackObject(attackerId, targetId, out _);
+        bool attacked = TryAttackObject(attackerId, targetId, out _, out _);
         if (!attacked)
         {
             return false;
@@ -154,7 +161,7 @@ public sealed class BattleActionService
         return true;
     }
 
-    public DamageApplicationResult ApplyDamageToTarget(string targetId, int amount, out bool wasDestroyed, out string failureReason)
+    public DamageApplicationResult ApplyDamageToTarget(string targetId, int amount, Vector2? knockbackDirection, out bool wasDestroyed, out string failureReason)
     {
         failureReason = string.Empty;
         wasDestroyed = false;
@@ -165,7 +172,7 @@ public sealed class BattleActionService
             return new DamageApplicationResult();
         }
 
-        DamageApplicationResult result = ApplyDamageToTarget(target, amount);
+        DamageApplicationResult result = ApplyDamageToTarget(target, amount, knockbackDirection ?? Vector2.Zero);
         wasDestroyed = target.IsDestroyed;
         return result;
     }
@@ -430,7 +437,7 @@ public sealed class BattleActionService
         _pieceViewManager.Sync(_registry, _stateManager, _room);
     }
 
-    private DamageApplicationResult ApplyDamageToTarget(BoardObject target, int amount)
+    private DamageApplicationResult ApplyDamageToTarget(BoardObject target, int amount, Vector2 knockbackDirection)
     {
         bool isPlayerTarget = target.HasTag("player");
         DamageApplicationResult result = target.ApplyDamage(amount);
@@ -447,7 +454,24 @@ public sealed class BattleActionService
         {
             if (!isPlayerTarget)
             {
-                _pieceViewManager.PlayDefeat(target.ObjectId);
+                if (target.ObjectType == BoardObjectType.Unit)
+                {
+                    _ = _pieceViewManager.PlayKillSequenceAsync(
+                        target.ObjectId,
+                        knockbackDirection,
+                        KillKnockbackDistancePixels,
+                        KillKnockbackPresentationDurationSeconds,
+                        KillWhitenPresentationDurationSeconds,
+                        KillShatterPresentationDurationSeconds);
+                    _lastImpactPresentationDurationSeconds = Math.Max(
+                        _lastImpactPresentationDurationSeconds,
+                        KillKnockbackPresentationDurationSeconds + KillShatterPresentationDurationSeconds);
+                }
+                else
+                {
+                    _pieceViewManager.PlayDefeat(target.ObjectId);
+                }
+
                 _boardState.RemoveObject(target);
                 _registry.Remove(target.ObjectId);
             }
@@ -491,9 +515,8 @@ public sealed class BattleActionService
             result.Impacts);
     }
 
-    private void PlayAttackPresentation(BoardObject attacker, BoardObject target)
+    private void PlayAttackPresentation(BoardObject attacker, BoardObject target, Vector2 direction)
     {
-        Vector2 direction = new(target.Cell.X - attacker.Cell.X, target.Cell.Y - attacker.Cell.Y);
         _pieceViewManager.PlayAttackExchange(attacker.ObjectId, direction, target.ObjectId);
     }
 

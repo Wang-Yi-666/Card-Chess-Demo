@@ -119,11 +119,10 @@ public sealed class BoardObject
 
         if (remainingDamage > 0)
         {
-            int hpDamage = Math.Min(CurrentHp, remainingDamage);
             CurrentHp = Math.Max(0, CurrentHp - remainingDamage);
-            if (hpDamage > 0)
+            if (remainingDamage > 0)
             {
-                impacts.Add(new CombatImpact(CombatImpactType.HealthDamage, hpDamage));
+                impacts.Add(new CombatImpact(CombatImpactType.HealthDamage, remainingDamage));
             }
         }
 

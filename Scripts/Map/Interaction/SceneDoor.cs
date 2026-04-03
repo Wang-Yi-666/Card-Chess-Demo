@@ -88,10 +88,16 @@ public partial class SceneDoor : InteractableTemplate
 	private void EnterBattle(Player player)
 	{
 		_isTransitioning = true;
-		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, BattleEncounterId, out string failureReason))
+		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, BattleEncounterId, out string failureReason, HandleDeferredBattleFailure))
 		{
 			_isTransitioning = false;
 			GD.PushError($"SceneDoor: {failureReason}");
 		}
+	}
+
+	private void HandleDeferredBattleFailure(string failureReason)
+	{
+		_isTransitioning = false;
+		GD.PushError($"SceneDoor: {failureReason}");
 	}
 }

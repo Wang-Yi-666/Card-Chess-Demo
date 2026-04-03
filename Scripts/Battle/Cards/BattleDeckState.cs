@@ -82,8 +82,6 @@ public sealed class BattleDeckState
             {
                 _drawPile.Add(CreateInstance(definition));
             }
-
-            Shuffle(_drawPile);
         }
 
         CurrentEnergy = runtimeInit != null && runtimeInit.InitialEnergy >= 0
@@ -223,8 +221,8 @@ public sealed class BattleDeckState
             return false;
         }
 
-        BattleCardInstance nextCard = _drawPile[^1];
-        _drawPile.RemoveAt(_drawPile.Count - 1);
+        BattleCardInstance nextCard = _drawPile[0];
+        _drawPile.RemoveAt(0);
         _hand.Add(nextCard);
         return true;
     }

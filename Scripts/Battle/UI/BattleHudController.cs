@@ -106,6 +106,7 @@ public partial class BattleHudController : CanvasLayer
 	private int _arakawaCurrentEnergy;
 	private int _arakawaMaxEnergy;
 	private bool _canUseArakawa;
+	private bool _showRetreatButton;
 	private bool _isArakawaWheelOpen;
 	private bool _isActionLogOpen;
 	private string _selectedArakawaAbilityId = string.Empty;
@@ -192,6 +193,11 @@ public partial class BattleHudController : CanvasLayer
 		_canUseArakawa = canUse;
 		_isArakawaWheelOpen = isWheelOpen;
 		_selectedArakawaAbilityId = selectedAbilityId ?? string.Empty;
+	}
+
+	public void SetRetreatActionState(bool visible)
+	{
+		_showRetreatButton = visible;
 	}
 
 	public void SetActionLogState(
@@ -285,7 +291,8 @@ public partial class BattleHudController : CanvasLayer
 		_attackButton.Disabled = !_turnState.CanEnterAttackTargeting && !_turnState.IsAttackTargeting;
 		_defendButton.Disabled = !_turnState.CanSelectCard;
 		_meditateButton.Disabled = !_turnState.CanSelectCard;
-		_retreatButton.Disabled = !_turnState.CanRetreat;
+		_retreatButton.Visible = _showRetreatButton;
+		_retreatButton.Disabled = !_showRetreatButton || !_turnState.CanRetreat;
 		_endTurnButton.Disabled = !_turnState.IsPlayerTurn && !_turnState.IsAttackTargeting && !_turnState.IsCardTargeting;
 
 		RefreshHandViews();
@@ -650,6 +657,10 @@ public partial class BattleHudController : CanvasLayer
 		ApplyCompactButtonStyle(_arakawaCancelButton);
 		ApplyCompactButtonStyle(_meditateButton);
 		ApplyCompactButtonStyle(_endTurnButton);
+		DisableButtonFocus(_actionLogDismissButton);
+		DisableButtonFocus(_actionLogCloseButton);
+		DisableButtonFocus(_pileDismissButton);
+		DisableButtonFocus(_pilePopupCloseButton);
 
 		_attackButton.Pressed += OnAttackPressed;
 		_defendButton.Pressed += OnDefendPressed;
@@ -674,6 +685,8 @@ public partial class BattleHudController : CanvasLayer
 
 	private void ApplyCompactButtonStyle(Button button)
 	{
+		DisableButtonFocus(button);
+
 		StyleBoxFlat normal = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
 		StyleBoxFlat hover = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
 		StyleBoxFlat pressed = _compactButtonStyle.Duplicate() as StyleBoxFlat ?? _compactButtonStyle;
@@ -687,6 +700,11 @@ public partial class BattleHudController : CanvasLayer
 		button.AddThemeStyleboxOverride("hover", hover);
 		button.AddThemeStyleboxOverride("pressed", pressed);
 		button.AddThemeStyleboxOverride("disabled", disabled);
+	}
+
+	private static void DisableButtonFocus(Button button)
+	{
+		button.FocusMode = Control.FocusModeEnum.None;
 	}
 
 	private void OnCardMouseEntered(BattleCardInstance card)

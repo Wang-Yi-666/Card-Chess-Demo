@@ -42,7 +42,7 @@ public partial class Enemy : InteractableTemplate
 	protected override void OnInteract(Player player)
 	{
 		_isTransitioning = true;
-		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, EncounterId, out string failureReason))
+		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, EncounterId, out string failureReason, HandleDeferredBattleFailure))
 		{
 			_isTransitioning = false;
 			GD.PushError($"Enemy: {failureReason}");
@@ -53,5 +53,16 @@ public partial class Enemy : InteractableTemplate
 		{
 			IsDisabled = true;
 		}
+	}
+
+	private void HandleDeferredBattleFailure(string failureReason)
+	{
+		_isTransitioning = false;
+		if (DisableAfterInteract)
+		{
+			IsDisabled = false;
+		}
+
+		GD.PushError($"Enemy: {failureReason}");
 	}
 }

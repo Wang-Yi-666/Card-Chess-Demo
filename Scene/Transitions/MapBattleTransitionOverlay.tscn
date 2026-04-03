@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Map/Transitions/MapBattleTransitionOverlay.cs" id="1_script"]
+[ext_resource type="Shader" path="res://Shaders/Transitions/MapBattleDissolve.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_battle_transition"]
+shader = ExtResource("2_shader")
+shader_parameter/progress = 0.0
+shader_parameter/block_size = 12.0
+shader_parameter/spread = 0.55
+shader_parameter/drift_pixels = 18.0
+shader_parameter/edge_tint = Color(0.51, 0.84, 1, 1)
+shader_parameter/background_tint = Color(0.02, 0.03, 0.06, 1)
+
+[node name="MapBattleTransitionOverlay" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="FullscreenRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_battle_transition")
+color = Color(1, 1, 1, 1)

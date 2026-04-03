@@ -21,7 +21,7 @@ public partial class BattleEncounterEnemy : InteractableTemplate
 
 		if (!CanInteract(player))
 		{
-			return "无法接战";
+			return "无法交战";
 		}
 
 		return string.IsNullOrWhiteSpace(PromptText) ? $"挑战 {EnemyDisplayName}" : PromptText;
@@ -43,12 +43,19 @@ public partial class BattleEncounterEnemy : InteractableTemplate
 	{
 		_isTransitioning = true;
 		PromptText = BusyText;
-		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, BattleEncounterId, out string failureReason))
+		if (!MapBattleTransitionHelper.TryEnterBattle(this, player, BattleScene, BattleScenePath, BattleEncounterId, out string failureReason, HandleDeferredBattleFailure))
 		{
 			_isTransitioning = false;
 			PromptText = $"失败: {failureReason}";
 			GD.PushError($"BattleEncounterEnemy: {failureReason}");
 			return;
 		}
+	}
+
+	private void HandleDeferredBattleFailure(string failureReason)
+	{
+		_isTransitioning = false;
+		PromptText = $"失败: {failureReason}";
+		GD.PushError($"BattleEncounterEnemy: {failureReason}");
 	}
 }

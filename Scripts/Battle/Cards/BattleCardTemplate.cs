@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Godot;
 using CardChessDemo.Battle.Boundary;
@@ -57,9 +57,7 @@ public partial class BattleCardTemplate : Resource
 			energyGain = ScalePositiveValue(energyGain, multiplier);
 			shieldGain = ScalePositiveValue(shieldGain, multiplier);
 			displayName = string.IsNullOrWhiteSpace(displayName) ? "超规卡牌" : $"{displayName} [超规]";
-			description = string.IsNullOrWhiteSpace(description)
-				? "以超规方式携带，费用或效果已受惩罚。"
-				: $"{description} / 超规携带：费用提高或效果衰减";
+			description = string.IsNullOrWhiteSpace(description) ? "以超规方式携带，费用或效果已受惩罚。" : $"{description} / 超规携带：费用提高或效果衰减";
 		}
 
 		return new BattleCardDefinition(
@@ -148,3 +146,5 @@ public partial class BattleCardTemplate : Resource
 		return Math.Max(1, Mathf.FloorToInt(value * multiplier));
 	}
 }
+
+

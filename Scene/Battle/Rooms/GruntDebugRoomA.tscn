@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattlePlayerToken.tscn" id="3_2ttv6"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleEnemyToken.tscn" id="4_uifpp"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleObstacleToken.tscn" id="5_4buc0"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleEscapeTile.tscn" id="6_escape"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2ysmo"]
 texture = ExtResource("2_gwry8")
@@ -149,6 +150,7 @@ texture = ExtResource("2_gwry8")
 scenes/1/scene = ExtResource("3_2ttv6")
 scenes/2/scene = ExtResource("4_uifpp")
 scenes/3/scene = ExtResource("5_4buc0")
+scenes/6/scene = ExtResource("6_escape")
 
 [sub_resource type="TileSet" id="TileSet_23rl1"]
 sources/1 = SubResource("TileSetScenesCollectionSource_pbh81")
@@ -166,4 +168,7 @@ tile_set = SubResource("TileSet_23rl1")
 
 [node name="MarkerLayer" type="TileMapLayer" parent="." unique_id=1044931140]
 tile_map_data = PackedByteArray("AAAAAAAAAQAAAAAAAQAPAAAAAQAAAAAAAgAPAAcAAQAAAAAAAgAAAAcAAQAAAAAAAgAFAAIAAQAAAAAAAwAFAAUAAQAAAAAAAwAHAAUAAQAAAAAAAwAHAAIAAQAAAAAAAwAJAAIAAQAAAAAAAwAJAAUAAQAAAAAAAwALAAUAAQAAAAAAAwALAAIAAQAAAAAAAwA=")
+tile_set = SubResource("TileSet_23rl1")
+
+[node name="EscapeLayer" type="TileMapLayer" parent="." unique_id=915337441]
 tile_set = SubResource("TileSet_23rl1")
