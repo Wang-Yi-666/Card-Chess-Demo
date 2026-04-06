@@ -68,6 +68,7 @@ public partial class BattleCardView : Button
 		_artSymbolLabel.Text = BuildArtSymbol(card.Definition);
 		_costIcon.Texture = GetBadgeTexture(card.Definition);
 		_artTexture.Texture = GetArtTexture(card.Definition);
+		_descriptionPanel.Visible = false;
 
 		ApplyCardFrameStyle(card, isSelected, isPlayable);
 		Modulate = isPlayable ? Colors.White : new Color(1.0f, 1.0f, 1.0f, 0.55f);

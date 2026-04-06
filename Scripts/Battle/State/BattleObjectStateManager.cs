@@ -16,6 +16,7 @@ public sealed class BattleObjectStateManager
     private readonly BoardObjectRegistry _registry;
     private readonly BattlePrefabLibrary _prefabLibrary;
     private readonly GlobalGameSession _session;
+    private int _playerAttackDamageBonus;
 
     public BattleObjectStateManager(BoardObjectRegistry registry, BattlePrefabLibrary prefabLibrary, GlobalGameSession session)
     {
@@ -46,6 +47,17 @@ public sealed class BattleObjectStateManager
     public BattleObjectState? GetPrimaryPlayerState()
     {
         return _states.Values.FirstOrDefault(state => state.IsPlayer);
+    }
+
+    public void AddPlayerAttackDamageBonus(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        _playerAttackDamageBonus += amount;
+        SyncPlayerFromSession();
     }
 
     public void SyncAllFromRegistry()
@@ -100,7 +112,7 @@ public sealed class BattleObjectStateManager
         playerState.CurrentHp = _session.PlayerCurrentHp;
         playerState.MovePointsPerTurn = resolvedStats.MovePointsPerTurn;
         playerState.AttackRange = resolvedStats.AttackRange;
-        playerState.AttackDamage = resolvedStats.AttackDamage;
+        playerState.AttackDamage = resolvedStats.AttackDamage + _playerAttackDamageBonus;
     }
 
     private BattleObjectState CreateState(BoardObject boardObject)
@@ -139,7 +151,7 @@ public sealed class BattleObjectStateManager
             state.CurrentHp = _session.PlayerCurrentHp;
             state.MovePointsPerTurn = resolvedStats.MovePointsPerTurn;
             state.AttackRange = resolvedStats.AttackRange;
-            state.AttackDamage = resolvedStats.AttackDamage;
+            state.AttackDamage = resolvedStats.AttackDamage + _playerAttackDamageBonus;
         }
 
         return state;

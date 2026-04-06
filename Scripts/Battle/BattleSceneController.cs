@@ -27,6 +27,7 @@ public partial class BattleSceneController : Node2D
 	private const string BattleReturnTransitionOverlayScenePath = "res://Scene/Transitions/BattleReturnTransitionOverlay.tscn";
 	private static readonly ArakawaAbilityDefinition BuildWallAbility = new("build_wall", "造墙", 1);
 	private static readonly ArakawaAbilityDefinition EnhanceCardAbility = new("enhance_card", "强化", 1);
+	private static readonly ArakawaAbilityDefinition EnhanceWeaponAbility = new("enhance_weapon", "Weapon", 1);
 	private static readonly IReadOnlyDictionary<string, BattleCardEnhancementDefinition> PrototypeCardEnhancements =
 		new Dictionary<string, BattleCardEnhancementDefinition>(StringComparer.Ordinal)
 		{
@@ -984,6 +985,10 @@ public partial class BattleSceneController : Node2D
 
 			case "enhance_card":
 				BeginArakawaAbilityMode(ArakawaAbilityMode.EnhanceCard);
+				break;
+
+			case "enhance_weapon":
+				TryExecuteArakawaEnhanceWeapon();
 				break;
 		}
 	}
@@ -2178,6 +2183,30 @@ public partial class BattleSceneController : Node2D
 
 		_hud.PlayCardEnhancementEffect(cardInstanceId);
 		AppendBattleActionLog($"荒川->{cardInstance.Definition.DisplayName} 强化");
+		CancelArakawaAbilityMode();
+	}
+
+	private void TryExecuteArakawaEnhanceWeapon()
+	{
+		if (GlobalSession == null || StateManager == null || _pieceViewManager == null || !CanUseArakawaThisTurn())
+		{
+			return;
+		}
+
+		BattleObjectState? playerState = StateManager.GetPrimaryPlayerState();
+		if (playerState == null)
+		{
+			return;
+		}
+
+		if (!GlobalSession.TrySpendArakawaEnergy(EnhanceWeaponAbility.EnergyCost))
+		{
+			return;
+		}
+
+		StateManager.AddPlayerAttackDamageBonus(1);
+		_pieceViewManager.PlayTintPulse(playerState.ObjectId, new Color(0.30f, 0.76f, 1.0f, 1.0f));
+		AppendBattleActionLog($"Arakawa->{playerState.DisplayName} Weapon+1");
 		CancelArakawaAbilityMode();
 	}
 

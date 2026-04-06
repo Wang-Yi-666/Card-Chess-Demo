@@ -35,10 +35,12 @@ public sealed class BattleActionService
     public const double DefensePresentationDurationSeconds = 0.22d;
     public const double UtilityPresentationDurationSeconds = 0.24d;
     public const double ImpactFlowWaitRatio = 0.82d;
-    public const double KillShatterPresentationDurationSeconds = 0.26d;
-    public const double KillWhitenPresentationDurationSeconds = 0.07d;
-    public const double KillKnockbackPresentationDurationSeconds = 0.10d;
-    public const float KillKnockbackDistancePixels = 11.0f;
+    public const double KillShatterPresentationDurationSeconds = 0.52d;
+    public const double KillWhitenPresentationDurationSeconds = 0.24d;
+    public const double KillKnockbackPresentationDurationSeconds = 0.50d;
+    public const float KillKnockbackDistancePixels = 18.0f;
+    public const double ObstacleBreakShatterPresentationDurationSeconds = 0.58d;
+    public const double ObstacleBreakWhitenPresentationDurationSeconds = 0.18d;
 
     public BattleActionService(
         BoardState boardState,
@@ -467,11 +469,16 @@ public sealed class BattleActionService
                         _lastImpactPresentationDurationSeconds,
                         KillKnockbackPresentationDurationSeconds + KillShatterPresentationDurationSeconds);
                 }
-                else
+                else if (target.ObjectType == BoardObjectType.Obstacle)
                 {
-                    _pieceViewManager.PlayDefeat(target.ObjectId);
+                    _ = _pieceViewManager.PlayObstacleBreakSequenceAsync(
+                        target.ObjectId,
+                        ObstacleBreakWhitenPresentationDurationSeconds,
+                        ObstacleBreakShatterPresentationDurationSeconds);
+                    _lastImpactPresentationDurationSeconds = Math.Max(
+                        _lastImpactPresentationDurationSeconds,
+                        ObstacleBreakWhitenPresentationDurationSeconds + ObstacleBreakShatterPresentationDurationSeconds);
                 }
-
                 _boardState.RemoveObject(target);
                 _registry.Remove(target.ObjectId);
             }

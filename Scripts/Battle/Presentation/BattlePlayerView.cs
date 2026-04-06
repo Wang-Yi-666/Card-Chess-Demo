@@ -49,6 +49,16 @@ public partial class BattlePlayerView : BattleAnimatedViewBase
 		return new Vector2(0.0f, CellFootOffsetY);
 	}
 
+	protected override int GetSourceArtFacingSign()
+	{
+		return 1;
+	}
+
+	protected override int GetDefaultFacingSign()
+	{
+		return 1;
+	}
+
 	private SpriteFrames BuildPlayerSheetFrames()
 	{
 		SpriteFrames frames = new();

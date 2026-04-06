@@ -31,6 +31,7 @@ public sealed class BattleObjectState
     public int MovePointsPerTurn { get; set; }
     public int AttackRange { get; set; }
     public int AttackDamage { get; set; }
+    public Vector2 InitialFacing { get; set; } = Vector2.Right;
     public string CurrentAnimation { get; set; } = "idle";
     public bool IsPlayer { get; set; }
 }

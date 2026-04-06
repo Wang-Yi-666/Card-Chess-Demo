@@ -21,5 +21,6 @@ public partial class BoardObjectSpawnDefinition : Resource
     [Export] public bool BlocksLineOfSight { get; set; } = false;
     [Export] public bool StackableWithUnit { get; set; } = true;
     [Export] public int MoveCostModifier { get; set; } = 0;
+    [Export] public Vector2I InitialFacing { get; set; } = Vector2I.Right;
     [Export] public Godot.Collections.Dictionary InitialStatePayload { get; set; } = new();
 }

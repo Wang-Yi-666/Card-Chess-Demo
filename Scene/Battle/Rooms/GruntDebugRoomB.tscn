@@ -6,6 +6,10 @@
 [ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleEnemyToken.tscn" id="4_4pi5i"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleObstacleToken.tscn" id="5_5rulf"]
 [ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleEscapeTile.tscn" id="6_escape"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleFacingLeftTile.tscn" id="7_face_left"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleFacingUpTile.tscn" id="8_face_up"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleFacingRightTile.tscn" id="9_face_right"]
+[ext_resource type="PackedScene" path="res://Scene/Battle/Tiles/BattleFacingDownTile.tscn" id="10_face_down"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hr3sv"]
 texture = ExtResource("2_vvv7j")
@@ -151,6 +155,10 @@ scenes/1/scene = ExtResource("3_nq3j7")
 scenes/2/scene = ExtResource("4_4pi5i")
 scenes/3/scene = ExtResource("5_5rulf")
 scenes/6/scene = ExtResource("6_escape")
+scenes/7/scene = ExtResource("7_face_left")
+scenes/8/scene = ExtResource("8_face_up")
+scenes/9/scene = ExtResource("9_face_right")
+scenes/10/scene = ExtResource("10_face_down")
 
 [sub_resource type="TileSet" id="TileSet_vff8n"]
 sources/0 = SubResource("TileSetAtlasSource_hr3sv")
@@ -177,4 +185,7 @@ tile_map_data = PackedByteArray("AAAAAAcAAQAAAAAAAQAPAAcAAQAAAAAAAgAPAAAAAQAAAAA
 tile_set = SubResource("TileSet_vff8n")
 
 [node name="EscapeLayer" type="TileMapLayer" parent="." unique_id=1853104012]
+tile_set = SubResource("TileSet_vff8n")
+
+[node name="FacingLayer" type="TileMapLayer" parent="." unique_id=138411087]
 tile_set = SubResource("TileSet_vff8n")

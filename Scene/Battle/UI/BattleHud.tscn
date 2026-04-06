@@ -62,7 +62,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 0
 flat = true
 text = ""
 z_index = 69
@@ -75,22 +75,22 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 0
 flat = true
 text = ""
 z_index = 71
 
 [node name="PilePopup" type="PanelContainer" parent="."]
 visible = false
-anchor_left = 1.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-offset_left = -262.0
-offset_top = 28.0
-offset_right = -4.0
-offset_bottom = 176.0
-mouse_filter = 2
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -74.0
+offset_right = 150.0
+offset_bottom = 74.0
+mouse_filter = 0
 z_index = 70
 
 [node name="Margin" type="MarginContainer" parent="PilePopup"]
@@ -102,36 +102,134 @@ theme_override_constants/margin_bottom = 3
 [node name="VBox" type="VBoxContainer" parent="PilePopup/Margin"]
 theme_override_constants/separation = 2
 
-[node name="TitleLabel" type="Label" parent="PilePopup/Margin/VBox"]
-theme_override_font_sizes/font_size = 16
-text = "Pile"
+[node name="Header" type="HBoxContainer" parent="PilePopup/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+mouse_filter = 1
 
-[node name="CloseButton" type="Button" parent="PilePopup/Margin/VBox"]
-custom_minimum_size = Vector2(0, 16)
+[node name="TitleLabel" type="Label" parent="PilePopup/Margin/VBox/Header"]
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "牌堆查看"
+mouse_filter = 2
+
+[node name="CloseButton" type="Button" parent="PilePopup/Margin/VBox/Header"]
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "关闭"
+mouse_filter = 0
+text = ""
 
-[node name="BodyLabel" type="RichTextLabel" parent="PilePopup/Margin/VBox"]
+[node name="PileTabs" type="TabContainer" parent="PilePopup/Margin/VBox"]
+custom_minimum_size = Vector2(0, 136)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 16
+
+[node name="DrawTab" type="VBoxContainer" parent="PilePopup/Margin/VBox/PileTabs"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="EmptyLabel" type="Label" parent="PilePopup/Margin/VBox/PileTabs/DrawTab"]
 visible = false
-custom_minimum_size = Vector2(0, 30)
-bbcode_enabled = false
-scroll_active = true
-fit_content = false
-theme_override_font_sizes/normal_font_size = 16
-text = "Empty"
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "空"
+horizontal_alignment = 1
 
-[node name="PileScroll" type="ScrollContainer" parent="PilePopup/Margin/VBox"]
-custom_minimum_size = Vector2(0, 118)
+[node name="PileScroll" type="ScrollContainer" parent="PilePopup/Margin/VBox/PileTabs/DrawTab"]
+custom_minimum_size = Vector2(0, 110)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="PileGrid" type="GridContainer" parent="PilePopup/Margin/VBox/PileScroll"]
+[node name="PileContent" type="VBoxContainer" parent="PilePopup/Margin/VBox/PileTabs/DrawTab/PileScroll"]
 layout_mode = 2
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
-columns = 4
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="PileGrid" type="GridContainer" parent="PilePopup/Margin/VBox/PileTabs/DrawTab/PileScroll/PileContent"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="OverscrollSpacer" type="Control" parent="PilePopup/Margin/VBox/PileTabs/DrawTab/PileScroll/PileContent"]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+
+[node name="DiscardTab" type="VBoxContainer" parent="PilePopup/Margin/VBox/PileTabs"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="EmptyLabel" type="Label" parent="PilePopup/Margin/VBox/PileTabs/DiscardTab"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "空"
+horizontal_alignment = 1
+
+[node name="PileScroll" type="ScrollContainer" parent="PilePopup/Margin/VBox/PileTabs/DiscardTab"]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PileContent" type="VBoxContainer" parent="PilePopup/Margin/VBox/PileTabs/DiscardTab/PileScroll"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="PileGrid" type="GridContainer" parent="PilePopup/Margin/VBox/PileTabs/DiscardTab/PileScroll/PileContent"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="OverscrollSpacer" type="Control" parent="PilePopup/Margin/VBox/PileTabs/DiscardTab/PileScroll/PileContent"]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+
+[node name="ExhaustTab" type="VBoxContainer" parent="PilePopup/Margin/VBox/PileTabs"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="EmptyLabel" type="Label" parent="PilePopup/Margin/VBox/PileTabs/ExhaustTab"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "空"
+horizontal_alignment = 1
+
+[node name="PileScroll" type="ScrollContainer" parent="PilePopup/Margin/VBox/PileTabs/ExhaustTab"]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PileContent" type="VBoxContainer" parent="PilePopup/Margin/VBox/PileTabs/ExhaustTab/PileScroll"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="PileGrid" type="GridContainer" parent="PilePopup/Margin/VBox/PileTabs/ExhaustTab/PileScroll/PileContent"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="OverscrollSpacer" type="Control" parent="PilePopup/Margin/VBox/PileTabs/ExhaustTab/PileScroll/PileContent"]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
 
 [node name="ActionLogPopup" type="PanelContainer" parent="."]
 visible = false
@@ -139,7 +237,7 @@ offset_left = 26.0
 offset_top = 20.0
 offset_right = 224.0
 offset_bottom = 154.0
-mouse_filter = 2
+mouse_filter = 0
 z_index = 72
 
 [node name="Margin" type="MarginContainer" parent="ActionLogPopup"]
@@ -154,17 +252,18 @@ theme_override_constants/separation = 2
 [node name="Header" type="HBoxContainer" parent="ActionLogPopup/Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
+mouse_filter = 1
 
 [node name="TitleLabel" type="Label" parent="ActionLogPopup/Margin/VBox/Header"]
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 16
 text = "战斗记录"
 
 [node name="CloseButton" type="Button" parent="ActionLogPopup/Margin/VBox/Header"]
-custom_minimum_size = Vector2(26, 14)
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "关闭"
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="BodyScroll" type="ScrollContainer" parent="ActionLogPopup/Margin/VBox"]
 custom_minimum_size = Vector2(0, 108)
@@ -177,7 +276,7 @@ layout_mode = 2
 bbcode_enabled = true
 scroll_active = false
 fit_content = true
-theme_override_font_sizes/normal_font_size = 14
+theme_override_font_sizes/normal_font_size = 16
 text = "暂无动作记录"
 
 [node name="CardFxRoot" type="Control" parent="."]
@@ -193,7 +292,7 @@ z_index = 40
 [node name="TopBar" type="HBoxContainer" parent="."]
 offset_left = 2.0
 offset_top = 0.0
-offset_right = 222.0
+offset_right = 286.0
 offset_bottom = 16.0
 theme_override_constants/separation = 2
 z_index = 20
@@ -223,58 +322,48 @@ text = "Ark"
 
 [node name="RightControls" type="GridContainer" parent="."]
 anchor_left = 1.0
-offset_left = -70.0
+offset_left = -62.0
 offset_top = 18.0
 offset_right = -2.0
-offset_bottom = 82.0
+offset_bottom = 138.0
 theme_override_constants/h_separation = 2
-theme_override_constants/v_separation = 1
+theme_override_constants/v_separation = 2
 columns = 2
 z_index = 20
 
 [node name="ActionLogButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "Log"
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
+text = ""
 
-[node name="DrawPileButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "D0"
-
-[node name="DiscardPileButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "G0"
-
-[node name="ExhaustPileButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "X0"
+[node name="PileButton" type="Button" parent="RightControls"]
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="AttackButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "Atk"
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="DefendButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "Def"
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="MeditateButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "Med"
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="RetreatButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
-text = "Run"
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
+text = ""
 
 [node name="EndTurnButton" type="Button" parent="RightControls"]
-custom_minimum_size = Vector2(32, 10)
-theme_override_font_sizes/font_size = 14
+custom_minimum_size = Vector2(28, 28)
+theme_override_font_sizes/font_size = 16
 text = "End"
 
 [node name="BottomHand" type="Control" parent="."]
@@ -328,10 +417,18 @@ offset_bottom = 38.0
 theme_override_font_sizes/font_size = 16
 text = "强化\n1"
 
+[node name="WeaponButton" type="Button" parent="ArakawaWheel"]
+offset_left = 132.0
+offset_top = 10.0
+offset_right = 178.0
+offset_bottom = 38.0
+theme_override_font_sizes/font_size = 16
+text = "强武\n1"
+
 [node name="CancelButton" type="Button" parent="ArakawaWheel"]
-offset_left = 40.0
+offset_left = 72.0
 offset_top = 52.0
-offset_right = 84.0
+offset_right = 116.0
 offset_bottom = 84.0
 theme_override_font_sizes/font_size = 16
 text = "X"

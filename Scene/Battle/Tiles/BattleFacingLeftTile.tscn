@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[node name="BattleFacingLeftTile" type="Node2D"]
+
+[node name="Arrow" type="Polygon2D" parent="."]
+color = Color(0.95, 0.85, 0.25, 0.9)
+polygon = PackedVector2Array(6, 0, -2, -4, -2, -2, -8, -2, -8, 2, -2, 2, -2, 4)

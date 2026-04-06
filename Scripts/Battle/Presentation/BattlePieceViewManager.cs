@@ -161,59 +161,77 @@ public sealed class BattlePieceViewManager
             return;
         }
 
+        Texture2D? capturedTexture = view.CaptureCurrentFrameTexture()
+            ?? view.CaptureAnimationFrameTexture("idle", 0);
+        if (capturedTexture == null)
+        {
+            _views.Remove(objectId);
+            view.QueueFree();
+            return;
+        }
+
+        Texture2D snapshotTexture = CreateSnapshotTexture(capturedTexture, view.CaptureSpriteFlipH());
+        Texture2D whiteOverlayTexture = CreateWhiteOverlayTexture(snapshotTexture);
+        Vector2 textureSize = snapshotTexture.GetSize();
+        Vector2 halfSize = textureSize * 0.5f;
         Vector2 spriteAnchor = view.CaptureSpriteLocalPosition();
+        bool spriteCentered = view.CaptureSpriteCentered();
+        Vector2 spriteTopLeft = spriteCentered ? spriteAnchor - halfSize : spriteAnchor;
 
         Node2D killGhost = new()
         {
             Name = $"{view.Name}_KillGhost",
-            Position = view.Position + spriteAnchor,
+            Position = view.Position,
             Scale = view.Scale,
             ZIndex = 999,
         };
 
-        Polygon2D baseSquare = new()
+        Sprite2D baseSprite = new()
         {
-            Polygon = new[]
-            {
-                new Vector2(-8.0f, -8.0f),
-                new Vector2(8.0f, -8.0f),
-                new Vector2(8.0f, 8.0f),
-                new Vector2(-8.0f, 8.0f),
-            },
-            Color = Colors.White,
+            Texture = snapshotTexture,
+            Centered = false,
+            Position = spriteTopLeft,
+            Modulate = Colors.White,
+            ZIndex = 0,
         };
-        killGhost.AddChild(baseSquare);
+        killGhost.AddChild(baseSprite);
+
+        Sprite2D whiteOverlaySprite = new()
+        {
+            Texture = whiteOverlayTexture,
+            Centered = false,
+            Position = spriteTopLeft,
+            Modulate = new Color(1.0f, 1.0f, 1.0f, 0.0f),
+            ZIndex = 1,
+        };
+        killGhost.AddChild(whiteOverlaySprite);
 
         Vector2[] shardDirections =
         {
-            new Vector2(-0.8f, -0.9f),
-            new Vector2(0.9f, -0.7f),
-            new Vector2(-0.7f, 0.8f),
-            new Vector2(0.85f, 0.95f),
+            new Vector2(-0.85f, -0.95f),
+            new Vector2(0.95f, -0.75f),
+            new Vector2(-0.75f, 0.95f),
+            new Vector2(0.9f, 1.0f),
         };
 
-        Vector2[] shardOrigins =
-        {
-            new Vector2(-8.0f, -8.0f),
-            new Vector2(0.0f, -8.0f),
-            new Vector2(-8.0f, 0.0f),
-            new Vector2(0.0f, 0.0f),
-        };
-
-        List<Polygon2D> shardSprites = new();
+        List<Sprite2D> shardSprites = new();
         for (int index = 0; index < 4; index++)
         {
-            Polygon2D shard = new()
+            Vector2 regionPosition = new(
+                index % 2 == 0 ? 0.0f : halfSize.X,
+                index < 2 ? 0.0f : halfSize.Y);
+            AtlasTexture shardTexture = new()
             {
-                Polygon = new[]
-                {
-                    Vector2.Zero,
-                    new Vector2(8.0f, 0.0f),
-                    new Vector2(8.0f, 8.0f),
-                    new Vector2(0.0f, 8.0f),
-                },
-                Position = shardOrigins[index],
-                Color = new Color(1.0f, 1.0f, 1.0f, 0.0f),
+                Atlas = snapshotTexture,
+                Region = new Rect2(regionPosition, halfSize),
+            };
+
+            Sprite2D shard = new()
+            {
+                Texture = shardTexture,
+                Centered = false,
+                Position = spriteTopLeft + regionPosition,
+                Modulate = Colors.White,
             };
             killGhost.AddChild(shard);
             shardSprites.Add(shard);
@@ -224,36 +242,137 @@ public sealed class BattlePieceViewManager
         _views.Remove(objectId);
         view.QueueFree();
 
-        Vector2 resolvedDirection = knockbackDirection == Vector2.Zero ? Vector2.Right : knockbackDirection.Normalized();
+        Vector2 knockDirection = knockbackDirection == Vector2.Zero ? Vector2.Right : knockbackDirection.Normalized();
         Tween rootTween = killGhost.CreateTween();
+        rootTween.SetParallel();
         rootTween.SetEase(Tween.EaseType.Out);
         rootTween.SetTrans(Tween.TransitionType.Cubic);
-        rootTween.TweenProperty(killGhost, "position", killGhost.Position + resolvedDirection * knockbackDistance, knockbackDuration);
+        rootTween.TweenProperty(killGhost, "position", killGhost.Position + knockDirection * knockbackDistance, knockbackDuration);
+        rootTween.TweenProperty(whiteOverlaySprite, "modulate", Colors.White, knockbackDuration);
+        await killGhost.ToSignal(rootTween, Tween.SignalName.Finished);
 
-        double shardDelay = Math.Max(whiteFlashDuration * 0.35d, 0.02d);
-        Tween flashTween = killGhost.CreateTween();
-        flashTween.SetEase(Tween.EaseType.Out);
-        flashTween.SetTrans(Tween.TransitionType.Cubic);
-        flashTween.TweenProperty(baseSquare, "color", Colors.White, whiteFlashDuration * 0.45d);
-        flashTween.TweenProperty(baseSquare, "color", new Color(1.0f, 1.0f, 1.0f, 0.0f), shatterDuration).SetDelay(shardDelay);
+        await killGhost.ToSignal(killGhost.GetTree().CreateTimer(0.18d), SceneTreeTimer.SignalName.Timeout);
+
+        baseSprite.Visible = false;
+        whiteOverlaySprite.Visible = false;
 
         for (int index = 0; index < shardSprites.Count; index++)
         {
-            Polygon2D shard = shardSprites[index];
-            Vector2 shardDrift = (resolvedDirection * 0.8f + shardDirections[index]).Normalized() * (knockbackDistance * 0.95f + 6.0f);
+            Sprite2D shard = shardSprites[index];
+            Vector2 shardDrift = (knockDirection * 0.28f + shardDirections[index]).Normalized() * (Mathf.Max(textureSize.X, textureSize.Y) * 0.7f + 8.0f);
             Tween shardTween = killGhost.CreateTween();
             shardTween.SetParallel();
             shardTween.SetEase(Tween.EaseType.Out);
             shardTween.SetTrans(Tween.TransitionType.Cubic);
-            shardTween.TweenProperty(shard, "color", Colors.White, 0.01d).SetDelay(shardDelay);
-            shardTween.TweenProperty(shard, "position", shard.Position + shardDrift, shatterDuration).SetDelay(shardDelay);
-            shardTween.TweenProperty(shard, "rotation_degrees", (index % 2 == 0 ? -1.0f : 1.0f) * (20.0f + index * 12.0f), shatterDuration).SetDelay(shardDelay);
-            shardTween.TweenProperty(shard, "color", new Color(1.0f, 1.0f, 1.0f, 0.0f), shatterDuration).SetDelay(shardDelay);
+            shardTween.TweenProperty(shard, "position", shard.Position + shardDrift, shatterDuration);
+            shardTween.TweenProperty(shard, "rotation_degrees", (index % 2 == 0 ? -1.0f : 1.0f) * (28.0f + index * 16.0f), shatterDuration);
+            shardTween.TweenProperty(shard, "modulate", new Color(1.0f, 1.0f, 1.0f, 0.0f), shatterDuration);
         }
 
-        double totalDuration = Math.Max(knockbackDuration, Math.Max(whiteFlashDuration, shardDelay + shatterDuration));
+        double totalDuration = knockbackDuration + 0.18d + shatterDuration;
         await killGhost.ToSignal(killGhost.GetTree().CreateTimer(totalDuration), SceneTreeTimer.SignalName.Timeout);
         killGhost.QueueFree();
+    }
+
+    public async Task PlayObstacleBreakSequenceAsync(
+        string objectId,
+        double whiteFlashDuration,
+        double shatterDuration)
+    {
+        if (!_views.TryGetValue(objectId, out BattleAnimatedViewBase? view))
+        {
+            return;
+        }
+
+        Texture2D? capturedTexture = view.CaptureCurrentFrameTexture()
+            ?? view.CaptureAnimationFrameTexture("idle", 0);
+        if (capturedTexture == null)
+        {
+            _views.Remove(objectId);
+            view.QueueFree();
+            return;
+        }
+
+        Texture2D snapshotTexture = CreateSnapshotTexture(capturedTexture, view.CaptureSpriteFlipH());
+        Vector2 textureSize = snapshotTexture.GetSize();
+        Vector2 halfSize = textureSize * 0.5f;
+        Vector2 spriteAnchor = view.CaptureSpriteLocalPosition();
+        bool spriteCentered = view.CaptureSpriteCentered();
+        Vector2 spriteTopLeft = spriteCentered ? spriteAnchor - halfSize : spriteAnchor;
+
+        Node2D breakGhost = new()
+        {
+            Name = $"{view.Name}_ObstacleBreakGhost",
+            Position = view.Position,
+            Scale = view.Scale,
+            ZIndex = 999,
+        };
+
+        Sprite2D baseSprite = new()
+        {
+            Texture = snapshotTexture,
+            Centered = false,
+            Position = spriteTopLeft,
+            Modulate = Colors.White,
+        };
+        breakGhost.AddChild(baseSprite);
+
+        Vector2[] shardDirections =
+        {
+            new Vector2(-1.0f, -0.65f),
+            new Vector2(1.0f, -0.55f),
+            new Vector2(-0.8f, 0.95f),
+            new Vector2(0.85f, 1.0f),
+        };
+
+        List<Sprite2D> shardSprites = new();
+        for (int index = 0; index < 4; index++)
+        {
+            Vector2 regionPosition = new(
+                index % 2 == 0 ? 0.0f : halfSize.X,
+                index < 2 ? 0.0f : halfSize.Y);
+            AtlasTexture shardTexture = new()
+            {
+                Atlas = snapshotTexture,
+                Region = new Rect2(regionPosition, halfSize),
+            };
+
+            Sprite2D shard = new()
+            {
+                Texture = shardTexture,
+                Centered = false,
+                Position = spriteTopLeft + regionPosition,
+                Modulate = Colors.White,
+            };
+            breakGhost.AddChild(shard);
+            shardSprites.Add(shard);
+        }
+
+        _killFxRoot.AddChild(breakGhost);
+
+        _views.Remove(objectId);
+        view.QueueFree();
+
+        await breakGhost.ToSignal(breakGhost.GetTree().CreateTimer(Math.Max(whiteFlashDuration, 0.16d)), SceneTreeTimer.SignalName.Timeout);
+
+        baseSprite.Visible = false;
+
+        for (int index = 0; index < shardSprites.Count; index++)
+        {
+            Sprite2D shard = shardSprites[index];
+            Vector2 shardDrift = shardDirections[index].Normalized() * (Mathf.Max(textureSize.X, textureSize.Y) * 0.75f + 6.0f);
+            Tween shardTween = breakGhost.CreateTween();
+            shardTween.SetParallel();
+            shardTween.SetEase(Tween.EaseType.Out);
+            shardTween.SetTrans(Tween.TransitionType.Cubic);
+            shardTween.TweenProperty(shard, "position", shard.Position + shardDrift, shatterDuration);
+            shardTween.TweenProperty(shard, "rotation_degrees", (index % 2 == 0 ? -1.0f : 1.0f) * (24.0f + index * 14.0f), shatterDuration);
+            shardTween.TweenProperty(shard, "modulate", new Color(1.0f, 1.0f, 1.0f, 0.0f), shatterDuration);
+        }
+
+        double totalDuration = Math.Max(whiteFlashDuration, 0.16d) + shatterDuration;
+        await breakGhost.ToSignal(breakGhost.GetTree().CreateTimer(totalDuration), SceneTreeTimer.SignalName.Timeout);
+        breakGhost.QueueFree();
     }
 
     public void PlayCue(string objectId, StringName animationName)
@@ -293,5 +412,41 @@ public sealed class BattlePieceViewManager
         view.PlayIdle();
         _views[state.ObjectId] = view;
         return view;
+    }
+
+    private static Texture2D CreateSnapshotTexture(Texture2D sourceTexture, bool flipHorizontally)
+    {
+        Image image = sourceTexture.GetImage();
+        if (image == null || image.IsEmpty())
+        {
+            return sourceTexture;
+        }
+
+        if (flipHorizontally)
+        {
+            image.FlipX();
+        }
+
+        return ImageTexture.CreateFromImage(image);
+    }
+
+    private static Texture2D CreateWhiteOverlayTexture(Texture2D sourceTexture)
+    {
+        Image image = sourceTexture.GetImage();
+        if (image == null || image.IsEmpty())
+        {
+            return sourceTexture;
+        }
+
+        for (int y = 0; y < image.GetHeight(); y++)
+        {
+            for (int x = 0; x < image.GetWidth(); x++)
+            {
+                Color source = image.GetPixel(x, y);
+                image.SetPixel(x, y, new Color(1.0f, 1.0f, 1.0f, source.A));
+            }
+        }
+
+        return ImageTexture.CreateFromImage(image);
     }
 }

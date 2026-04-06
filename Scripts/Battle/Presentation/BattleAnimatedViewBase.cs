@@ -38,6 +38,15 @@ public partial class BattleAnimatedViewBase : Node2D
 			_animatedSprite.SpriteFrames = BuildFallbackFrames();
 		}
 
+		if (!_animatedSprite.IsConnected(AnimatedSprite2D.SignalName.AnimationFinished, Callable.From(OnAnimationFinished)))
+		{
+			_animatedSprite.AnimationFinished += OnAnimationFinished;
+		}
+
+		if (State == null)
+		{
+			_horizontalFacing = GetDefaultFacingSign();
+		}
 		ConfigureAnimatedSprite(_animatedSprite);
 		ApplySpriteFacing();
 		PlayNamedAnimation(_pendingAnimation);
@@ -47,6 +56,9 @@ public partial class BattleAnimatedViewBase : Node2D
 	{
 		State = state;
 		Name = state.ObjectId;
+		FaceDirection(state.InitialFacing == Vector2.Zero
+			? new Vector2(GetDefaultFacingSign(), 0.0f)
+			: state.InitialFacing);
 	}
 
 	public void SetBoardPosition(Vector2 localCenter)
@@ -113,6 +125,43 @@ public partial class BattleAnimatedViewBase : Node2D
 
 		int frame = Math.Clamp(_animatedSprite.Frame, 0, frameCount - 1);
 		Texture2D? frameTexture = frames.GetFrameTexture(animationName, frame);
+		return CloneFrameTexture(frameTexture);
+	}
+
+	public Texture2D? CaptureAnimationFrameTexture(string animationName, int frameIndex)
+	{
+		_animatedSprite ??= GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+		if (_animatedSprite == null)
+		{
+			return null;
+		}
+
+		if (_animatedSprite.SpriteFrames == null)
+		{
+			_animatedSprite.SpriteFrames = BuildFallbackFrames();
+			ConfigureAnimatedSprite(_animatedSprite);
+			ApplySpriteFacing();
+		}
+
+		SpriteFrames? frames = _animatedSprite.SpriteFrames;
+		if (frames == null || !frames.HasAnimation(animationName))
+		{
+			return null;
+		}
+
+		int frameCount = frames.GetFrameCount(animationName);
+		if (frameCount <= 0)
+		{
+			return null;
+		}
+
+		int safeFrameIndex = Math.Clamp(frameIndex, 0, frameCount - 1);
+		Texture2D? frameTexture = frames.GetFrameTexture(animationName, safeFrameIndex);
+		return CloneFrameTexture(frameTexture);
+	}
+
+	private static Texture2D? CloneFrameTexture(Texture2D? frameTexture)
+	{
 		if (frameTexture == null)
 		{
 			return null;
@@ -137,6 +186,12 @@ public partial class BattleAnimatedViewBase : Node2D
 	{
 		_animatedSprite ??= GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 		return _animatedSprite?.FlipH ?? false;
+	}
+
+	public bool CaptureSpriteCentered()
+	{
+		_animatedSprite ??= GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+		return _animatedSprite?.Centered ?? true;
 	}
 
 	public virtual async System.Threading.Tasks.Task PlayKillSequenceAsync(
@@ -304,6 +359,16 @@ public partial class BattleAnimatedViewBase : Node2D
 		return Vector2.Zero;
 	}
 
+	protected virtual int GetSourceArtFacingSign()
+	{
+		return 1;
+	}
+
+	protected virtual int GetDefaultFacingSign()
+	{
+		return 1;
+	}
+
 	protected SpriteFrames CreateFrames(Color primary, Color secondary)
 	{
 		SpriteFrames frames = new();
@@ -358,7 +423,32 @@ public partial class BattleAnimatedViewBase : Node2D
 			return;
 		}
 
-		_animatedSprite.FlipH = _horizontalFacing < 0;
+		_animatedSprite.FlipH = _horizontalFacing != GetSourceArtFacingSign();
+	}
+
+	private void OnAnimationFinished()
+	{
+		if (_animatedSprite == null)
+		{
+			return;
+		}
+
+		string finishedAnimation = _animatedSprite.Animation.ToString();
+		if (string.IsNullOrWhiteSpace(finishedAnimation))
+		{
+			return;
+		}
+
+		// 非循环表现动画播完后要主动回到 idle，
+		// 否则 AnimatedSprite2D 会停在最后一帧，看起来像“动画卡住”。
+		if (string.Equals(finishedAnimation, "idle", StringComparison.Ordinal)
+			|| string.Equals(finishedAnimation, "move", StringComparison.Ordinal)
+			|| string.Equals(finishedAnimation, "defeat", StringComparison.Ordinal))
+		{
+			return;
+		}
+
+		PlayIdle();
 	}
 
 	private void SetKillWhiteMix(float value)
